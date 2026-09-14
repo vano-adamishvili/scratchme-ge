@@ -270,3 +270,79 @@ button { cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   *, *:before, *:after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior:auto !important; }
 }
+
+/* Product gallery, bundle progress, and admin editor */
+.button:disabled { opacity:.45; cursor:not-allowed; transform:none !important; box-shadow:none !important; }
+.gallery-main { background:var(--cream); }
+.gallery-arrow { position:absolute; top:50%; transform:translateY(-50%); width:42px; height:42px; border:1px solid var(--ink); background:rgba(247,245,238,.92); display:grid; place-items:center; z-index:2; transition:transform .16s var(--ease-out), background .16s ease; }
+.gallery-arrow:hover { background:var(--lime); transform:translateY(-50%) scale(1.05); }
+.gallery-arrow.prev { left:14px; }
+.gallery-arrow.next { right:14px; }
+.gallery-thumbs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:12px; }
+.gallery-thumb { padding:0; border:1px solid var(--line); background:transparent; text-align:left; overflow:hidden; }
+.gallery-thumb.active { border-color:var(--ink); box-shadow:3px 3px 0 var(--lime); }
+.gallery-thumb img { width:100%; aspect-ratio:1.2; object-fit:cover; display:block; }
+.gallery-thumb span { display:block; padding:8px; font:500 10px/1.3 'DM Mono',monospace; }
+.product-features { list-style:none; padding:0; margin:24px 0; display:grid; gap:9px; color:#5c5b53; font-size:13px; }
+.product-features li { display:flex; align-items:center; gap:8px; }
+.stock-pill { display:inline-flex; padding:6px 8px; background:var(--lime); border:1px solid var(--ink); font:500 10px 'DM Mono',monospace; text-transform:uppercase; }
+.stock-pill.out { background:var(--coral); }
+
+.bundle-progress { margin:0 0 18px; padding:15px 14px 20px; background:var(--ink); color:var(--paper); }
+.bundle-progress-copy { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; font-size:11px; margin-bottom:22px; }
+.bundle-progress-copy strong { max-width:235px; line-height:1.4; }
+.bundle-progress-copy span { color:var(--lime); font:500 11px 'DM Mono',monospace; }
+.progress-track { height:7px; background:rgba(247,245,238,.18); position:relative; }
+.progress-fill { position:absolute; inset:0 auto 0 0; background:var(--lime); transition:width .28s var(--ease-out); }
+.progress-marker { position:absolute; top:50%; width:23px; height:23px; margin-left:-11px; margin-top:-11px; display:grid; place-items:center; border-radius:50%; border:1px solid rgba(247,245,238,.5); background:var(--ink); color:var(--paper); font:500 9px 'DM Mono',monospace; }
+.progress-marker.reached { background:var(--lime); color:var(--ink); border-color:var(--lime); }
+.progress-labels { display:grid; grid-template-columns:2fr 1fr 1fr; margin-top:17px; color:#aaa79d; font:9px/1.2 'DM Mono',monospace; }
+.progress-labels span:nth-child(2) { text-align:center; }
+.progress-labels span:last-child { text-align:right; color:var(--lime); }
+
+.admin-nav button { display:flex; align-items:center; }
+.admin-empty { padding:34px 20px; color:var(--muted); }
+.table-sub { color:var(--muted); font-size:11px; line-height:1.5; }
+.order-item-line { display:block; font-size:11px; margin:3px 0; }
+.admin-table select { border:1px solid var(--line); padding:7px 8px; background:var(--paper); font-size:11px; }
+.admin-product-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1px; background:var(--line); }
+.admin-product-card { display:grid; grid-template-columns:70px 1fr auto; gap:14px; align-items:center; padding:15px; background:var(--paper); }
+.admin-product-card img { width:70px; aspect-ratio:.82; object-fit:cover; border:1px solid var(--ink); }
+.admin-product-card h3 { margin:0 0 6px; font:600 15px/1.15 'Space Grotesk',sans-serif; }
+.admin-product-card p { margin:0 0 9px; color:var(--muted); font-size:11px; }
+.admin-editor-backdrop { position:fixed; inset:0; z-index:50; display:flex; justify-content:flex-end; background:rgba(23,23,20,.58); backdrop-filter:blur(3px); }
+.admin-editor { width:min(780px,94vw); height:100%; overflow:auto; background:var(--paper); padding:28px; box-shadow:-15px 0 50px rgba(0,0,0,.2); }
+.admin-editor-head { display:flex; justify-content:space-between; gap:20px; align-items:flex-start; padding-bottom:20px; border-bottom:1px solid var(--line); margin-bottom:24px; }
+.admin-editor-head h2 { font:700 32px/.95 'Space Grotesk',sans-serif; letter-spacing:-.06em; margin:8px 0 0; }
+.icon-button { width:38px; height:38px; display:grid; place-items:center; border:1px solid var(--line); background:transparent; }
+.icon-button:hover { background:var(--coral); border-color:var(--ink); }
+.editor-grid { display:grid; grid-template-columns:1fr 1fr; gap:15px; }
+.gallery-editor-head { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; margin:36px 0 14px; }
+.gallery-editor-head p { margin:7px 0 0; color:var(--muted); font-size:12px; }
+.gallery-editor-list { display:grid; gap:10px; }
+.gallery-editor-row { display:grid; grid-template-columns:76px 1.3fr .8fr auto auto; gap:10px; align-items:end; padding:10px; border:1px solid var(--line); }
+.gallery-editor-row > img, .image-placeholder { width:76px; height:76px; object-fit:cover; border:1px solid var(--ink); background:var(--cream); }
+.image-placeholder { display:grid; place-items:center; color:var(--muted); }
+.upload-button { position:relative; overflow:hidden; }
+.upload-button input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+.admin-editor-actions { position:sticky; bottom:-28px; display:flex; justify-content:flex-end; gap:10px; margin:30px -28px -28px; padding:18px 28px; border-top:1px solid var(--line); background:rgba(247,245,238,.96); backdrop-filter:blur(10px); }
+
+@media (max-width:900px) {
+  .admin-product-grid { grid-template-columns:1fr; }
+  .gallery-editor-row { grid-template-columns:64px 1fr auto; }
+  .gallery-editor-row .field:nth-of-type(2) { grid-column:2/-1; }
+}
+@media (max-width:640px) {
+  .gallery-thumbs { grid-template-columns:repeat(2,1fr); }
+  .admin-editor { width:100vw; padding:20px 16px; }
+  .editor-grid { grid-template-columns:1fr; }
+  .editor-grid .field.full { grid-column:auto; }
+  .gallery-editor-head { align-items:flex-start; flex-direction:column; }
+  .gallery-editor-row { grid-template-columns:54px 1fr auto; align-items:center; }
+  .gallery-editor-row > img, .image-placeholder { width:54px; height:54px; }
+  .gallery-editor-row .field { grid-column:1/-1; }
+  .admin-editor-actions { margin:24px -16px -20px; bottom:-20px; padding:14px 16px; }
+  .admin-product-card { grid-template-columns:54px 1fr; }
+  .admin-product-card img { width:54px; }
+  .admin-product-card .button { grid-column:1/-1; }
+}

@@ -5,14 +5,25 @@ export type Product = {
   slug: string;
   title: string;
   titleKa: string;
+  subtitle?: string;
   category: CategoryId;
   categoryLabel: string;
   price: number;
   description: string;
+  features?: string[];
   accent: string;
   image: string;
+  images?: GalleryImage[];
+  stock?: number;
+  stockStatus?: "in_stock" | "out_of_stock";
   badge?: string;
   popular?: boolean;
+};
+
+export type GalleryImage = {
+  url: string;
+  labelKa: string;
+  labelEn: string;
 };
 
 export const categories = [
@@ -181,6 +192,11 @@ export const products: Product[] = [
 ];
 
 export const getProductBySlug = (slug?: string) => products.find((product) => product.slug === slug);
+
+export const getProductGallery = (product: Product): GalleryImage[] => product.images?.length ? product.images : [
+  { url: product.image, labelKa: "გადაუფხეკელი პოსტერი", labelEn: "Unscratched poster" },
+  { url: `${product.image}&sat=-70`, labelKa: "გადაფხეკილი / პროცესში", labelEn: "Scratched / revealed" },
+];
 
 export const formatPrice = (amount: number) => `${amount.toFixed(2)} ₾`;
 

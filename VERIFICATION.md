@@ -26,3 +26,15 @@ Desktop screenshots confirm Georgian is now the default across the announcement 
 ## Georgian mobile preview
 
 At 375px, the Georgian headline, buttons, filter pills, GE/EN switcher, and localized empty checkout state remain readable and properly spaced. The compact header hides secondary navigation without crowding the language switcher or cart button.
+
+## Architecture upgrade browser verification
+
+The public product page now loads its product from the persistent catalog and exposes indexed controls for previous/next image, “გადაუფხეკელი პოსტერი,” and “გადაფხეკილი / პროცესში.” Product features, stock quantity, and purchase actions render from the upgraded product shape. A separate unauthenticated browser session is correctly blocked from `/admin` and shown the administrator sign-in gate, while managed owner-preview sessions retain admin access.
+
+The scratched/revealed thumbnail updates the main image and accessible label immediately. Adding the product updates the persistent cart badge from empty to `კალათა (1)` without navigation, confirming the public gallery and cart state are connected to the same database-backed product identity.
+
+The populated cart displays a high-contrast milestone bar with 2/3/4 markers, prices, and free-delivery target. Increasing quantity from one to two moves progress to 2/4, marks the first tier reached, changes the guidance to the 3-poster tier, applies the 29.90 ₾ bundle price, and shows 9.90 ₾ savings.
+
+Desktop owner previews show the full 12-product management grid and a slide-over creation form with titles, subtitle, description, features, category, price, stock, status, slug, accent color, and sticky save controls. Mobile previews confirm the two-state gallery remains swipe-friendly through large navigation controls and labeled thumbnails, while the admin editor becomes a readable single-column form with persistent actions.
+
+The reversible persistence probe passed catalog seeding, product edit and reload, product creation and reload, order creation, payment-status update, and fulfillment-status update, then removed all temporary records and restored the edited seed product.

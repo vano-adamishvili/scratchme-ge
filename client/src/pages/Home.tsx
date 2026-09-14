@@ -2,11 +2,13 @@ import { ArrowDown, ArrowRight, Check, MapPin, PackageCheck, Sparkles } from "lu
 import { Link } from "wouter";
 import { BundleBuilder, Footer, ProductCard, SiteNav } from "@/components/storefront";
 import { useI18n } from "@/lib/i18n";
-import { products } from "@shared/catalog";
+import { useStore } from "@/lib/store";
 
 export default function Home() {
   const { t } = useI18n();
-  const popular = products.filter((product) => product.popular).slice(0, 4);
+  const { catalogProducts } = useStore();
+  const popularCandidates = catalogProducts.filter((product) => product.popular);
+  const popular = (popularCandidates.length >= 4 ? popularCandidates : catalogProducts).slice(0, 4);
   return <div className="site-shell"><SiteNav /><main>
     <section className="hero-grid"><div className="hero-copy"><div className="eyebrow">{t("hero.eyebrow")}</div><h1>{t("hero.title")}</h1><p>{t("hero.body")}</p><div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}><Link href="/shop" className="button">{t("hero.shop")} <ArrowRight size={16} /></Link><a href="#how-it-works" className="button secondary">{t("hero.how")} <ArrowDown size={16} /></a></div><div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 42, color: "var(--muted)", fontSize: 12 }}><MapPin size={14} /> {t("hero.note")}</div></div><div className="hero-art"><div className="hero-sticker">გადაფხიკე / აღმოაჩინე</div><div className="hero-sticker alt">შექმნილია ცნობისმოყვარეებისთვის</div><div className="hero-poster"><div style={{ display: "flex", justifyContent: "space-between", position: "relative", zIndex: 1 }}><span className="eyebrow">scratchme.ge</span><span className="eyebrow">№ 001</span></div><div className="poster-number">100</div><div className="poster-title">ადგილები,<br />სადაც<br />უნდა წახვიდე.</div><div className="poster-footer"><span>საქართველო / ევროპა / მსოფლიო</span><span>გადაფხიკე</span></div></div></div></section>
 

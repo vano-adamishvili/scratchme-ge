@@ -1,99 +1,59 @@
 import { z } from "zod";
-import { categories, products, Product, CategoryId } from "../shared/catalog";
+import { categories } from "../shared/catalog";
 import { COOKIE_NAME } from "@shared/const";
+import { createCatalogProduct, createPersistentOrder, getCatalogProductBySlug, getCatalogProducts, getPersistentOrders, updateCatalogProduct, updatePersistentOrder } from "./db";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router } from "./_core/trpc";
+import { adminProcedure, publicProcedure, router } from "./_core/trpc";
+import { storagePut } from "./storage";
 
 const orderInput = z.object({
-  fullName: z.string().min(2),
-  phone: z.string().min(6),
-  address: z.string().min(4),
-  city: z.string().min(2),
-  notes: z.string().optional(),
-  paymentMethod: z.enum(["bank_transfer", "card"]),
-  total: z.number().nonnegative(),
-  items: z.array(z.object({ productId: z.number(), quantity: z.number().int().positive() })).min(1),
+  fullName: z.string().min(2), phone: z.string().min(6), address: z.string().min(4), city: z.string().min(2), notes: z.string().optional(), paymentMethod: z.enum(["bank_transfer", "card"]), total: z.number().nonnegative(), items: z.array(z.object({ productId: z.number(), quantity: z.number().int().positive() })).min(1),
 });
 
-type Order = z.infer<typeof orderInput> & {
-  id: number;
-  reference: string;
-  paymentStatus: "pending" | "paid";
-  fulfillmentStatus: "pending" | "processing" | "shipped" | "completed";
-  createdAt: number;
-};
-
-const orders: Order[] = [
-  {
-    id: 1,
-    reference: "SCR-2401",
-    fullName: "Nino Beridze",
-    phone: "+995 599 12 34 56",
-    address: "12 Rustaveli Ave",
-    city: "Tbilisi",
-    notes: "Please call before delivery",
-    paymentMethod: "bank_transfer",
-    total: 49.9,
-    items: [{ productId: 4, quantity: 1 }, { productId: 9, quantity: 1 }, { productId: 11, quantity: 1 }],
-    paymentStatus: "pending",
-    fulfillmentStatus: "processing",
-    createdAt: Date.now() - 1000 * 60 * 42,
-  },
-];
-
-const referenceCode = () => `SCR-${Math.floor(1000 + Math.random() * 8999)}`;
+const imageUrlInput = z.string().min(1).refine((value) => value.startsWith("/manus-storage/") || /^https?:\/\//.test(value), "Use an image URL or uploaded storage path");
+const galleryImageInput = z.object({ url: imageUrlInput, labelKa: z.string().min(1), labelEn: z.string().min(1) });
+const productInput = z.object({
+  title: z.string().min(2),
+  titleKa: z.string().min(2),
+  subtitle: z.string(),
+  slug: z.string().optional(),
+  description: z.string().min(10),
+  features: z.array(z.string().min(1)).min(1),
+  category: z.enum(["travel", "watch", "read-kids"]),
+  price: z.number().positive(),
+  stock: z.number().int().nonnegative(),
+  stockStatus: z.enum(["in_stock", "out_of_stock"]),
+  image: imageUrlInput,
+  images: z.array(galleryImageInput).min(2),
+  accent: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+});
 
 export const appRouter = router({
   system: systemRouter,
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
-    logout: publicProcedure.mutation(({ ctx }) => {
-      const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
-      return { success: true } as const;
-    }),
+    logout: publicProcedure.mutation(({ ctx }) => { const cookieOptions = getSessionCookieOptions(ctx.req); ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 }); return { success: true } as const; }),
   }),
   catalog: router({
-    list: publicProcedure.query(() => ({ products, categories })),
-    byCategory: publicProcedure.input(z.object({ category: z.enum(["travel", "watch", "read-kids"]) })).query(({ input }) => products.filter((product) => product.category === input.category)),
-    bySlug: publicProcedure.input(z.object({ slug: z.string() })).query(({ input }) => products.find((product) => product.slug === input.slug) ?? null),
+    list: publicProcedure.query(async () => ({ products: await getCatalogProducts(), categories })),
+    byCategory: publicProcedure.input(z.object({ category: z.enum(["travel", "watch", "read-kids"]) })).query(async ({ input }) => (await getCatalogProducts()).filter((product) => product.category === input.category)),
+    bySlug: publicProcedure.input(z.object({ slug: z.string() })).query(({ input }) => getCatalogProductBySlug(input.slug)),
   }),
-  orders: router({
-    create: publicProcedure.input(orderInput).mutation(({ input }) => {
-      const order: Order = {
-        ...input,
-        id: orders.length + 1,
-        reference: referenceCode(),
-        paymentStatus: input.paymentMethod === "card" ? "pending" : "pending",
-        fulfillmentStatus: "pending",
-        createdAt: Date.now(),
-      };
-      orders.unshift(order);
-      return { reference: order.reference, total: order.total, paymentMethod: order.paymentMethod };
-    }),
-  }),
+  orders: router({ create: publicProcedure.input(orderInput).mutation(({ input }) => createPersistentOrder(input)) }),
   admin: router({
-    overview: publicProcedure.query(() => ({
-      totalSales: orders.filter((order) => order.paymentStatus === "paid").reduce((sum, order) => sum + order.total, 0),
-      totalOrders: orders.length,
-      pendingOrders: orders.filter((order) => order.fulfillmentStatus === "pending").length,
-      productsInCatalog: products.length,
-      recentOrders: orders.slice(0, 8),
-    })),
-    orders: publicProcedure.query(() => orders),
-    updateFulfillment: publicProcedure.input(z.object({ id: z.number(), status: z.enum(["pending", "processing", "shipped", "completed"]) })).mutation(({ input }) => {
-      const order = orders.find((item) => item.id === input.id);
-      if (!order) throw new Error("Order not found");
-      order.fulfillmentStatus = input.status;
-      return order;
+    overview: adminProcedure.query(async () => {
+      const [orderList, productList] = await Promise.all([getPersistentOrders(), getCatalogProducts()]);
+      return { totalSales: orderList.filter((order) => order.paymentStatus === "paid").reduce((sum, order) => sum + order.total, 0), totalOrders: orderList.length, pendingOrders: orderList.filter((order) => order.fulfillmentStatus === "pending").length, productsInCatalog: productList.length, recentOrders: orderList.slice(0, 8) };
     }),
-    updateProduct: publicProcedure.input(z.object({ id: z.number(), title: z.string().min(2), price: z.number().positive(), stock: z.number().int().nonnegative() })).mutation(({ input }) => {
-      const product = products.find((item) => item.id === input.id);
-      if (!product) throw new Error("Product not found");
-      product.title = input.title;
-      product.price = input.price;
-      return product;
+    orders: adminProcedure.query(() => getPersistentOrders()),
+    updateOrder: adminProcedure.input(z.object({ id: z.number(), paymentStatus: z.enum(["pending", "paid"]).optional(), fulfillmentStatus: z.enum(["pending", "processing", "shipped", "completed"]).optional() })).mutation(({ input }) => updatePersistentOrder(input.id, { paymentStatus: input.paymentStatus, fulfillmentStatus: input.fulfillmentStatus })),
+    products: adminProcedure.query(() => getCatalogProducts()),
+    createProduct: adminProcedure.input(productInput).mutation(({ input }) => createCatalogProduct(input)),
+    updateProduct: adminProcedure.input(productInput.extend({ id: z.number() })).mutation(({ input }) => { const { id, ...data } = input; return updateCatalogProduct(id, data); }),
+    uploadProductImage: adminProcedure.input(z.object({ filename: z.string().min(1), contentType: z.string().regex(/^image\//), base64: z.string().max(12_000_000) })).mutation(async ({ input, ctx }) => {
+      const safeName = input.filename.replace(/[^a-zA-Z0-9._-]/g, "-");
+      return storagePut(`products/${ctx.user.id}/${safeName}`, Buffer.from(input.base64, "base64"), input.contentType);
     }),
   }),
 });
