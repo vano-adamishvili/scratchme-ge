@@ -1,0 +1,199 @@
+export type CategoryId = "travel" | "watch" | "read-kids";
+
+export type Product = {
+  id: number;
+  slug: string;
+  title: string;
+  titleKa: string;
+  category: CategoryId;
+  categoryLabel: string;
+  price: number;
+  description: string;
+  accent: string;
+  image: string;
+  badge?: string;
+  popular?: boolean;
+};
+
+export const categories = [
+  { id: "travel" as const, label: "Travel", labelKa: "მოგზაურობა", blurb: "Scratch your way around the world." },
+  { id: "watch" as const, label: "Watch", labelKa: "ყურება", blurb: "Your next movie night, mapped out." },
+  { id: "read-kids" as const, label: "Read & Kids", labelKa: "კითხვა და საბავშვო", blurb: "Big stories for curious minds." },
+];
+
+const img = (id: string) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=900&q=88`;
+
+export const products: Product[] = [
+  {
+    id: 1,
+    slug: "top-100-places-georgia",
+    title: "Top 100 Places in Georgia",
+    titleKa: "ტოპ 100 ადგილი საქართველოში",
+    category: "travel",
+    categoryLabel: "Travel / მოგზაურობა",
+    price: 19.9,
+    description: "A tactile bucket list for slow roads, wild valleys, and the places that make Georgia feel endless.",
+    accent: "#ff5d4f",
+    image: img("photo-1548013146-72479768bada"),
+    badge: "Local love",
+    popular: true,
+  },
+  {
+    id: 2,
+    slug: "top-100-places-europe",
+    title: "Top 100 Places in Europe",
+    titleKa: "ტოპ 100 ადგილი ევროპაში",
+    category: "travel",
+    categoryLabel: "Travel / მოგზაურობა",
+    price: 19.9,
+    description: "From hidden beaches to city corners worth missing your train for.",
+    accent: "#ffcb45",
+    image: img("photo-1502602898657-3e91760cbb34"),
+    popular: true,
+  },
+  {
+    id: 3,
+    slug: "top-100-places-world",
+    title: "Top 100 Places in the World",
+    titleKa: "ტოპ 100 ადგილი მსოფლიოში",
+    category: "travel",
+    categoryLabel: "Travel / მოგზაურობა",
+    price: 19.9,
+    description: "The big one. A colorful, scratchable reminder that the map is still yours.",
+    accent: "#c4ef38",
+    image: img("photo-1500530855697-b586d89ba3ee"),
+    badge: "New drop",
+  },
+  {
+    id: 4,
+    slug: "top-100-movies",
+    title: "Top 100 Movies",
+    titleKa: "ტოპ 100 ფილმი",
+    category: "watch",
+    categoryLabel: "Watch / ყურება",
+    price: 19.9,
+    description: "A film lover's wall of tiny dares. Scratch, watch, repeat.",
+    accent: "#b7a0ff",
+    image: img("photo-1489599849927-2ee91cede3ba"),
+    badge: "Bestseller",
+    popular: true,
+  },
+  {
+    id: 5,
+    slug: "top-100-anime",
+    title: "Top 100 Anime",
+    titleKa: "ტოპ 100 ანიმე",
+    category: "watch",
+    categoryLabel: "Watch / ყურება",
+    price: 19.9,
+    description: "A hundred worlds, heroes, villains, and late-night marathons.",
+    accent: "#ff8dd4",
+    image: img("photo-1578632767115-351597cf2477"),
+  },
+  {
+    id: 6,
+    slug: "top-100-tv-shows",
+    title: "Top 100 TV Shows",
+    titleKa: "ტოპ 100 ტვ შოუ",
+    category: "watch",
+    categoryLabel: "Watch / ყურება",
+    price: 19.9,
+    description: "For the shows that became personality traits.",
+    accent: "#73d8ff",
+    image: img("photo-1522869635100-9f4c5e86aa37"),
+  },
+  {
+    id: 7,
+    slug: "top-100-cartoons",
+    title: "Top 100 Cartoons",
+    titleKa: "ტოპ 100 მულტფილმი",
+    category: "watch",
+    categoryLabel: "Watch / ყურება",
+    price: 19.9,
+    description: "A bright hit of nostalgia, from Saturday mornings to forever favorites.",
+    accent: "#ff8a3d",
+    image: img("photo-1608889825103-eb5ed706fc64"),
+  },
+  {
+    id: 8,
+    slug: "top-30-pixar",
+    title: "Top 30 Pixar Movies",
+    titleKa: "ტოპ 30 პიქსარის მულტფილმი",
+    category: "watch",
+    categoryLabel: "Watch / ყურება",
+    price: 19.9,
+    description: "Thirty perfect excuses to laugh, cry, and call it research.",
+    accent: "#ffdb6e",
+    image: img("photo-1594736797933-d0501ba2fe65"),
+  },
+  {
+    id: 9,
+    slug: "top-100-books",
+    title: "Top 100 Books",
+    titleKa: "ტოპ 100 წიგნი",
+    category: "read-kids",
+    categoryLabel: "Read & Kids / კითხვა",
+    price: 19.9,
+    description: "A lifetime of rabbit holes, dog-eared pages, and one more chapter.",
+    accent: "#a9e6d1",
+    image: img("photo-1495446815901-a7297e633e8d"),
+    badge: "Gift pick",
+  },
+  {
+    id: 10,
+    slug: "top-100-teen-books",
+    title: "Top 100 Teen Books",
+    titleKa: "ტოპ 100 წიგნი თინეიჯერებისთვის",
+    category: "read-kids",
+    categoryLabel: "Read & Kids / კითხვა",
+    price: 19.9,
+    description: "The stories that meet you halfway through becoming yourself.",
+    accent: "#f8a9c4",
+    image: img("photo-1512820790803-83ca734da794"),
+  },
+  {
+    id: 11,
+    slug: "35-books-kids-6-9",
+    title: "35 Books for Kids Aged 6–9",
+    titleKa: "35 წიგნი 6-9 წლამდე ბავშვებისთვის",
+    category: "read-kids",
+    categoryLabel: "Kids / საბავშვო",
+    price: 14.9,
+    description: "Small readers, huge worlds. A playful reading adventure for curious kids.",
+    accent: "#b8ee4e",
+    image: img("photo-1606092195730-5d7b9af1efc5"),
+    badge: "Kids pick",
+    popular: true,
+  },
+  {
+    id: 12,
+    slug: "35-books-kids-9-12",
+    title: "35 Books for Kids Aged 9–12",
+    titleKa: "35 წიგნი 9-12 წლამდე ბავშვებისთვის",
+    category: "read-kids",
+    categoryLabel: "Kids / საბავშვო",
+    price: 14.9,
+    description: "A colorful challenge for big imaginations and even bigger opinions.",
+    accent: "#77cdf4",
+    image: img("photo-1550745165-9bc0b252726f"),
+    badge: "Kids pick",
+  },
+];
+
+export const getProductBySlug = (slug?: string) => products.find((product) => product.slug === slug);
+
+export const formatPrice = (amount: number) => `${amount.toFixed(2)} ₾`;
+
+export const bundlePrice = (count: number) => {
+  if (count === 2) return 29.9;
+  if (count === 3) return 39.9;
+  if (count === 4) return 49.9;
+  return null;
+};
+
+export const bundleLabel = (count: number) => {
+  if (count === 2) return "2 posters";
+  if (count === 3) return "3 posters";
+  if (count === 4) return "4 posters + free shipping";
+  return "single poster";
+};
