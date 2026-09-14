@@ -4,6 +4,7 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { I18nProvider } from "./lib/i18n";
 import { StoreProvider } from "./lib/store";
 import Home from "./pages/Home";
 import Shop from "./pages/Shop";
@@ -26,5 +27,5 @@ function Router() {
 }
 
 export default function App() {
-  return <ErrorBoundary><ThemeProvider defaultTheme="light"><TooltipProvider><Toaster /><StoreProvider><Router /></StoreProvider></TooltipProvider></ThemeProvider></ErrorBoundary>;
+  return <ErrorBoundary><ThemeProvider defaultTheme="light"><TooltipProvider><Toaster /><I18nProvider><StoreProvider><Router /></StoreProvider></I18nProvider></TooltipProvider></ThemeProvider></ErrorBoundary>;
 }

@@ -1,65 +1,58 @@
 import { Link } from "wouter";
 import { ArrowRight, Heart, ShoppingBag, Sparkles } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { formatPrice, type Product } from "@shared/catalog";
+import { useI18n } from "@/lib/i18n";
+import { formatPrice, products, type Product } from "@shared/catalog";
 
 export function SiteNav() {
   const { cartCount } = useStore();
-  return (
-    <>
-      <div className="announcement"><Sparkles size={13} /><span>Build your stack: <strong>4 posters = free delivery</strong></span></div>
-      <header className="site-nav"><div className="container nav-inner">
-        <Link href="/" className="brand-mark">scratchme<span>.</span>ge</Link>
-        <nav className="nav-links" style={{ gap: 24 }}>
-          <Link href="/shop" className="nav-link">Shop all</Link>
-          <Link href="/shop?category=travel" className="nav-link">Travel</Link>
-          <Link href="/shop?category=watch" className="nav-link">Watch</Link>
-          <Link href="/shop?category=read-kids" className="nav-link">Read & kids</Link>
-        </nav>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <Link href="/admin" className="nav-link" style={{ fontSize: 12 }}>Admin</Link>
-          <Link href="/cart" className="button small secondary"><ShoppingBag size={15} /> Bag {cartCount > 0 && <span style={{ color: "var(--coral)" }}>({cartCount})</span>}</Link>
-        </div>
-      </div></header>
-    </>
-  );
+  const { language, setLanguage, t } = useI18n();
+  return <>
+    <div className="announcement"><Sparkles size={13} /><span>{t("announcement")}</span></div>
+    <header className="site-nav"><div className="container nav-inner">
+      <Link href="/" className="brand-mark">scratchme<span>.</span>ge</Link>
+      <nav className="nav-links">
+        <Link href="/shop" className="nav-link">{t("nav.shop")}</Link>
+        <Link href="/shop?category=travel" className="nav-link">{t("nav.travel")}</Link>
+        <Link href="/shop?category=watch" className="nav-link">{t("nav.watch")}</Link>
+        <Link href="/shop?category=read-kids" className="nav-link">{t("nav.read")}</Link>
+      </nav>
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div className="language-switcher" aria-label="Language switcher"><button className={language === "ka" ? "active" : ""} onClick={() => setLanguage("ka")}>GE</button><span>/</span><button className={language === "en" ? "active" : ""} onClick={() => setLanguage("en")}>EN</button></div>
+        <Link href="/admin" className="nav-link admin-link" style={{ fontSize: 12 }}>{t("nav.admin")}</Link>
+        <Link href="/cart" className="button small secondary"><ShoppingBag size={15} /> {t("nav.cart")} {cartCount > 0 && <span style={{ color: "var(--coral)" }}>({cartCount})</span>}</Link>
+      </div>
+    </div></header>
+  </>;
 }
 
 export function Footer() {
-  return <footer className="footer"><div className="container">
-    <div className="footer-grid">
-      <div><Link href="/" className="brand-mark">scratchme<span>.</span>ge</Link><p className="footer-note" style={{ marginTop: 16 }}>Make your wall a little more you. Scratch, discover, remember.</p></div>
-      <div><h4>Explore</h4><Link href="/shop">All posters</Link><Link href="/shop?category=travel">Travel</Link><Link href="/shop?category=watch">Watch</Link><Link href="/shop?category=read-kids">Read & kids</Link></div>
-      <div><h4>Help</h4><a href="mailto:hello@scratchme.ge">hello@scratchme.ge</a><a href="tel:+995555123456">+995 555 12 34 56</a><a href="#delivery">Delivery & returns</a></div>
-      <div><h4>Little note</h4><p className="footer-note">Every poster is a tiny excuse to plan the next thing. Made in Tbilisi.</p></div>
-    </div>
-    <div className="footer-bottom"><span>© {new Date().getFullYear()} scratchme.ge</span><span>გადასაფხეკი პოსტერები / scratch-off posters</span></div>
-  </div></footer>;
+  const { t } = useI18n();
+  return <footer className="footer"><div className="container"><div className="footer-grid">
+    <div><Link href="/" className="brand-mark">scratchme<span>.</span>ge</Link><p className="footer-note" style={{ marginTop: 16 }}>{t("footer.note")}</p></div>
+    <div><h4>{t("footer.explore")}</h4><Link href="/shop">{t("nav.shop")}</Link><Link href="/shop?category=travel">{t("nav.travel")}</Link><Link href="/shop?category=watch">{t("nav.watch")}</Link><Link href="/shop?category=read-kids">{t("nav.read")}</Link></div>
+    <div><h4>{t("footer.help")}</h4><a href="mailto:hello@scratchme.ge">hello@scratchme.ge</a><a href="tel:+995555123456">+995 555 12 34 56</a><a href="#delivery">{t("footer.delivery")}</a></div>
+    <div><h4>{t("footer.made")}</h4><p className="footer-note">{t("footer.note")}</p></div>
+  </div><div className="footer-bottom"><span>© {new Date().getFullYear()} scratchme.ge</span><span>გადასაფხეკი პოსტერები / scratch-off posters</span></div></div></footer>;
 }
 
 export function ProductCard({ product }: { product: Product }) {
-  const { addToCart } = useStore();
-  return <article className="product-card">
-    <Link href={`/product/${product.slug}`}>
-      <div className="product-image-wrap"><img className="product-image" src={product.image} alt={product.title} />{product.badge && <span className="product-tag">{product.badge}</span>}</div>
-    </Link>
-    <div className="product-card-body"><div className="product-card-top"><Link href={`/product/${product.slug}`} style={{ textDecoration: "none", color: "inherit" }}><h3>{product.title}</h3></Link><span className="product-price">{formatPrice(product.price)}</span></div><div className="product-card-top"><div className="category">{product.categoryLabel}</div><button className="remove-btn" style={{ marginTop: 7, textDecoration: "none" }} onClick={() => addToCart(product)} aria-label={`Add ${product.title} to bag`}><Heart size={15} /></button></div></div>
-  </article>;
+  const { addToCart, showToast } = useStore();
+  const { productTitle, t } = useI18n();
+  const category = product.category === "travel" ? t("nav.travel") : product.category === "watch" ? t("nav.watch") : t("nav.read");
+  return <article className="product-card"><Link href={`/product/${product.slug}`}><div className="product-image-wrap"><img className="product-image" src={product.image} alt={productTitle(product)} />{product.badge && <span className="product-tag">{product.badge}</span>}</div></Link><div className="product-card-body"><div className="product-card-top"><Link href={`/product/${product.slug}`} style={{ textDecoration: "none", color: "inherit" }}><h3>{productTitle(product)}</h3></Link><span className="product-price">{formatPrice(product.price)}</span></div><div className="product-card-top"><div className="category">{category}</div><button className="remove-btn" style={{ marginTop: 7, textDecoration: "none" }} onClick={() => { addToCart(product); showToast(`${productTitle(product)} — ${t("toast.added")}`); }} aria-label={`${t("product.add")} ${productTitle(product)}`}><Heart size={15} /></button></div></div></article>;
 }
 
 export function BundleBuilder() {
-  const { cartCount, savings, bundleName } = useStore();
+  const { cartCount, savings, addBundle, showToast } = useStore();
+  const { t } = useI18n();
   const remaining = Math.max(0, 4 - cartCount);
-  return <div className="bundle-banner"><div>
-    <div className="eyebrow" style={{ color: "var(--lime)" }}>The scratch stack</div>
-    <h2>More posters. More plans. Less math.</h2>
-    <p>Mix any posters and the bundle price applies automatically at checkout. No coupon hunting, just better walls.</p>
-    <Link href="/shop" className="button coral" style={{ marginTop: 26 }}>Build your bundle <ArrowRight size={16} /></Link>
-  </div><div className="bundle-steps">
-    <div className="bundle-step"><span className="step-no">2</span><span>Any 2 posters</span><small>29.90 ₾</small></div>
-    <div className="bundle-step"><span className="step-no">3</span><span>Any 3 posters</span><small>39.90 ₾</small></div>
-    <div className="bundle-step"><span className="step-no">4</span><span>Any 4 posters</span><small>49.90 ₾ + FREE DELIVERY</small></div>
-    {cartCount > 0 && <div style={{ color: "var(--lime)", fontSize: 13, marginTop: 6 }}>{remaining > 0 ? `Add ${remaining} more to unlock your best bundle.` : `Your ${bundleName} is active — saving ${savings.toFixed(2)} ₾.`}</div>}
+  const add = (count: 2 | 3 | 4) => { addBundle(count); showToast(`${count} ${t("bundle.posters")} — ${t("bundle.added")}`); };
+  return <div className="bundle-banner"><div><div className="eyebrow" style={{ color: "var(--lime)" }}>{t("bundle.eyebrow")}</div><h2>{t("bundle.title")}</h2><p>{t("bundle.body")}</p><Link href="/shop" className="button coral" style={{ marginTop: 26 }}>{t("bundle.cta")} <ArrowRight size={16} /></Link></div><div className="bundle-steps">
+    <button className="bundle-step bundle-step-button" onClick={() => add(2)}><span className="step-no">2</span><span>{t("bundle.any")} 2 {t("bundle.posters")}</span><small>29.90 ₾</small><strong>{t("bundle.add")}</strong></button>
+    <button className="bundle-step bundle-step-button" onClick={() => add(3)}><span className="step-no">3</span><span>{t("bundle.any")} 3 {t("bundle.posters")}</span><small>39.90 ₾</small><strong>{t("bundle.add")}</strong></button>
+    <button className="bundle-step bundle-step-button" onClick={() => add(4)}><span className="step-no">4</span><span>{t("bundle.any")} 4 {t("bundle.posters")}</span><small>49.90 ₾ + {t("bundle.free")}</small><strong>{t("bundle.add")}</strong></button>
+    {cartCount > 0 && <div style={{ color: "var(--lime)", fontSize: 13, marginTop: 6 }}>{remaining > 0 ? t("bundle.remaining", { count: remaining }) : t("bundle.active", { name: `${cartCount} ${t("bundle.posters")}`, amount: `${savings.toFixed(2)} ₾` })}</div>}
   </div></div>;
 }
 

@@ -1,0 +1,166 @@
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+
+export type Language = "ka" | "en";
+
+type Dictionary = Record<string, string>;
+
+const ka: Dictionary = {
+  "nav.shop": "ყველა პოსტერი",
+  "nav.travel": "მოგზაურობა",
+  "nav.watch": "ყურება",
+  "nav.read": "კითხვა & საბავშვო",
+  "nav.admin": "ადმინი",
+  "nav.cart": "კალათა",
+  "announcement": "ააწყე შენი ნაკრები: 4 პოსტერი = უფასო მიტანა",
+  "hero.eyebrow": "გადასაფხეკი პოსტერები / თბილისი, საქართველო",
+  "hero.title": "შენი კედელი, შენი შემდეგი ისტორია.",
+  "hero.body": "პოსტერები, რომელთა ზედაპირზეც პატარა საიდუმლო იმალება. გადაფხიკე ჩვეულებრივი და იპოვე შენი შემდეგი ადგილი, ფილმი, წიგნი ან საყვარელი მოგონება.",
+  "hero.shop": "პოსტერების ნახვა",
+  "hero.how": "როგორ მუშაობს",
+  "hero.note": "კარგი მიზეზი ახალი გეგმისთვის.",
+  "section.find": "იპოვე შენი თემა",
+  "section.pick": "აირჩიე შენი ახალი თავგადასავალი.",
+  "section.pickBody": "აირჩიე სია, რომელიც ამ მომენტში ყველაზე მეტად გგავს. ან ააწყვე ფერადი ნაკრები და არჩევანი მომავალ შენს დაუტოვე.",
+  "category.travel": "იმოგზაურე.",
+  "category.watch": "უყურე ყველაფერს.",
+  "category.read": "მეტი წაიკითხე.",
+  "section.popular": "პოპულარული პოსტერები",
+  "section.current": "ამჟამად კედელზე.",
+  "all.posters": "ყველა პოსტერის ნახვა",
+  "bundle.eyebrow": "შენი scratch-ნაკრები",
+  "bundle.title": "მეტი პოსტერი. მეტი გეგმა. ნაკლები ფიქრი.",
+  "bundle.body": "აარჩიე ნებისმიერი პოსტერი — ფასდაკლება კალათაში ავტომატურად ჩაირთვება.",
+  "bundle.cta": "ააწყვე შენი ნაკრები",
+  "bundle.any": "ნებისმიერი",
+  "bundle.posters": "პოსტერი",
+  "bundle.free": "უფასო მიტანა",
+  "bundle.add": "ნაკრების დამატება",
+  "bundle.added": "ნაკრები დაემატა კალათაში",
+  "bundle.remaining": "დაამატე კიდევ {count}, რომ საუკეთესო ფასი მიიღო.",
+  "bundle.active": "შენი {name} აქტიურია — დაზოგე {amount}.",
+  "trust.eyebrow": "როგორ მუშაობს",
+  "trust.title": "აირჩიე. გადაფხიკე. შეასრულე.",
+  "trust.pick": "აირჩიე პოსტერი",
+  "trust.pickBody": "იპოვე სია, რომელიც შენს განწყობას ემთხვევა.",
+  "trust.scratch": "გადაფხიკე",
+  "trust.scratchBody": "ნელა გახსენი თითოეული პატარა აღმოჩენა.",
+  "trust.goals": "შეასრულე მიზნები",
+  "trust.goalsBody": "გადააქციე იდეები რეალურ გეგმებად.",
+  "trust.delivery": "მიწოდება მთელ საქართველოში",
+  "trust.gifting": "იდეალური საჩუქარი",
+  "trust.quality": "პრემიუმ ქაღალდი",
+  "footer.explore": "აღმოაჩინე",
+  "footer.help": "დახმარება",
+  "footer.note": "შენი კედელი უფრო შენსავით რომ გახდეს. გადაფხიკე, აღმოაჩინე, გაიხსენე.",
+  "footer.delivery": "მიწოდება და დაბრუნება",
+  "footer.made": "დამზადებულია თბილისში",
+  "shop.eyebrow": "კატალოგი / 12 გადასაფხეკი სია",
+  "shop.title": "იპოვე შენი შემდეგი პატარა გატაცება.",
+  "shop.body": "თითოეული პოსტერი შენი კედლისთვის შექმნილი პატარა თავგადასავალია.",
+  "shop.all": "ყველა პოსტერი",
+  "shop.found": "ნაპოვნია {count} პოსტერი",
+  "shop.how": "როგორ მუშაობს",
+  "product.add": "კალათაში დამატება",
+  "product.buy": "ყიდვა",
+  "product.back": "ყველა პოსტერზე დაბრუნება",
+  "product.gift": "საჩუქრად იდეალური",
+  "product.fast": "სწრაფი მიწოდება",
+  "product.fastBody": "4 ან მეტი პოსტერის შეკვეთაზე მიტანა უფასოა.",
+  "product.fine": "მცირე დეტალები",
+  "product.fineBody": "დაბეჭდილია სქელ, მქრქალ ქაღალდზე. გადაფხიკე ფრთხილად მონეტით ან შენი საყვარელი ნივთის კიდით.",
+  "cart.eyebrow": "შენი scratch-ნაკრები",
+  "cart.emptyTitle": "კალათა ცოტათი ცარიელია.",
+  "cart.emptyBody": "აირჩიე ერთი კარგი იდეა და შენი კედელი დანარჩენს თვითონ გააკეთებს.",
+  "cart.find": "იპოვე პოსტერი",
+  "cart.good": "კარგი არჩევანია.",
+  "cart.items": "ნივთები",
+  "cart.keep": "შოპინგის გაგრძელება",
+  "cart.remove": "წაშლა",
+  "cart.summary": "შეკვეთის შეჯამება",
+  "cart.ready": "მზადაა, როცა შენ იქნები.",
+  "cart.value": "პოსტერების ღირებულება",
+  "cart.bundle": "ნაკრების ფასი",
+  "cart.saved": "შენ დაზოგე {amount}.",
+  "cart.delivery": "მიტანა",
+  "cart.free": "უფასო",
+  "cart.checkout": "შეკვეთის გაფორმება",
+  "cart.paymentNote": "საბანკო გადარიცხვა აქტიურია. ბარათით გადახდა მზად არის ჩასართავად.",
+  "checkout.empty": "კალათა ცარიელია.",
+  "checkout.emptyBody": "შეკვეთის გაფორმებამდე დაამატე მინიმუმ ერთი პოსტერი.",
+  "checkout.backShop": "მაღაზიაში დაბრუნება",
+  "checkout.eyebrow": "შეკვეთის გაფორმება / თითქმის მზადაა",
+  "checkout.title": "გახადე ის შენი.",
+  "checkout.body": "მოგვიყევი, სად გამოგიგზავნოთ კარგი ამბები.",
+  "checkout.details": "მიწოდების დეტალები",
+  "checkout.fullName": "სრული სახელი",
+  "checkout.phone": "ტელეფონის ნომერი",
+  "checkout.address": "მისამართი",
+  "checkout.city": "ქალაქი",
+  "checkout.notes": "შეკვეთის შენიშვნა",
+  "checkout.payment": "გადახდა",
+  "checkout.active": "აქტიური",
+  "checkout.bank": "საბანკო გადარიცხვა",
+  "checkout.bankBody": "შეკვეთის დადასტურების შემდეგ მიიღებ საბანკო დეტალებს.",
+  "checkout.standby": "მზადაა / პაუზაზე",
+  "checkout.card": "ბარათით გადახდა",
+  "checkout.cardBody": "გადახდის მოდული მზად არის ქართული ბანკების API-ებისთვის.",
+  "checkout.stack": "შენი ნაკრები",
+  "checkout.final": "ერთი ბოლო გადაფხეკა.",
+  "checkout.posters": "პოსტერები",
+  "checkout.status": "შეკვეთა დადასტურების მოლოდინში იქნება.",
+  "checkout.place": "შეკვეთის განთავსება",
+  "checkout.creating": "იქმნება…",
+  "checkout.backCart": "კალათაში დაბრუნება",
+  "checkout.received": "შეკვეთა მიღებულია / გადახდის დადასტურების მოლოდინში",
+  "checkout.thanks": "მადლობა, {name}. შენი შეკვეთა დაჯავშნილია. გადმორიცხე თანხა ქვემოთ მოცემულ ანგარიშზე და როგორც კი მივიღებთ, მიწოდებას დაგიდასტურებთ.",
+  "checkout.bankName": "ბანკი",
+  "checkout.receiver": "მიმღები",
+  "checkout.iban": "IBAN",
+  "checkout.reference": "გადახდის კოდი",
+  "checkout.referenceBody": "გადარიცხვის დანიშნულებაში მიუთითე {reference}. დაგიკავშირდებით ნომერზე {phone}.",
+  "checkout.keep": "დათვალიერების გაგრძელება",
+  "checkout.copy": "კოდის კოპირება",
+  "toast.copied": "კოდი დაკოპირდა",
+  "toast.required": "გთხოვ, შეავსე სავალდებულო ველები",
+  "toast.added": "დაემატა კალათაში",
+  "toast.removed": "პოსტერი წაიშალა კალათიდან",
+};
+
+const en: Dictionary = {
+  "nav.shop": "Shop all", "nav.travel": "Travel", "nav.watch": "Watch", "nav.read": "Read & kids", "nav.admin": "Admin", "nav.cart": "Bag",
+  "announcement": "Build your stack: 4 posters = free delivery", "hero.eyebrow": "Scratch-off posters / Tbilisi, GE", "hero.title": "Your wall, your next story.", "hero.body": "Posters with a little secret under the surface. Scratch through the ordinary and find your next place, film, book, or favorite memory.", "hero.shop": "Shop the posters", "hero.how": "How it works", "hero.note": "A better excuse to make a plan.", "section.find": "Find your thing", "section.pick": "Pick a rabbit hole.", "section.pickBody": "Choose the list that feels most like you right now. Or build a colorful stack and let future-you decide.", "category.travel": "Go somewhere.", "category.watch": "Watch everything.", "category.read": "Read more.", "section.popular": "The good stuff", "section.current": "Currently on the wall.", "all.posters": "See all posters", "bundle.eyebrow": "The scratch stack", "bundle.title": "More posters. More plans. Less math.", "bundle.body": "Mix any posters and the bundle price applies automatically at checkout.", "bundle.cta": "Build your bundle", "bundle.any": "Any", "bundle.posters": "posters", "bundle.free": "Free delivery", "bundle.add": "Add this bundle", "bundle.added": "Bundle added to your bag", "bundle.remaining": "Add {count} more to unlock your best price.", "bundle.active": "Your {name} is active — saving {amount}.", "trust.eyebrow": "How it works", "trust.title": "Pick. Scratch. Complete.", "trust.pick": "Pick a poster", "trust.pickBody": "Find a list that matches your mood.", "trust.scratch": "Scratch it off", "trust.scratchBody": "Reveal one tiny discovery at a time.", "trust.goals": "Complete your goals", "trust.goalsBody": "Turn ideas into real plans.", "trust.delivery": "Delivery across Georgia", "trust.gifting": "Made for gifting", "trust.quality": "Premium paper", "footer.explore": "Explore", "footer.help": "Help", "footer.note": "Make your wall a little more you. Scratch, discover, remember.", "footer.delivery": "Delivery & returns", "footer.made": "Made in Tbilisi", "shop.eyebrow": "The catalog / 12 scratchable lists", "shop.title": "Find your next little obsession.", "shop.body": "Every poster is a choose-your-own-adventure for your wall.", "shop.all": "All posters", "shop.found": "{count} posters found", "shop.how": "How it works", "product.add": "Add to cart", "product.buy": "Buy now", "product.back": "Back to all posters", "product.gift": "Made for gifting", "product.fast": "Fast delivery", "product.fastBody": "Free delivery on bundles of 4 or more posters.", "product.fine": "The fine print", "product.fineBody": "Printed on heavyweight matte stock. Scratch gently with a coin or your favorite edge.", "cart.eyebrow": "Your scratch stack", "cart.emptyTitle": "It is a little too empty.", "cart.emptyBody": "Start with one good idea and your wall will take it from there.", "cart.find": "Find a poster", "cart.good": "Good choices.", "cart.items": "Items", "cart.keep": "Keep shopping", "cart.remove": "Remove", "cart.summary": "Order summary", "cart.ready": "Ready when you are.", "cart.value": "Poster value", "cart.bundle": "Bundle price", "cart.saved": "You saved {amount}.", "cart.delivery": "Delivery", "cart.free": "FREE", "cart.checkout": "Checkout", "cart.paymentNote": "Bank transfer is active. Card payments are ready to connect.", "checkout.empty": "Your bag is empty.", "checkout.emptyBody": "Add at least one poster before checkout.", "checkout.backShop": "Back to shop", "checkout.eyebrow": "Checkout / almost there", "checkout.title": "Make it yours.", "checkout.body": "Tell us where to send the good stuff.", "checkout.details": "Delivery details", "checkout.fullName": "Full name", "checkout.phone": "Phone number", "checkout.address": "Shipping address", "checkout.city": "City", "checkout.notes": "Order notes", "checkout.payment": "Payment", "checkout.active": "Active", "checkout.bank": "Bank transfer", "checkout.bankBody": "Get bank details after placing the order.", "checkout.standby": "Ready / standby", "checkout.card": "Card payment", "checkout.cardBody": "Gateway adapter is prepared for Georgian bank APIs.", "checkout.stack": "Your stack", "checkout.final": "One final scratch.", "checkout.posters": "Posters", "checkout.status": "Your order will be pending payment verification.", "checkout.place": "Place order", "checkout.creating": "Creating…", "checkout.backCart": "Back to bag", "checkout.received": "Order received / pending payment verification", "checkout.thanks": "Thanks, {name}. Your order is reserved. Make the bank transfer below and we will confirm delivery as soon as it lands.", "checkout.bankName": "Bank", "checkout.receiver": "Receiver", "checkout.iban": "IBAN", "checkout.reference": "Payment reference", "checkout.referenceBody": "Please include {reference} in the transfer description. We will message you at {phone}.", "checkout.keep": "Keep exploring", "checkout.copy": "Copy reference", "toast.copied": "Reference copied", "toast.required": "Please fill in the required fields", "toast.added": "added to your bag", "toast.removed": "Poster removed from your bag",
+};
+
+const copyKa: Record<string, string> = {
+  "top-100-places-georgia": "სიუჟეტები, გზები და ადგილები, რომლებიც საქართველოს უსასრულობას გვახსენებს.",
+  "top-100-places-europe": "დამალული სანაპიროებიდან ქალაქის კუთხეებამდე — ევროპა შენს კედელზე.",
+  "top-100-places-world": "ფერადი შეხსენება, რომ რუკა ჯერ კიდევ შენია.",
+  "top-100-movies": "კინოს მოყვარულის პატარა გამოწვევა — გადაფხიკე, უყურე, გაიმეორე.",
+  "top-100-anime": "ასი სამყარო, გმირი და გვიანი ღამის მარათონი.",
+  "top-100-tv-shows": "იმ სერიალებისთვის, რომლებიც შენი ხასიათის ნაწილად იქცა.",
+  "top-100-cartoons": "ნოსტალგიის ფერადი დოზა — ბავშვობიდან დღემდე.",
+  "top-30-pixar": "ოცდაათი მიზეზი სიცილისთვის, ცრემლებისთვის და კიდევ ერთი ფილმისთვის.",
+  "top-100-books": "ასი ისტორია, ასი ახალი კარის გაღება და კიდევ ერთი თავი.",
+  "top-100-teen-books": "წიგნები, რომლებიც საკუთარი თავის პოვნაში შუა გზაზე შეგხვდებიან.",
+  "35-books-kids-6-9": "პატარა მკითხველებისთვის შექმნილი დიდი სამყაროები.",
+  "35-books-kids-9-12": "ფერადი გამოწვევა დიდი წარმოსახვისა და კიდევ უფრო დიდი აზრებისთვის.",
+};
+
+const I18nContext = createContext<{ language: Language; setLanguage: (language: Language) => void; t: (key: string, vars?: Record<string, string | number>) => string; productTitle: (product: { title: string; titleKa: string }) => string; productDescription: (slug: string, fallback: string) => string }>({ language: "ka", setLanguage: () => undefined, t: (key) => key, productTitle: (product) => product.titleKa, productDescription: (_slug, fallback) => fallback });
+
+export function I18nProvider({ children }: { children: ReactNode }) {
+  const [language, setLanguage] = useState<Language>(() => (localStorage.getItem("scratchme-language") as Language) || "ka");
+  useEffect(() => { localStorage.setItem("scratchme-language", language); document.documentElement.lang = language; }, [language]);
+  const value = useMemo(() => {
+    const dictionary = language === "ka" ? ka : en;
+    const t = (key: string, vars?: Record<string, string | number>) => {
+      let result = dictionary[key] ?? key;
+      Object.entries(vars ?? {}).forEach(([name, replacement]) => { result = result.replace(`{${name}}`, String(replacement)); });
+      return result;
+    };
+    return { language, setLanguage, t, productTitle: (product: { title: string; titleKa: string }) => language === "ka" ? product.titleKa : product.title, productDescription: (slug: string, fallback: string) => language === "ka" ? copyKa[slug] ?? fallback : fallback };
+  }, [language]);
+  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
+}
+
+export const useI18n = () => useContext(I18nContext);

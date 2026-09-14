@@ -18,3 +18,11 @@ The mobile 375px previews are clean: navigation links collapse without overlap, 
 - Managed preview returned HTTP 200 and served the scratchme.ge document shell.
 
 The Vite build emits a non-blocking chunk-size advisory for the single client bundle; no functional or type errors remain.
+
+## Georgian-first refactor preview
+
+Desktop screenshots confirm Georgian is now the default across the announcement bar, navigation, hero, category cards, product titles, bundle section, trust badges, footer, catalog filters, and empty cart state. The language switcher is visible in the header as GE / EN. Bundle tiers are rendered as full-width clickable rows with explicit add controls.
+
+## Georgian mobile preview
+
+At 375px, the Georgian headline, buttons, filter pills, GE/EN switcher, and localized empty checkout state remain readable and properly spaced. The compact header hides secondary navigation without crowding the language switcher or cart button.

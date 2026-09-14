@@ -15,6 +15,7 @@ type StoreContextValue = {
   bundleName: string;
   toast: string | null;
   addToCart: (product: Product) => void;
+  addBundle: (count: 2 | 3 | 4) => void;
   updateQuantity: (productId: number, quantity: number) => void;
   removeFromCart: (productId: number) => void;
   clearCart: () => void;
@@ -56,21 +57,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const value: StoreContextValue = {
     cart, cartItems, cartCount, retailTotal, posterTotal, shipping, total, savings, bundleName, toast,
-    addToCart(product) {
-      setCart((current) => ({ ...current, [product.id]: (current[product.id] ?? 0) + 1 }));
-      setToast(`${product.title} added to your scratch stack`);
+    addToCart(product) { setCart((current) => ({ ...current, [product.id]: (current[product.id] ?? 0) + 1 })); },
+    addBundle(count) {
+      const picks = products.filter((product) => product.popular).slice(0, count);
+      setCart((current) => picks.reduce((next, product) => ({ ...next, [product.id]: (next[product.id] ?? 0) + 1 }), { ...current }));
     },
     updateQuantity(productId, quantity) {
-      setCart((current) => {
-        const next = { ...current };
-        if (quantity <= 0) delete next[productId]; else next[productId] = quantity;
-        return next;
-      });
+      setCart((current) => { const next = { ...current }; if (quantity <= 0) delete next[productId]; else next[productId] = quantity; return next; });
     },
-    removeFromCart(productId) {
-      setCart((current) => { const next = { ...current }; delete next[productId]; return next; });
-      setToast("Poster removed from your stack");
-    },
+    removeFromCart(productId) { setCart((current) => { const next = { ...current }; delete next[productId]; return next; }); },
     clearCart() { setCart({}); },
     showToast(message) { setToast(message); },
   };
