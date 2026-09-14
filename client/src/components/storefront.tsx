@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { ArrowRight, Heart, ShoppingBag, Sparkles } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { useI18n } from "@/lib/i18n";
-import { formatPrice, products, type Product } from "@shared/catalog";
+import { formatPrice, getCategoryLabel, type Product } from "@shared/catalog";
 
 export function SiteNav() {
   const { cartCount } = useStore();
@@ -12,10 +12,10 @@ export function SiteNav() {
     <header className="site-nav"><div className="container nav-inner">
       <Link href="/" className="brand-mark">scratchme<span>.</span>ge</Link>
       <nav className="nav-links">
-        <Link href="/shop" className="nav-link">{t("nav.shop")}</Link>
-        <Link href="/shop?category=travel" className="nav-link">{t("nav.travel")}</Link>
-        <Link href="/shop?category=watch" className="nav-link">{t("nav.watch")}</Link>
-        <Link href="/shop?category=read-kids" className="nav-link">{t("nav.read")}</Link>
+        <a href="/#catalog" className="nav-link">{t("nav.shop")}</a>
+        <a href="/#bundle-builder" className="nav-link">{t("nav.bundle")}</a>
+        <a href="/#how-it-works" className="nav-link">{t("nav.how")}</a>
+        <a href="#contact" className="nav-link">{t("nav.contact")}</a>
       </nav>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <div className="language-switcher" aria-label="Language switcher"><button className={language === "ka" ? "active" : ""} onClick={() => setLanguage("ka")}>GE</button><span>/</span><button className={language === "en" ? "active" : ""} onClick={() => setLanguage("en")}>EN</button></div>
@@ -23,14 +23,15 @@ export function SiteNav() {
         <Link href="/cart" className="button small secondary"><ShoppingBag size={15} /> {t("nav.cart")} {cartCount > 0 && <span style={{ color: "var(--coral)" }}>({cartCount})</span>}</Link>
       </div>
     </div></header>
+    <nav className="mobile-anchor-nav" aria-label={language === "ka" ? "სექციების ნავიგაცია" : "Section navigation"}><a href="/#catalog">{t("nav.shop")}</a><a href="/#bundle-builder">{t("nav.bundle")}</a><a href="/#how-it-works">{t("nav.how")}</a><a href="#contact">{t("nav.contact")}</a></nav>
   </>;
 }
 
 export function Footer() {
   const { t } = useI18n();
-  return <footer className="footer"><div className="container"><div className="footer-grid">
+  return <footer className="footer" id="contact"><div className="container"><div className="footer-grid">
     <div><Link href="/" className="brand-mark">scratchme<span>.</span>ge</Link><p className="footer-note" style={{ marginTop: 16 }}>{t("footer.note")}</p></div>
-    <div><h4>{t("footer.explore")}</h4><Link href="/shop">{t("nav.shop")}</Link><Link href="/shop?category=travel">{t("nav.travel")}</Link><Link href="/shop?category=watch">{t("nav.watch")}</Link><Link href="/shop?category=read-kids">{t("nav.read")}</Link></div>
+    <div><h4>{t("footer.explore")}</h4><a href="/#catalog">{t("nav.shop")}</a><a href="/#bundle-builder">{t("nav.bundle")}</a><a href="/#how-it-works">{t("nav.how")}</a><a href="#contact">{t("nav.contact")}</a></div>
     <div><h4>{t("footer.help")}</h4><a href="mailto:hello@scratchme.ge">hello@scratchme.ge</a><a href="tel:+995555123456">+995 555 12 34 56</a><a href="#delivery">{t("footer.delivery")}</a></div>
     <div><h4>{t("footer.made")}</h4><p className="footer-note">{t("footer.note")}</p></div>
   </div><div className="footer-bottom"><span>© {new Date().getFullYear()} scratchme.ge</span><span>გადასაფხეკი პოსტერები / scratch-off posters</span></div></div></footer>;
@@ -38,8 +39,8 @@ export function Footer() {
 
 export function ProductCard({ product }: { product: Product }) {
   const { addToCart, showToast } = useStore();
-  const { productTitle, t } = useI18n();
-  const category = product.category === "travel" ? t("nav.travel") : product.category === "watch" ? t("nav.watch") : t("nav.read");
+  const { language, productTitle, t } = useI18n();
+  const category = getCategoryLabel(product.category, language);
   const outOfStock = product.stockStatus === "out_of_stock" || product.stock === 0;
   return <article className="product-card"><Link href={`/product/${product.slug}`}><div className="product-image-wrap"><img className="product-image" src={product.image} alt={productTitle(product)} />{outOfStock ? <span className="product-tag">მარაგში არ არის</span> : product.badge && <span className="product-tag">{product.badge}</span>}</div></Link><div className="product-card-body"><div className="product-card-top"><Link href={`/product/${product.slug}`} style={{ textDecoration: "none", color: "inherit" }}><h3>{productTitle(product)}</h3></Link><span className="product-price">{formatPrice(product.price)}</span></div><div className="product-card-top"><div className="category">{category}</div><button disabled={outOfStock} className="remove-btn" style={{ marginTop: 7, textDecoration: "none" }} onClick={() => { addToCart(product); showToast(`${productTitle(product)} — ${t("toast.added")}`); }} aria-label={`${t("product.add")} ${productTitle(product)}`}><Heart size={15} /></button></div></div></article>;
 }

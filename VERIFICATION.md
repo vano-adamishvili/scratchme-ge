@@ -38,3 +38,15 @@ The populated cart displays a high-contrast milestone bar with 2/3/4 markers, pr
 Desktop owner previews show the full 12-product management grid and a slide-over creation form with titles, subtitle, description, features, category, price, stock, status, slug, accent color, and sticky save controls. Mobile previews confirm the two-state gallery remains swipe-friendly through large navigation controls and labeled thumbnails, while the admin editor becomes a readable single-column form with persistent actions.
 
 The reversible persistence probe passed catalog seeding, product edit and reload, product creation and reload, order creation, payment-status update, and fulfillment-status update, then removed all temporary records and restored the edited seed product.
+
+## Navigation, taxonomy, scratch, and cart-animation upgrade
+
+The live product detail page exposes the new header links (`ყველა პოსტერი`, `ბანდლის აწყობა`, `როგორ მუშაობს`, and `კონტაქტი`) with cart and GE/EN controls retained. The virtual scratch canvas loads at 0%; moving the desktop pointer across it erases the unscratched image layer, reveals the scratched image below, advances progress to 1%, and exposes a reset control. Manual unscratched/revealed thumbnails remain available.
+
+The homepage catalog now renders all eight chips (`ყველა` plus the seven requested categories) from the shared category source. The database-backed product cards show reading products under `კითხვა` and children’s products under `საბავშვო`; the catalog API reports only the seven allowed category IDs. Direct `/#catalog` navigation settles at the catalog section after the SPA renders.
+
+Selecting `მოსმენა` instantly reduces the homepage catalog to zero results, highlights the active chip, and displays a purposeful empty state pointing administrators to product creation. The catalog stays on-page, and bundle/how-it-works sections remain accessible immediately below it.
+
+The cart progress bar transitions from 2/4 to 3/4, moves the lime fill and active marker smoothly, applies the 39.90 ₾ tier, recalculates savings to 19.80 ₾, and updates the guidance to “დაამატე 1 პოსტერი უფასო მიტანისთვის.”
+
+Crossing from three to four posters fills the progress rail to 4/4, switches the panel to an unlocked green state, changes shipping to `უფასო`, applies the 49.90 ₾ tier, shows the persistent celebratory `✦ მიწოდება ჩვენზეა ✦` banner, and triggers transient confetti plus a spring pop animation. Mobile previews retain the cart and GE/EN controls, expose a horizontally scrollable section-navigation row, and present the scratch canvas with touch instructions and reset/progress UI.

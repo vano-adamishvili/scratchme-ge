@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { categories } from "../shared/catalog";
+import { categories, categoryIds } from "../shared/catalog";
 import { COOKIE_NAME } from "@shared/const";
 import { createCatalogProduct, createPersistentOrder, getCatalogProductBySlug, getCatalogProducts, getPersistentOrders, updateCatalogProduct, updatePersistentOrder } from "./db";
 import { getSessionCookieOptions } from "./_core/cookies";
@@ -20,7 +20,7 @@ const productInput = z.object({
   slug: z.string().optional(),
   description: z.string().min(10),
   features: z.array(z.string().min(1)).min(1),
-  category: z.enum(["travel", "watch", "read-kids"]),
+  category: z.enum(categoryIds),
   price: z.number().positive(),
   stock: z.number().int().nonnegative(),
   stockStatus: z.enum(["in_stock", "out_of_stock"]),
@@ -37,7 +37,7 @@ export const appRouter = router({
   }),
   catalog: router({
     list: publicProcedure.query(async () => ({ products: await getCatalogProducts(), categories })),
-    byCategory: publicProcedure.input(z.object({ category: z.enum(["travel", "watch", "read-kids"]) })).query(async ({ input }) => (await getCatalogProducts()).filter((product) => product.category === input.category)),
+    byCategory: publicProcedure.input(z.object({ category: z.enum(categoryIds) })).query(async ({ input }) => (await getCatalogProducts()).filter((product) => product.category === input.category)),
     bySlug: publicProcedure.input(z.object({ slug: z.string() })).query(({ input }) => getCatalogProductBySlug(input.slug)),
   }),
   orders: router({ create: publicProcedure.input(orderInput).mutation(({ input }) => createPersistentOrder(input)) }),

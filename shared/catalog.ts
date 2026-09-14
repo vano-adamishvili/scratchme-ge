@@ -1,4 +1,5 @@
-export type CategoryId = "travel" | "watch" | "read-kids";
+export const categoryIds = ["travel", "watch", "read", "listen", "couples", "kids", "challenge"] as const;
+export type CategoryId = (typeof categoryIds)[number];
 
 export type Product = {
   id: number;
@@ -29,8 +30,17 @@ export type GalleryImage = {
 export const categories = [
   { id: "travel" as const, label: "Travel", labelKa: "მოგზაურობა", blurb: "Scratch your way around the world." },
   { id: "watch" as const, label: "Watch", labelKa: "ყურება", blurb: "Your next movie night, mapped out." },
-  { id: "read-kids" as const, label: "Read & Kids", labelKa: "კითხვა და საბავშვო", blurb: "Big stories for curious minds." },
+  { id: "read" as const, label: "Read", labelKa: "კითხვა", blurb: "A reading list worth keeping on the wall." },
+  { id: "listen" as const, label: "Listen", labelKa: "მოსმენა", blurb: "Albums, songs, and stories worth hearing." },
+  { id: "couples" as const, label: "For Couples", labelKa: "წყვილებისთვის", blurb: "Shared ideas for two curious people." },
+  { id: "kids" as const, label: "For Kids", labelKa: "საბავშვო", blurb: "Colorful goals for growing imaginations." },
+  { id: "challenge" as const, label: "Challenge", labelKa: "ჩელენჯი", blurb: "Small prompts that turn into big stories." },
 ];
+
+export const getCategoryLabel = (categoryId: CategoryId, language: "ka" | "en" = "ka") => {
+  const category = categories.find((item) => item.id === categoryId);
+  return language === "ka" ? category?.labelKa ?? categoryId : category?.label ?? categoryId;
+};
 
 const img = (id: string) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=900&q=88`;
 
@@ -142,8 +152,8 @@ export const products: Product[] = [
     slug: "top-100-books",
     title: "Top 100 Books",
     titleKa: "ტოპ 100 წიგნი",
-    category: "read-kids",
-    categoryLabel: "Read & Kids / კითხვა",
+    category: "read",
+    categoryLabel: "Read / კითხვა",
     price: 19.9,
     description: "A lifetime of rabbit holes, dog-eared pages, and one more chapter.",
     accent: "#a9e6d1",
@@ -155,8 +165,8 @@ export const products: Product[] = [
     slug: "top-100-teen-books",
     title: "Top 100 Teen Books",
     titleKa: "ტოპ 100 წიგნი თინეიჯერებისთვის",
-    category: "read-kids",
-    categoryLabel: "Read & Kids / კითხვა",
+    category: "read",
+    categoryLabel: "Read / კითხვა",
     price: 19.9,
     description: "The stories that meet you halfway through becoming yourself.",
     accent: "#f8a9c4",
@@ -167,8 +177,8 @@ export const products: Product[] = [
     slug: "35-books-kids-6-9",
     title: "35 Books for Kids Aged 6–9",
     titleKa: "35 წიგნი 6-9 წლამდე ბავშვებისთვის",
-    category: "read-kids",
-    categoryLabel: "Kids / საბავშვო",
+    category: "kids",
+    categoryLabel: "For Kids / საბავშვო",
     price: 14.9,
     description: "Small readers, huge worlds. A playful reading adventure for curious kids.",
     accent: "#b8ee4e",
@@ -181,8 +191,8 @@ export const products: Product[] = [
     slug: "35-books-kids-9-12",
     title: "35 Books for Kids Aged 9–12",
     titleKa: "35 წიგნი 9-12 წლამდე ბავშვებისთვის",
-    category: "read-kids",
-    categoryLabel: "Kids / საბავშვო",
+    category: "kids",
+    categoryLabel: "For Kids / საბავშვო",
     price: 14.9,
     description: "A colorful challenge for big imaginations and even bigger opinions.",
     accent: "#77cdf4",
