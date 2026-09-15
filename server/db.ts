@@ -1,7 +1,7 @@
 import { desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { categories as categoryTable, orderItems, orders, products as productTable, users, type InsertUser } from "../drizzle/schema";
-import { categories, getProductGallery, products as seedProducts, type CategoryId, type Product } from "../shared/catalog";
+import { bundlePrice, categories, getProductGallery, products as seedProducts, type CategoryId, type Product } from "../shared/catalog";
 import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -127,17 +127,46 @@ export async function updateCatalogProduct(id: number, input: ProductInput) {
   return result[0] ? rowToProduct(result[0]) : null;
 }
 
-export async function createPersistentOrder(input: { fullName: string; phone: string; address: string; city: string; notes?: string; paymentMethod: "bank_transfer" | "card"; total: number; items: { productId: number; quantity: number }[] }) {
+type OrderInputItem = { productId: number; quantity: number; bundleId?: string; bundleTitle?: string };
+
+export function calculateOrderPricing(items: OrderInputItem[], catalog: Product[]) {
+  const bundleGroups = new Map<string, OrderInputItem[]>();
+  let standaloneTotal = 0;
+  for (const item of items) {
+    const product = catalog.find((candidate) => candidate.id === item.productId);
+    if (!product) throw new Error("A selected poster is no longer available");
+    if (item.bundleId) bundleGroups.set(item.bundleId, [...(bundleGroups.get(item.bundleId) ?? []), item]);
+    else standaloneTotal += product.price * item.quantity;
+  }
+  let packageTotal = 0;
+  let freeShipping = false;
+  const validatedBundleTitles = new Map<string, string>();
+  for (const [bundleId, items] of Array.from(bundleGroups.entries())) {
+    const posterCount = items.reduce((sum, item) => sum + item.quantity, 0);
+    const price = bundlePrice(posterCount);
+    if (!price || items.some((item) => item.quantity !== 1)) throw new Error("Invalid custom bundle configuration");
+    packageTotal += price;
+    freeShipping ||= posterCount === 4;
+    validatedBundleTitles.set(bundleId, `Custom ${posterCount}-Poster Bundle`);
+  }
+  const shipping = freeShipping ? 0 : 5;
+  return { standaloneTotal, packageTotal, shipping, total: standaloneTotal + packageTotal + shipping, validatedBundleTitles };
+}
+
+export async function createPersistentOrder(input: { fullName: string; phone: string; address: string; city: string; notes?: string; paymentMethod: "bank_transfer" | "card"; total: number; items: OrderInputItem[] }) {
   const db = await getDb();
   const reference = `SCR-${Math.floor(1000 + Math.random() * 8999)}`;
-  if (!db) return { reference, total: input.total, paymentMethod: input.paymentMethod };
-  await db.insert(orders).values({ reference, fullName: input.fullName, phone: input.phone, address: input.address, city: input.city, notes: input.notes, total: input.total.toFixed(2), paymentMethod: input.paymentMethod, paymentStatus: "pending", fulfillmentStatus: "pending" });
+  const catalog = await getCatalogProducts();
+  const pricing = calculateOrderPricing(input.items, catalog);
+  const calculatedTotal = pricing.total;
+  if (Math.abs(calculatedTotal - input.total) > 0.02) throw new Error("Cart total changed. Please review your order.");
+  if (!db) return { reference, total: calculatedTotal, paymentMethod: input.paymentMethod };
+  await db.insert(orders).values({ reference, fullName: input.fullName, phone: input.phone, address: input.address, city: input.city, notes: input.notes, total: calculatedTotal.toFixed(2), paymentMethod: input.paymentMethod, paymentStatus: "pending", fulfillmentStatus: "pending" });
   const created = await db.select({ id: orders.id }).from(orders).where(eq(orders.reference, reference)).limit(1);
   if (created[0]) {
-    const catalog = await getCatalogProducts();
-    await db.insert(orderItems).values(input.items.map((item) => { const product = catalog.find((candidate) => candidate.id === item.productId); return { orderId: created[0].id, productId: item.productId, title: product?.title ?? "Poster", quantity: item.quantity, unitPrice: (product?.price ?? 0).toFixed(2) }; }));
+    await db.insert(orderItems).values(input.items.map((item) => { const product = catalog.find((candidate) => candidate.id === item.productId); return { orderId: created[0].id, productId: item.productId, title: product?.title ?? "Poster", quantity: item.quantity, unitPrice: (product?.price ?? 0).toFixed(2), bundleId: item.bundleId ?? null, bundleTitle: item.bundleId ? pricing.validatedBundleTitles.get(item.bundleId) ?? null : null }; }));
   }
-  return { reference, total: input.total, paymentMethod: input.paymentMethod };
+  return { reference, total: calculatedTotal, paymentMethod: input.paymentMethod };
 }
 
 export async function getPersistentOrders() {
@@ -145,7 +174,7 @@ export async function getPersistentOrders() {
   if (!db) return [];
   const rows = await db.select().from(orders).orderBy(desc(orders.createdAt));
   const items = await db.select().from(orderItems);
-  return rows.map((order) => ({ ...order, total: Number(order.total), createdAt: order.createdAt instanceof Date ? order.createdAt.getTime() : Date.now(), items: items.filter((item) => item.orderId === order.id).map((item) => ({ productId: item.productId, quantity: item.quantity, title: item.title })) }));
+  return rows.map((order) => ({ ...order, total: Number(order.total), createdAt: order.createdAt instanceof Date ? order.createdAt.getTime() : Date.now(), items: items.filter((item) => item.orderId === order.id).map((item) => ({ productId: item.productId, quantity: item.quantity, title: item.title, bundleId: item.bundleId, bundleTitle: item.bundleTitle })) }));
 }
 
 export async function updatePersistentOrder(id: number, input: { fulfillmentStatus?: "pending" | "processing" | "shipped" | "completed"; paymentStatus?: "pending" | "paid" }) {

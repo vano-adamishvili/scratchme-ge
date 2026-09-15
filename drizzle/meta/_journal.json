@@ -22,6 +22,13 @@
       "when": 1789418312640,
       "tag": "0002_famous_xavin",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1789446316241,
+      "tag": "0003_steady_talkback",
+      "breakpoints": true
     }
   ]
 }

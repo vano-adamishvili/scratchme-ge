@@ -8,7 +8,7 @@ import { categories, type CategoryId } from "@shared/catalog";
 
 export default function Home() {
   const { language, t } = useI18n();
-  const { catalogProducts } = useStore();
+  const { catalogProducts, startBundle } = useStore();
   const [selected, setSelected] = useState<CategoryId | "all">("all");
   const filtered = useMemo(() => selected === "all" ? catalogProducts : catalogProducts.filter((product) => product.category === selected), [catalogProducts, selected]);
   useEffect(() => {
@@ -16,6 +16,10 @@ export default function Home() {
     if (!id) return;
     const timeout = window.setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }), 80);
     return () => window.clearTimeout(timeout);
+  }, []);
+  useEffect(() => {
+    const requestedTier = Number(new URLSearchParams(window.location.search).get("bundle"));
+    if (requestedTier === 2 || requestedTier === 3 || requestedTier === 4) startBundle(requestedTier);
   }, []);
   return <div className="site-shell"><SiteNav /><main>
     <section className="hero-grid"><div className="hero-copy"><div className="eyebrow">{t("hero.eyebrow")}</div><h1>{t("hero.title")}</h1><p>{t("hero.body")}</p><div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}><a href="#catalog" className="button">{t("hero.shop")} <ArrowRight size={16} /></a><a href="#how-it-works" className="button secondary">{t("hero.how")} <ArrowDown size={16} /></a></div><div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 42, color: "var(--muted)", fontSize: 12 }}><MapPin size={14} /> {t("hero.note")}</div></div><div className="hero-art"><div className="hero-sticker">გადაფხიკე / აღმოაჩინე</div><div className="hero-sticker alt">შექმნილია ცნობისმოყვარეებისთვის</div><div className="hero-poster"><div style={{ display: "flex", justifyContent: "space-between", position: "relative", zIndex: 1 }}><span className="eyebrow">scratchme.ge</span><span className="eyebrow">№ 001</span></div><div className="poster-number">100</div><div className="poster-title">ადგილები,<br />სადაც<br />უნდა წახვიდე.</div><div className="poster-footer"><span>საქართველო / ევროპა / მსოფლიო</span><span>გადაფხიკე</span></div></div></div></section>

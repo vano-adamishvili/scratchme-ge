@@ -50,3 +50,11 @@ Selecting `მოსმენა` instantly reduces the homepage catalog to zero
 The cart progress bar transitions from 2/4 to 3/4, moves the lime fill and active marker smoothly, applies the 39.90 ₾ tier, recalculates savings to 19.80 ₾, and updates the guidance to “დაამატე 1 პოსტერი უფასო მიტანისთვის.”
 
 Crossing from three to four posters fills the progress rail to 4/4, switches the panel to an unlocked green state, changes shipping to `უფასო`, applies the 49.90 ₾ tier, shows the persistent celebratory `✦ მიწოდება ჩვენზეა ✦` banner, and triggers transient confetti plus a spring pop animation. Mobile previews retain the cart and GE/EN controls, expose a horizontally scrollable section-navigation row, and present the scratch canvas with touch instructions and reset/progress UI.
+
+## Interactive custom bundle builder
+
+The bundle builder now follows an explicit three-step flow. Selecting the 4-poster tier leaves the existing cart unchanged, scrolls to the catalog, and opens a sticky `არჩეულია 0 / 4 პოსტერი` summary with four empty visual slots. Clicking catalog cards adds the exact products to those slots, applies a lime selected state to each card, updates the remaining count, and allows removal from either the card or summary. At 4/4, the interface shows `ბანდლი შეივსო!`, enables `დაამატე ბანდლი კალათაში`, and prevents selecting a fifth poster until one is removed.
+
+Adding the completed set creates one grouped `4-პოსტერიანი პერსონალური ბანდლი` cart package at 49.90 ₾ with all four selected poster thumbnails and names listed underneath. The 4-poster package activates free delivery and the existing celebration state. Checkout preserves the grouped package summary and exact member titles. The order API now recalculates bundle pricing server-side, ignores client-supplied package labels, and persists validated `bundleId` / `Custom 4-Poster Bundle` metadata on each order line. A reversible database verification created, inspected, and removed a temporary grouped order successfully.
+
+Responsive previews confirm the fixed selection dock collapses into a touch-friendly bottom sheet at 375px with horizontally scrollable visual slots and a reachable add-to-cart action. TypeScript validation, four Vitest assertions, production build, migration application, and database persistence verification pass.

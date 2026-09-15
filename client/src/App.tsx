@@ -12,6 +12,7 @@ import ProductPage from "./pages/ProductPage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import AdminPage from "./pages/AdminPage";
+import { BundleSelectionDock } from "./components/storefront";
 
 function Router() {
   return <Switch>
@@ -27,5 +28,5 @@ function Router() {
 }
 
 export default function App() {
-  return <ErrorBoundary><ThemeProvider defaultTheme="light"><TooltipProvider><Toaster /><I18nProvider><StoreProvider><Router /></StoreProvider></I18nProvider></TooltipProvider></ThemeProvider></ErrorBoundary>;
+  return <ErrorBoundary><ThemeProvider defaultTheme="light"><TooltipProvider><Toaster /><I18nProvider><StoreProvider><Router /><BundleSelectionDock /></StoreProvider></I18nProvider></TooltipProvider></ThemeProvider></ErrorBoundary>;
 }
