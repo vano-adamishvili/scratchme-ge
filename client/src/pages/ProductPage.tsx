@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Check, ChevronLeft, ChevronRight, Sparkles, Truck } from "lucide-react";
 import { Link, useLocation, useRoute } from "wouter";
 import { Footer, SiteNav } from "@/components/storefront";
@@ -18,6 +18,7 @@ export default function ProductPage() {
   const product = productQuery.data;
   const [selectedImage, setSelectedImage] = useState(0);
   const [scratchMode, setScratchMode] = useState(true);
+  const swipeStartRef = useRef<{ x: number; y: number } | null>(null);
   useEffect(() => { setSelectedImage(0); setScratchMode(true); }, [product?.id]);
 
   if (productQuery.isLoading) return <div className="site-shell"><SiteNav /><main className="container"><div className="empty-state" style={{ margin: "70px 0" }}>იტვირთება…</div></main><Footer /></div>;
@@ -29,12 +30,26 @@ export default function ProductPage() {
   const add = (goToCart = false) => { if (outOfStock) return; addToCart(product); showToast(`${productTitle(product)} — ${t("toast.added")}`); if (goToCart) setLocation("/cart"); };
   const move = (step: number) => { setScratchMode(false); setSelectedImage((current) => (current + step + gallery.length) % gallery.length); };
   const chooseImage = (index: number) => { setScratchMode(false); setSelectedImage(index); };
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    const touch = event.touches[0];
+    if (touch) swipeStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+  const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    const start = swipeStartRef.current;
+    const touch = event.changedTouches[0];
+    swipeStartRef.current = null;
+    if (!start || !touch || gallery.length < 2) return;
+    const deltaX = touch.clientX - start.x;
+    const deltaY = touch.clientY - start.y;
+    if (Math.abs(deltaX) < 45 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+    move(deltaX < 0 ? 1 : -1);
+  };
 
   return <div className="site-shell"><SiteNav /><main className="container">
     <div style={{ paddingTop: 28 }}><Link href="/shop" className="nav-link"><ArrowLeft size={14} style={{ verticalAlign: "-2px" }} /> {t("product.back")}</Link></div>
     <section className="product-detail">
       <div>
-        {scratchMode && gallery.length > 1 ? <ScratchReveal coverUrl={gallery[0].url} revealUrl={gallery[1].url} alt={`${productTitle(product)} — ${language === "ka" ? "ვირტუალური გადაფხეკა" : "virtual scratch preview"}`} language={language} /> : <div className="detail-image gallery-main"><img src={gallery[selectedImage].url} alt={`${productTitle(product)} — ${language === "ka" ? gallery[selectedImage].labelKa : gallery[selectedImage].labelEn}`} /><div className="detail-label">{language === "ka" ? gallery[selectedImage].labelKa : gallery[selectedImage].labelEn}</div>{gallery.length > 1 && <><button className="gallery-arrow prev" onClick={() => move(-1)} aria-label="Previous image"><ChevronLeft /></button><button className="gallery-arrow next" onClick={() => move(1)} aria-label="Next image"><ChevronRight /></button></>}</div>}
+        {scratchMode && gallery.length > 1 ? <ScratchReveal coverUrl={gallery[0].url} revealUrl={gallery[1].url} alt={`${productTitle(product)} — ${language === "ka" ? "ვირტუალური გადაფხეკა" : "virtual scratch preview"}`} language={language} /> : <div className="detail-image gallery-main" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}><img src={gallery[selectedImage].url} alt={`${productTitle(product)} — ${language === "ka" ? gallery[selectedImage].labelKa : gallery[selectedImage].labelEn}`} /><div className="detail-label">{language === "ka" ? gallery[selectedImage].labelKa : gallery[selectedImage].labelEn}</div>{gallery.length > 1 && <><button className="gallery-arrow prev" onClick={() => move(-1)} aria-label="Previous image"><ChevronLeft /></button><button className="gallery-arrow next" onClick={() => move(1)} aria-label="Next image"><ChevronRight /></button></>}</div>}
         <div className="gallery-thumbs">
           {gallery.length > 1 && <button className={`gallery-thumb scratch-thumb ${scratchMode ? "active" : ""}`} onClick={() => setScratchMode(true)}><span className="scratch-thumb-art"><Sparkles size={24} /></span><span>{language === "ka" ? "ვირტუალურად გადაფხიკე" : "Try virtual scratch"}</span></button>}
           {gallery.map((image, index) => <button key={`${image.url}-${index}`} className={`gallery-thumb ${!scratchMode && selectedImage === index ? "active" : ""}`} onClick={() => chooseImage(index)}><img src={image.url} alt="" /><span>{language === "ka" ? image.labelKa : image.labelEn}</span></button>)}
