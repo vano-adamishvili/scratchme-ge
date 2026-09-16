@@ -13,6 +13,7 @@ import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import AdminPage from "./pages/AdminPage";
 import ContactPage from "./pages/ContactPage";
+import LegalPage from "./pages/LegalPage";
 import { BundleSelectionDock } from "./components/storefront";
 
 function Router() {
@@ -24,6 +25,9 @@ function Router() {
     <Route path="/checkout" component={CheckoutPage} />
     <Route path="/admin" component={AdminPage} />
     <Route path="/contact" component={ContactPage} />
+    <Route path="/privacy-policy" component={() => <LegalPage kind="privacy" />} />
+    <Route path="/terms" component={() => <LegalPage kind="terms" />} />
+    <Route path="/delivery-returns" component={() => <LegalPage kind="delivery" />} />
     <Route path="/404" component={NotFound} />
     <Route component={NotFound} />
   </Switch>;
