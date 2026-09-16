@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { categories, categoryIds } from "../shared/catalog";
 import { COOKIE_NAME } from "@shared/const";
-import { createCatalogProduct, createPersistentOrder, getCatalogProductBySlug, getCatalogProducts, getPersistentOrders, updateCatalogProduct, updatePersistentOrder } from "./db";
+import { createCatalogProduct, createPersistentOrder, deleteCatalogProduct, getCatalogProductBySlug, getCatalogProducts, getPersistentOrders, updateCatalogProduct, updatePersistentOrder } from "./db";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
@@ -51,6 +51,7 @@ export const appRouter = router({
     products: adminProcedure.query(() => getCatalogProducts()),
     createProduct: adminProcedure.input(productInput).mutation(({ input }) => createCatalogProduct(input)),
     updateProduct: adminProcedure.input(productInput.extend({ id: z.number() })).mutation(({ input }) => { const { id, ...data } = input; return updateCatalogProduct(id, data); }),
+    deleteProduct: adminProcedure.input(z.object({ id: z.number().int().positive() })).mutation(({ input }) => deleteCatalogProduct(input.id)),
     uploadProductImage: adminProcedure.input(z.object({ filename: z.string().min(1), contentType: z.string().regex(/^image\//), base64: z.string().max(12_000_000) })).mutation(async ({ input, ctx }) => {
       const safeName = input.filename.replace(/[^a-zA-Z0-9._-]/g, "-");
       return storagePut(`products/${ctx.user.id}/${safeName}`, Buffer.from(input.base64, "base64"), input.contentType);

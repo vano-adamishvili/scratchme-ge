@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import { BarChart3, Check, ImagePlus, Package, Pencil, Plus, Settings2, ShoppingBag, X } from "lucide-react";
+import { BarChart3, Check, ImagePlus, Package, Pencil, Plus, Settings2, ShoppingBag, Trash2, X } from "lucide-react";
 import { Link } from "wouter";
 import { Footer, SiteNav } from "@/components/storefront";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -61,7 +61,23 @@ function OrderItemsCell({ items, language }: { items: any[]; language: "ka" | "e
 function Products({ products, productTitle, language, showToast }: { products: Product[]; productTitle: (product: { title: string; titleKa: string }) => string; language: "ka" | "en"; showToast: (message: string) => void }) {
   const ka = language === "ka";
   const [editing, setEditing] = useState<Product | "new" | null>(() => new URLSearchParams(window.location.search).get("new") === "1" ? "new" : null);
-  return <><div className="admin-panel"><div className="admin-panel-head"><h2>{ka ? "კატალოგის მართვა" : "Catalog management"}</h2><button className="button small coral" onClick={() => setEditing("new")}><Plus size={14} /> {ka ? "პროდუქტის დამატება" : "Add product"}</button></div><div className="admin-product-grid">{products.map((product) => <article key={product.id} className="admin-product-card"><img src={product.image} alt="" /><div><h3>{productTitle(product)}</h3><p>{categories.find((category) => category.id === product.category)?.labelKa} · {formatPrice(product.price)}</p><span className={`stock-pill ${product.stockStatus === "out_of_stock" ? "out" : ""}`}>{product.stockStatus === "out_of_stock" ? (ka ? "მარაგში არ არის" : "Out of stock") : `${ka ? "მარაგი" : "Stock"}: ${product.stock ?? 0}`}</span></div><button className="button small secondary" onClick={() => setEditing(product)}><Pencil size={13} /> {ka ? "რედაქტირება" : "Edit"}</button></article>)}</div></div>{editing && <ProductEditor product={editing === "new" ? null : editing} language={language} close={() => setEditing(null)} showToast={showToast} />}</>;
+  const utils = trpc.useUtils();
+  const [deleting, setDeleting] = useState<Product | null>(null);
+  const deleteProduct = trpc.admin.deleteProduct.useMutation({
+    onSuccess: async (result) => {
+      await Promise.all([utils.admin.products.invalidate(), utils.admin.overview.invalidate(), utils.catalog.invalidate()]);
+      setDeleting(null);
+      showToast(result.deleted ? (ka ? "პროდუქტი სრულად წაიშალა" : "Product permanently deleted") : (ka ? "პროდუქტი ვერ მოიძებნა" : "Product was not found"));
+    },
+    onError: (error) => showToast(error.message),
+  });
+  const requestDelete = (product: Product) => {
+    const confirmed = window.confirm(ka ? `ნამდვილად წავშალოთ „${productTitle(product)}“? ეს მოქმედება შეუქცევადია.` : `Delete “${productTitle(product)}” permanently? This action cannot be undone.`);
+    if (!confirmed) return;
+    setDeleting(product);
+    deleteProduct.mutate({ id: product.id });
+  };
+  return <><div className="admin-panel"><div className="admin-panel-head"><h2>{ka ? "კატალოგის მართვა" : "Catalog management"}</h2><button className="button small coral" onClick={() => setEditing("new")}><Plus size={14} /> {ka ? "პროდუქტის დამატება" : "Add product"}</button></div><div className="admin-product-grid">{products.map((product) => <article key={product.id} className="admin-product-card"><img src={product.image} alt="" /><div><h3>{productTitle(product)}</h3><p>{categories.find((category) => category.id === product.category)?.labelKa} · {formatPrice(product.price)}</p><span className={`stock-pill ${product.stockStatus === "out_of_stock" ? "out" : ""}`}>{product.stockStatus === "out_of_stock" ? (ka ? "მარაგში არ არის" : "Out of stock") : `${ka ? "მარაგი" : "Stock"}: ${product.stock ?? 0}`}</span></div><div className="admin-product-actions"><button className="button small secondary" onClick={() => setEditing(product)} disabled={deleteProduct.isPending}><Pencil size={13} /> {ka ? "რედაქტირება" : "Edit"}</button><button className="button small danger" onClick={() => requestDelete(product)} disabled={deleteProduct.isPending}><Trash2 size={13} /> {deleting?.id === product.id ? (ka ? "იშლება…" : "Deleting…") : (ka ? "წაშლა" : "Delete")}</button></div></article>)}</div></div>{editing && <ProductEditor product={editing === "new" ? null : editing} language={language} close={() => setEditing(null)} showToast={showToast} />}</>;
 }
 
 function ProductEditor({ product, language, close, showToast }: { product: Product | null; language: "ka" | "en"; close: () => void; showToast: (message: string) => void }) {

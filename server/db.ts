@@ -127,6 +127,16 @@ export async function updateCatalogProduct(id: number, input: ProductInput) {
   return result[0] ? rowToProduct(result[0]) : null;
 }
 
+export async function deleteCatalogProduct(id: number) {
+  await ensureCatalogSeeded();
+  const db = await getDb();
+  if (!db) return { deleted: false };
+  const existing = await db.select({ id: productTable.id }).from(productTable).where(eq(productTable.id, id)).limit(1);
+  if (!existing[0]) return { deleted: false };
+  await db.delete(productTable).where(eq(productTable.id, id));
+  return { deleted: true };
+}
+
 type OrderInputItem = { productId: number; quantity: number; bundleId?: string; bundleTitle?: string };
 
 export function calculateOrderPricing(items: OrderInputItem[], catalog: Product[]) {
