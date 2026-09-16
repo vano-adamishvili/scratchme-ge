@@ -15,7 +15,7 @@ export function SiteNav() {
         <a href="/#catalog" className="nav-link">{t("nav.shop")}</a>
         <a href="/#bundle-builder" className="nav-link">{t("nav.bundle")}</a>
         <a href="/#how-it-works" className="nav-link">{t("nav.how")}</a>
-        <a href="#contact" className="nav-link">{t("nav.contact")}</a>
+        <Link href="/contact" className="nav-link">{t("nav.contact")}</Link>
       </nav>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <div className="language-switcher" aria-label="Language switcher"><button className={language === "ka" ? "active" : ""} onClick={() => setLanguage("ka")}>GE</button><span>/</span><button className={language === "en" ? "active" : ""} onClick={() => setLanguage("en")}>EN</button></div>
@@ -23,7 +23,7 @@ export function SiteNav() {
         <Link href="/cart" className="button small secondary"><ShoppingBag size={15} /> {t("nav.cart")} {cartCount > 0 && <span style={{ color: "var(--coral)" }}>({cartCount})</span>}</Link>
       </div>
     </div></header>
-    <nav className="mobile-anchor-nav" aria-label={language === "ka" ? "სექციების ნავიგაცია" : "Section navigation"}><a href="/#catalog">{t("nav.shop")}</a><a href="/#bundle-builder">{t("nav.bundle")}</a><a href="/#how-it-works">{t("nav.how")}</a><a href="#contact">{t("nav.contact")}</a></nav>
+    <nav className="mobile-anchor-nav" aria-label={language === "ka" ? "სექციების ნავიგაცია" : "Section navigation"}><a href="/#catalog">{t("nav.shop")}</a><a href="/#bundle-builder">{t("nav.bundle")}</a><a href="/#how-it-works">{t("nav.how")}</a><Link href="/contact">{t("nav.contact")}</Link></nav>
   </>;
 }
 
@@ -31,7 +31,7 @@ export function Footer() {
   const { t } = useI18n();
   return <footer className="footer" id="contact"><div className="container"><div className="footer-grid">
     <div><Link href="/" className="brand-mark">scratchme<span>.</span>ge</Link><p className="footer-note" style={{ marginTop: 16 }}>{t("footer.note")}</p></div>
-    <div><h4>{t("footer.explore")}</h4><a href="/#catalog">{t("nav.shop")}</a><a href="/#bundle-builder">{t("nav.bundle")}</a><a href="/#how-it-works">{t("nav.how")}</a><a href="#contact">{t("nav.contact")}</a></div>
+    <div><h4>{t("footer.explore")}</h4><a href="/#catalog">{t("nav.shop")}</a><a href="/#bundle-builder">{t("nav.bundle")}</a><a href="/#how-it-works">{t("nav.how")}</a><Link href="/contact">{t("nav.contact")}</Link></div>
     <div><h4>{t("footer.help")}</h4><a href="mailto:hello@scratchme.ge">hello@scratchme.ge</a><a href="tel:+995555123456">+995 555 12 34 56</a><a href="#delivery">{t("footer.delivery")}</a></div>
     <div><h4>{t("footer.made")}</h4><p className="footer-note">{t("footer.note")}</p></div>
   </div><div className="footer-bottom"><span>© {new Date().getFullYear()} scratchme.ge</span><span>გადასაფხეკი პოსტერები / scratch-off posters</span></div></div></footer>;

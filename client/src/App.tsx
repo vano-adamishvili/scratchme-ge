@@ -12,6 +12,7 @@ import ProductPage from "./pages/ProductPage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import AdminPage from "./pages/AdminPage";
+import ContactPage from "./pages/ContactPage";
 import { BundleSelectionDock } from "./components/storefront";
 
 function Router() {
@@ -22,6 +23,7 @@ function Router() {
     <Route path="/cart" component={CartPage} />
     <Route path="/checkout" component={CheckoutPage} />
     <Route path="/admin" component={AdminPage} />
+    <Route path="/contact" component={ContactPage} />
     <Route path="/404" component={NotFound} />
     <Route component={NotFound} />
   </Switch>;
