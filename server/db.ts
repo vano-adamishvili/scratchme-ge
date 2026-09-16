@@ -197,3 +197,15 @@ export async function updatePersistentOrder(id: number, input: { fulfillmentStat
   const rows = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
   return rows[0] ?? null;
 }
+
+export async function deletePersistentOrder(id: number) {
+  const db = await getDb();
+  if (!db) return { deleted: false };
+  const existing = await db.select({ id: orders.id }).from(orders).where(eq(orders.id, id)).limit(1);
+  if (!existing[0]) return { deleted: false };
+  await db.transaction(async (tx) => {
+    await tx.delete(orderItems).where(eq(orderItems.orderId, id));
+    await tx.delete(orders).where(eq(orders.id, id));
+  });
+  return { deleted: true };
+}

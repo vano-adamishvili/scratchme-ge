@@ -2,10 +2,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 
-const { deleteCatalogProduct } = vi.hoisted(() => ({ deleteCatalogProduct: vi.fn() }));
+const { deleteCatalogProduct, deletePersistentOrder } = vi.hoisted(() => ({ deleteCatalogProduct: vi.fn(), deletePersistentOrder: vi.fn() }));
 
 vi.mock("./db", () => ({
   deleteCatalogProduct,
+  deletePersistentOrder,
   createCatalogProduct: vi.fn(),
   createPersistentOrder: vi.fn(),
   getCatalogProductBySlug: vi.fn(),
@@ -36,6 +37,7 @@ function createContext(role: "admin" | "user" = "admin"): TrpcContext {
 describe("admin.deleteProduct", () => {
   beforeEach(() => {
     deleteCatalogProduct.mockReset();
+    deletePersistentOrder.mockReset();
   });
 
   it("allows an admin to permanently delete a product", async () => {
@@ -58,5 +60,22 @@ describe("admin.deleteProduct", () => {
 
     await expect(caller.admin.deleteProduct({ id: 0 })).rejects.toMatchObject({ code: "BAD_REQUEST" });
     expect(deleteCatalogProduct).not.toHaveBeenCalled();
+  });
+
+  it("allows an admin to permanently delete an order", async () => {
+    deletePersistentOrder.mockResolvedValueOnce({ deleted: true });
+    const caller = appRouter.createCaller(createContext());
+
+    await expect(caller.admin.deleteOrder({ id: 17 })).resolves.toEqual({ deleted: true });
+    expect(deletePersistentOrder).toHaveBeenCalledWith(17);
+  });
+
+  it("rejects order deletion for non-admin users and invalid ids", async () => {
+    const userCaller = appRouter.createCaller(createContext("user"));
+    await expect(userCaller.admin.deleteOrder({ id: 17 })).rejects.toMatchObject({ code: "FORBIDDEN" });
+
+    const adminCaller = appRouter.createCaller(createContext());
+    await expect(adminCaller.admin.deleteOrder({ id: 0 })).rejects.toMatchObject({ code: "BAD_REQUEST" });
+    expect(deletePersistentOrder).not.toHaveBeenCalled();
   });
 });

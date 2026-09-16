@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { categories, categoryIds } from "../shared/catalog";
 import { COOKIE_NAME } from "@shared/const";
-import { createCatalogProduct, createPersistentOrder, deleteCatalogProduct, getCatalogProductBySlug, getCatalogProducts, getPersistentOrders, updateCatalogProduct, updatePersistentOrder } from "./db";
+import { createCatalogProduct, createPersistentOrder, deleteCatalogProduct, deletePersistentOrder, getCatalogProductBySlug, getCatalogProducts, getPersistentOrders, updateCatalogProduct, updatePersistentOrder } from "./db";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
@@ -48,6 +48,7 @@ export const appRouter = router({
     }),
     orders: adminProcedure.query(() => getPersistentOrders()),
     updateOrder: adminProcedure.input(z.object({ id: z.number(), paymentStatus: z.enum(["pending", "paid"]).optional(), fulfillmentStatus: z.enum(["pending", "processing", "shipped", "completed"]).optional() })).mutation(({ input }) => updatePersistentOrder(input.id, { paymentStatus: input.paymentStatus, fulfillmentStatus: input.fulfillmentStatus })),
+    deleteOrder: adminProcedure.input(z.object({ id: z.number().int().positive() })).mutation(({ input }) => deletePersistentOrder(input.id)),
     products: adminProcedure.query(() => getCatalogProducts()),
     createProduct: adminProcedure.input(productInput).mutation(({ input }) => createCatalogProduct(input)),
     updateProduct: adminProcedure.input(productInput.extend({ id: z.number() })).mutation(({ input }) => { const { id, ...data } = input; return updateCatalogProduct(id, data); }),
