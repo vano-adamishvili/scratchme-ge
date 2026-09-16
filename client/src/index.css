@@ -127,7 +127,7 @@ button { cursor: pointer; }
 
 .product-detail { display:grid; grid-template-columns:minmax(0,1fr) minmax(360px,.78fr); gap:clamp(30px,7vw,100px); padding:54px 0 90px; align-items:start; }
 .detail-image { position:relative; aspect-ratio:.82; max-height:700px; border:1px solid var(--ink); overflow:hidden; }
-.detail-image img { width:100%; height:100%; object-fit:cover; }
+.detail-image img { width:100%; height:100%; object-fit:contain; object-position:center; display:block; background:var(--cream); }
 .detail-label { position:absolute; top:18px; left:18px; padding:8px 10px; background:var(--lime); border:1px solid var(--ink); font:500 11px 'DM Mono',monospace; text-transform:uppercase; }
 .detail-copy { padding-top:14px; }
 .detail-copy h1 { font:700 clamp(42px,6vw,78px)/.9 'Space Grotesk',sans-serif; letter-spacing:-.08em; margin:14px 0 18px; }
@@ -279,9 +279,9 @@ button { cursor: pointer; }
 .gallery-arrow.prev { left:14px; }
 .gallery-arrow.next { right:14px; }
 .gallery-thumbs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:12px; }
-.gallery-thumb { padding:0; border:1px solid var(--line); background:transparent; text-align:left; overflow:hidden; }
+.gallery-thumb { min-width:0; padding:0; border:1px solid var(--line); background:transparent; text-align:left; overflow:hidden; display:flex; flex-direction:column; }
 .gallery-thumb.active { border-color:var(--ink); box-shadow:3px 3px 0 var(--lime); }
-.gallery-thumb img { width:100%; aspect-ratio:1.2; object-fit:cover; display:block; }
+.gallery-thumb img { width:100%; height:102px; object-fit:cover; object-position:center; display:block; flex:none; }
 .gallery-thumb span { display:block; padding:8px; font:500 10px/1.3 'DM Mono',monospace; }
 .product-features { list-style:none; padding:0; margin:24px 0; display:grid; gap:9px; color:#5c5b53; font-size:13px; }
 .product-features li { display:flex; align-items:center; gap:8px; }
@@ -365,8 +365,8 @@ button { cursor: pointer; }
 .empty-category p { color:var(--muted); margin:0; }
 
 .scratch-reveal { position:relative; aspect-ratio:.82; max-height:700px; overflow:hidden; border:1px solid var(--ink); background:var(--cream); cursor:crosshair; isolation:isolate; }
-.scratch-reveal-image { width:100%; height:100%; display:block; object-fit:cover; }
-.scratch-reveal canvas { position:absolute; inset:0; z-index:2; width:100%; height:100%; touch-action:none; transition:opacity .35s var(--ease-out); }
+.scratch-reveal-image { width:100%; height:100%; display:block; object-fit:contain; object-position:center; background:var(--cream); }
+.scratch-reveal canvas { position:absolute; inset:0; z-index:2; width:100%; height:100%; object-fit:contain; object-position:center; touch-action:none; transition:opacity .35s var(--ease-out); }
 .scratch-reveal.complete canvas { opacity:0; pointer-events:none; }
 .scratch-instruction { position:absolute; z-index:3; left:14px; right:14px; bottom:14px; min-height:38px; display:flex; align-items:center; gap:8px; padding:9px 11px; border:1px solid var(--ink); background:rgba(247,245,238,.94); box-shadow:3px 3px 0 var(--ink); font:500 10px/1.3 'DM Mono',monospace; pointer-events:none; }
 .scratch-instruction b { margin-left:auto; color:var(--coral); }
