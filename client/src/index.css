@@ -198,6 +198,8 @@ button { cursor: pointer; }
 .bank-detail { background:rgba(247,245,238,.07); padding:15px; }
 .bank-detail small { display:block; color:#aaa79d; font:10px 'DM Mono',monospace; text-transform:uppercase; margin-bottom:7px; }
 .bank-detail strong { font:500 14px 'DM Mono',monospace; }
+.iban-copy-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.bank-copy-button { padding:7px 10px; font-size:10px; }
 
 .contact-page { padding:64px 0 96px; }
 .contact-hero { max-width:760px; padding:24px 0 54px; }
