@@ -156,7 +156,7 @@ const ka: Dictionary = {
   "contact.detailsEyebrow": "სად და როდის",
   "contact.detailsTitle": "მოდი, დაგელაპარაკებით.",
   "contact.addressLabel": "მისამართი",
-  "contact.address": "თბილისი, საქართველო",
+  "contact.address": "თბილისი, 37მ ილია ჭავჭავაძის გამზირი, აქსის თაუერსი",
   "contact.hoursLabel": "სამუშაო დრო",
   "contact.hours": "ყოველდღე · 09:00–20:00",
   "contact.emailLabel": "ელფოსტა",
