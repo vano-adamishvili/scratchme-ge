@@ -36,21 +36,21 @@ export async function getUserByOpenId(openId: string) {
   return result[0];
 }
 
-export type StoreSettings = { bankName: string; iban: string; receiverName: string; shippingFee: number };
-const defaultStoreSettings: StoreSettings = { bankName: "TBC Bank", iban: "", receiverName: "", shippingFee: 5 };
+export type StoreSettings = { bankName: string; iban: string; receiverName: string; secondBankName: string; secondIban: string; secondReceiverName: string; shippingFee: number };
+const defaultStoreSettings: StoreSettings = { bankName: "TBC Bank", iban: "", receiverName: "", secondBankName: "საქართველოს ბანკი", secondIban: "", secondReceiverName: "", shippingFee: 5 };
 
 export async function getStoreSettings(): Promise<StoreSettings> {
   const db = await getDb();
   if (!db) return defaultStoreSettings;
   const rows = await db.select().from(storeSettings).where(eq(storeSettings.id, 1)).limit(1);
   const row = rows[0];
-  return row ? { bankName: row.bankName, iban: row.iban, receiverName: row.receiverName, shippingFee: Number(row.shippingFee) } : defaultStoreSettings;
+  return row ? { bankName: row.bankName, iban: row.iban, receiverName: row.receiverName, secondBankName: row.secondBankName, secondIban: row.secondIban, secondReceiverName: row.secondReceiverName, shippingFee: Number(row.shippingFee) } : defaultStoreSettings;
 }
 
 export async function updateStoreSettings(input: StoreSettings) {
   const db = await getDb();
   if (!db) throw new Error("Store settings service is temporarily unavailable");
-  await db.insert(storeSettings).values({ id: 1, bankName: input.bankName, iban: input.iban, receiverName: input.receiverName, shippingFee: input.shippingFee.toFixed(2) }).onDuplicateKeyUpdate({ set: { bankName: input.bankName, iban: input.iban, receiverName: input.receiverName, shippingFee: input.shippingFee.toFixed(2) } });
+  await db.insert(storeSettings).values({ id: 1, bankName: input.bankName, iban: input.iban, receiverName: input.receiverName, secondBankName: input.secondBankName, secondIban: input.secondIban, secondReceiverName: input.secondReceiverName, shippingFee: input.shippingFee.toFixed(2) }).onDuplicateKeyUpdate({ set: { bankName: input.bankName, iban: input.iban, receiverName: input.receiverName, secondBankName: input.secondBankName, secondIban: input.secondIban, secondReceiverName: input.secondReceiverName, shippingFee: input.shippingFee.toFixed(2) } });
   return getStoreSettings();
 }
 

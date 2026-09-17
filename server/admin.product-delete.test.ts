@@ -84,7 +84,7 @@ describe("admin.deleteProduct", () => {
   });
 
   it("allows an admin to read and update store settings", async () => {
-    const settings = { bankName: "Bank of Georgia", iban: "GE00BG0000000000000000", receiverName: "Irakli Gulordava", shippingFee: 7 };
+    const settings = { bankName: "TBC Bank", iban: "GE00TB0000000000000000", receiverName: "Irakli Gulordava", secondBankName: "Bank of Georgia", secondIban: "GE00BG0000000000000000", secondReceiverName: "Irakli Gulordava", shippingFee: 7 };
     getStoreSettings.mockResolvedValueOnce(settings);
     updateStoreSettings.mockResolvedValueOnce(settings);
     const caller = appRouter.createCaller(createContext());
@@ -96,7 +96,7 @@ describe("admin.deleteProduct", () => {
 
   it("rejects store settings changes for non-admin users", async () => {
     const caller = appRouter.createCaller(createContext("user"));
-    await expect(caller.admin.updateSettings({ bankName: "Bank", iban: "GE00BG0000000000000000", receiverName: "Owner", shippingFee: 5 })).rejects.toMatchObject({ code: "FORBIDDEN" });
+    await expect(caller.admin.updateSettings({ bankName: "TBC Bank", iban: "GE00TB0000000000000000", receiverName: "Owner", secondBankName: "Bank of Georgia", secondIban: "GE00BG0000000000000000", secondReceiverName: "Owner", shippingFee: 5 })).rejects.toMatchObject({ code: "FORBIDDEN" });
     expect(updateStoreSettings).not.toHaveBeenCalled();
   });
 });

@@ -52,7 +52,7 @@ export const appRouter = router({
     deleteOrder: adminProcedure.input(z.object({ id: z.number().int().positive() })).mutation(({ input }) => deletePersistentOrder(input.id)),
     products: adminProcedure.query(() => getCatalogProducts()),
     settings: adminProcedure.query(() => getStoreSettings()),
-    updateSettings: adminProcedure.input(z.object({ bankName: z.string().min(2).max(100), iban: z.string().min(8).max(64), receiverName: z.string().min(2).max(160), shippingFee: z.number().nonnegative().max(1000) })).mutation(({ input }) => updateStoreSettings(input)),
+    updateSettings: adminProcedure.input(z.object({ bankName: z.string().min(2).max(100), iban: z.string().min(8).max(64), receiverName: z.string().min(2).max(160), secondBankName: z.string().min(2).max(100), secondIban: z.string().min(8).max(64), secondReceiverName: z.string().min(2).max(160), shippingFee: z.number().nonnegative().max(1000) })).mutation(({ input }) => updateStoreSettings(input)),
     createProduct: adminProcedure.input(productInput).mutation(({ input }) => createCatalogProduct(input)),
     updateProduct: adminProcedure.input(productInput.extend({ id: z.number() })).mutation(({ input }) => { const { id, ...data } = input; return updateCatalogProduct(id, data); }),
     deleteProduct: adminProcedure.input(z.object({ id: z.number().int().positive() })).mutation(({ input }) => deleteCatalogProduct(input.id)),
