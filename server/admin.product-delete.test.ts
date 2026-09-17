@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 
-const { deleteCatalogProduct, deletePersistentOrder } = vi.hoisted(() => ({ deleteCatalogProduct: vi.fn(), deletePersistentOrder: vi.fn() }));
+const { deleteCatalogProduct, deletePersistentOrder, getStoreSettings, updateStoreSettings } = vi.hoisted(() => ({ deleteCatalogProduct: vi.fn(), deletePersistentOrder: vi.fn(), getStoreSettings: vi.fn(), updateStoreSettings: vi.fn() }));
 
 vi.mock("./db", () => ({
   deleteCatalogProduct,
@@ -14,6 +14,8 @@ vi.mock("./db", () => ({
   getPersistentOrders: vi.fn().mockResolvedValue([]),
   updateCatalogProduct: vi.fn(),
   updatePersistentOrder: vi.fn(),
+  getStoreSettings,
+  updateStoreSettings,
 }));
 
 function createContext(role: "admin" | "user" = "admin"): TrpcContext {
@@ -38,6 +40,8 @@ describe("admin.deleteProduct", () => {
   beforeEach(() => {
     deleteCatalogProduct.mockReset();
     deletePersistentOrder.mockReset();
+    getStoreSettings.mockReset();
+    updateStoreSettings.mockReset();
   });
 
   it("allows an admin to permanently delete a product", async () => {
@@ -77,5 +81,22 @@ describe("admin.deleteProduct", () => {
     const adminCaller = appRouter.createCaller(createContext());
     await expect(adminCaller.admin.deleteOrder({ id: 0 })).rejects.toMatchObject({ code: "BAD_REQUEST" });
     expect(deletePersistentOrder).not.toHaveBeenCalled();
+  });
+
+  it("allows an admin to read and update store settings", async () => {
+    const settings = { bankName: "Bank of Georgia", iban: "GE00BG0000000000000000", receiverName: "Irakli Gulordava", shippingFee: 7 };
+    getStoreSettings.mockResolvedValueOnce(settings);
+    updateStoreSettings.mockResolvedValueOnce(settings);
+    const caller = appRouter.createCaller(createContext());
+
+    await expect(caller.admin.settings()).resolves.toEqual(settings);
+    await expect(caller.admin.updateSettings(settings)).resolves.toEqual(settings);
+    expect(updateStoreSettings).toHaveBeenCalledWith(settings);
+  });
+
+  it("rejects store settings changes for non-admin users", async () => {
+    const caller = appRouter.createCaller(createContext("user"));
+    await expect(caller.admin.updateSettings({ bankName: "Bank", iban: "GE00BG0000000000000000", receiverName: "Owner", shippingFee: 5 })).rejects.toMatchObject({ code: "FORBIDDEN" });
+    expect(updateStoreSettings).not.toHaveBeenCalled();
   });
 });

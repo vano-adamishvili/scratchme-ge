@@ -51,6 +51,7 @@ function readJson<T>(key: string, fallback: T): T {
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const catalog = trpc.catalog.list.useQuery(undefined, { staleTime: 30_000 });
+  const settings = trpc.store.settings.useQuery(undefined, { staleTime: 30_000 });
   const catalogProducts = catalog.data?.products ?? seedProducts;
   const [cart, setCart] = useState<CartMap>(() => readJson("scratchme-cart-v2", readJson("scratchme-cart", {})));
   const [bundles, setBundles] = useState<CartBundle[]>(() => readJson("scratchme-cart-bundles", []));
@@ -86,7 +87,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const posterTotal = standaloneRetail + bundleTotal;
   const savings = Math.max(0, retailTotal - posterTotal);
   const hasFreeShippingBundle = cartBundles.some((bundle) => bundle.tier === 4);
-  const shipping = cartCount === 0 || hasFreeShippingBundle ? 0 : 5;
+  const shipping = cartCount === 0 || hasFreeShippingBundle ? 0 : (settings.data?.shippingFee ?? 5);
   const total = posterTotal + shipping;
   const largestBundle = cartBundles.reduce<BundleTier | 0>((largest, bundle) => Math.max(largest, bundle.tier) as BundleTier, 0);
   const progressCount = largestBundle || Math.min(standaloneCount, 4);

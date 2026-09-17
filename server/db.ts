@@ -1,6 +1,6 @@
 import { desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { categories as categoryTable, orderItems, orders, products as productTable, users, type InsertUser } from "../drizzle/schema";
+import { categories as categoryTable, orderItems, orders, products as productTable, storeSettings, users, type InsertUser } from "../drizzle/schema";
 import { bundlePrice, categories, getProductGallery, products as seedProducts, type CategoryId, type Product } from "../shared/catalog";
 import { ENV } from "./_core/env";
 
@@ -34,6 +34,24 @@ export async function getUserByOpenId(openId: string) {
   if (!db) return undefined;
   const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
   return result[0];
+}
+
+export type StoreSettings = { bankName: string; iban: string; receiverName: string; shippingFee: number };
+const defaultStoreSettings: StoreSettings = { bankName: "TBC Bank", iban: "", receiverName: "", shippingFee: 5 };
+
+export async function getStoreSettings(): Promise<StoreSettings> {
+  const db = await getDb();
+  if (!db) return defaultStoreSettings;
+  const rows = await db.select().from(storeSettings).where(eq(storeSettings.id, 1)).limit(1);
+  const row = rows[0];
+  return row ? { bankName: row.bankName, iban: row.iban, receiverName: row.receiverName, shippingFee: Number(row.shippingFee) } : defaultStoreSettings;
+}
+
+export async function updateStoreSettings(input: StoreSettings) {
+  const db = await getDb();
+  if (!db) throw new Error("Store settings service is temporarily unavailable");
+  await db.insert(storeSettings).values({ id: 1, bankName: input.bankName, iban: input.iban, receiverName: input.receiverName, shippingFee: input.shippingFee.toFixed(2) }).onDuplicateKeyUpdate({ set: { bankName: input.bankName, iban: input.iban, receiverName: input.receiverName, shippingFee: input.shippingFee.toFixed(2) } });
+  return getStoreSettings();
 }
 
 function parseJson<T>(value: string | null | undefined, fallback: T): T {
@@ -139,7 +157,7 @@ export async function deleteCatalogProduct(id: number) {
 
 type OrderInputItem = { productId: number; quantity: number; bundleId?: string; bundleTitle?: string };
 
-export function calculateOrderPricing(items: OrderInputItem[], catalog: Product[]) {
+export function calculateOrderPricing(items: OrderInputItem[], catalog: Product[], shippingFee = 5) {
   const bundleGroups = new Map<string, OrderInputItem[]>();
   let standaloneTotal = 0;
   for (const item of items) {
@@ -159,23 +177,25 @@ export function calculateOrderPricing(items: OrderInputItem[], catalog: Product[
     freeShipping ||= posterCount === 4;
     validatedBundleTitles.set(bundleId, `Custom ${posterCount}-Poster Bundle`);
   }
-  const shipping = freeShipping ? 0 : 5;
+  const shipping = freeShipping ? 0 : shippingFee;
   return { standaloneTotal, packageTotal, shipping, total: standaloneTotal + packageTotal + shipping, validatedBundleTitles };
 }
 
 export async function createPersistentOrder(input: { fullName: string; phone: string; address: string; city: string; notes?: string; paymentMethod: "bank_transfer" | "card"; total: number; items: OrderInputItem[] }) {
   const db = await getDb();
+  if (!db) throw new Error("Order service is temporarily unavailable. Please try again.");
   const reference = `SCR-${Math.floor(1000 + Math.random() * 8999)}`;
   const catalog = await getCatalogProducts();
-  const pricing = calculateOrderPricing(input.items, catalog);
+  const settings = await getStoreSettings();
+  const pricing = calculateOrderPricing(input.items, catalog, settings.shippingFee);
   const calculatedTotal = pricing.total;
   if (Math.abs(calculatedTotal - input.total) > 0.02) throw new Error("Cart total changed. Please review your order.");
-  if (!db) return { reference, total: calculatedTotal, paymentMethod: input.paymentMethod };
-  await db.insert(orders).values({ reference, fullName: input.fullName, phone: input.phone, address: input.address, city: input.city, notes: input.notes, total: calculatedTotal.toFixed(2), paymentMethod: input.paymentMethod, paymentStatus: "pending", fulfillmentStatus: "pending" });
-  const created = await db.select({ id: orders.id }).from(orders).where(eq(orders.reference, reference)).limit(1);
-  if (created[0]) {
-    await db.insert(orderItems).values(input.items.map((item) => { const product = catalog.find((candidate) => candidate.id === item.productId); return { orderId: created[0].id, productId: item.productId, title: product?.title ?? "Poster", quantity: item.quantity, unitPrice: (product?.price ?? 0).toFixed(2), bundleId: item.bundleId ?? null, bundleTitle: item.bundleId ? pricing.validatedBundleTitles.get(item.bundleId) ?? null : null }; }));
-  }
+  await db.transaction(async (tx) => {
+    await tx.insert(orders).values({ reference, fullName: input.fullName, phone: input.phone, address: input.address, city: input.city, notes: input.notes, total: calculatedTotal.toFixed(2), paymentMethod: input.paymentMethod, paymentStatus: "pending", fulfillmentStatus: "pending" });
+    const created = await tx.select({ id: orders.id }).from(orders).where(eq(orders.reference, reference)).limit(1);
+    if (!created[0]) throw new Error("Order could not be created");
+    await tx.insert(orderItems).values(input.items.map((item) => { const product = catalog.find((candidate) => candidate.id === item.productId); return { orderId: created[0].id, productId: item.productId, title: product?.title ?? "Poster", quantity: item.quantity, unitPrice: (product?.price ?? 0).toFixed(2), bundleId: item.bundleId ?? null, bundleTitle: item.bundleId ? pricing.validatedBundleTitles.get(item.bundleId) ?? null : null }; }));
+  });
   return { reference, total: calculatedTotal, paymentMethod: input.paymentMethod };
 }
 

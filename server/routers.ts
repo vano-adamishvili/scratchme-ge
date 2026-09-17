@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { categories, categoryIds } from "../shared/catalog";
 import { COOKIE_NAME } from "@shared/const";
-import { createCatalogProduct, createPersistentOrder, deleteCatalogProduct, deletePersistentOrder, getCatalogProductBySlug, getCatalogProducts, getPersistentOrders, updateCatalogProduct, updatePersistentOrder } from "./db";
+import { createCatalogProduct, createPersistentOrder, deleteCatalogProduct, deletePersistentOrder, getCatalogProductBySlug, getCatalogProducts, getPersistentOrders, getStoreSettings, updateCatalogProduct, updatePersistentOrder, updateStoreSettings } from "./db";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
@@ -40,6 +40,7 @@ export const appRouter = router({
     byCategory: publicProcedure.input(z.object({ category: z.enum(categoryIds) })).query(async ({ input }) => (await getCatalogProducts()).filter((product) => product.category === input.category)),
     bySlug: publicProcedure.input(z.object({ slug: z.string() })).query(({ input }) => getCatalogProductBySlug(input.slug)),
   }),
+  store: router({ settings: publicProcedure.query(() => getStoreSettings()) }),
   orders: router({ create: publicProcedure.input(orderInput).mutation(({ input }) => createPersistentOrder(input)) }),
   admin: router({
     overview: adminProcedure.query(async () => {
@@ -50,6 +51,8 @@ export const appRouter = router({
     updateOrder: adminProcedure.input(z.object({ id: z.number(), paymentStatus: z.enum(["pending", "paid"]).optional(), fulfillmentStatus: z.enum(["pending", "processing", "shipped", "completed"]).optional() })).mutation(({ input }) => updatePersistentOrder(input.id, { paymentStatus: input.paymentStatus, fulfillmentStatus: input.fulfillmentStatus })),
     deleteOrder: adminProcedure.input(z.object({ id: z.number().int().positive() })).mutation(({ input }) => deletePersistentOrder(input.id)),
     products: adminProcedure.query(() => getCatalogProducts()),
+    settings: adminProcedure.query(() => getStoreSettings()),
+    updateSettings: adminProcedure.input(z.object({ bankName: z.string().min(2).max(100), iban: z.string().min(8).max(64), receiverName: z.string().min(2).max(160), shippingFee: z.number().nonnegative().max(1000) })).mutation(({ input }) => updateStoreSettings(input)),
     createProduct: adminProcedure.input(productInput).mutation(({ input }) => createCatalogProduct(input)),
     updateProduct: adminProcedure.input(productInput.extend({ id: z.number() })).mutation(({ input }) => { const { id, ...data } = input; return updateCatalogProduct(id, data); }),
     deleteProduct: adminProcedure.input(z.object({ id: z.number().int().positive() })).mutation(({ input }) => deleteCatalogProduct(input.id)),
