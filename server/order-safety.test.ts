@@ -16,6 +16,7 @@ describe("createPersistentOrder database safety", () => {
       address: "Test Street 1",
       city: "თბილისი",
       paymentMethod: "bank_transfer",
+      bankAccount: "bog",
       total: 24.9,
       items: [{ productId: 1, quantity: 1 }],
     })).rejects.toThrow("Order service is temporarily unavailable");

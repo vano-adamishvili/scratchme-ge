@@ -1,0 +1,1 @@
+ALTER TABLE `orders` ADD `bankAccount` enum('tbc','bog') DEFAULT 'tbc' NOT NULL;

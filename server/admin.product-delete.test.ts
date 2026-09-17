@@ -2,13 +2,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 
-const { deleteCatalogProduct, deletePersistentOrder, getStoreSettings, updateStoreSettings } = vi.hoisted(() => ({ deleteCatalogProduct: vi.fn(), deletePersistentOrder: vi.fn(), getStoreSettings: vi.fn(), updateStoreSettings: vi.fn() }));
+const { createPersistentOrder, deleteCatalogProduct, deletePersistentOrder, getStoreSettings, updateStoreSettings } = vi.hoisted(() => ({ createPersistentOrder: vi.fn(), deleteCatalogProduct: vi.fn(), deletePersistentOrder: vi.fn(), getStoreSettings: vi.fn(), updateStoreSettings: vi.fn() }));
 
 vi.mock("./db", () => ({
   deleteCatalogProduct,
   deletePersistentOrder,
   createCatalogProduct: vi.fn(),
-  createPersistentOrder: vi.fn(),
+  createPersistentOrder,
   getCatalogProductBySlug: vi.fn(),
   getCatalogProducts: vi.fn().mockResolvedValue([]),
   getPersistentOrders: vi.fn().mockResolvedValue([]),
@@ -40,6 +40,7 @@ describe("admin.deleteProduct", () => {
   beforeEach(() => {
     deleteCatalogProduct.mockReset();
     deletePersistentOrder.mockReset();
+    createPersistentOrder.mockReset();
     getStoreSettings.mockReset();
     updateStoreSettings.mockReset();
   });
@@ -81,6 +82,15 @@ describe("admin.deleteProduct", () => {
     const adminCaller = appRouter.createCaller(createContext());
     await expect(adminCaller.admin.deleteOrder({ id: 0 })).rejects.toMatchObject({ code: "BAD_REQUEST" });
     expect(deletePersistentOrder).not.toHaveBeenCalled();
+  });
+
+  it("passes the selected bank account into order creation", async () => {
+    const input = { fullName: "Test Customer", phone: "+995555000000", address: "Test Street 1", city: "თბილისი", paymentMethod: "bank_transfer" as const, bankAccount: "bog" as const, total: 24.9, items: [{ productId: 1, quantity: 1 }] };
+    createPersistentOrder.mockResolvedValueOnce({ reference: "SCR-1234", total: 24.9, paymentMethod: "bank_transfer" });
+    const caller = appRouter.createCaller(createContext());
+
+    await expect(caller.orders.create(input)).resolves.toMatchObject({ reference: "SCR-1234" });
+    expect(createPersistentOrder).toHaveBeenCalledWith(input);
   });
 
   it("allows an admin to read and update store settings", async () => {

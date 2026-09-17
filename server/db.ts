@@ -181,7 +181,7 @@ export function calculateOrderPricing(items: OrderInputItem[], catalog: Product[
   return { standaloneTotal, packageTotal, shipping, total: standaloneTotal + packageTotal + shipping, validatedBundleTitles };
 }
 
-export async function createPersistentOrder(input: { fullName: string; phone: string; address: string; city: string; notes?: string; paymentMethod: "bank_transfer" | "card"; total: number; items: OrderInputItem[] }) {
+export async function createPersistentOrder(input: { fullName: string; phone: string; address: string; city: string; notes?: string; paymentMethod: "bank_transfer" | "card"; bankAccount: "tbc" | "bog"; total: number; items: OrderInputItem[] }) {
   const db = await getDb();
   if (!db) throw new Error("Order service is temporarily unavailable. Please try again.");
   const reference = `SCR-${Math.floor(1000 + Math.random() * 8999)}`;
@@ -191,7 +191,7 @@ export async function createPersistentOrder(input: { fullName: string; phone: st
   const calculatedTotal = pricing.total;
   if (Math.abs(calculatedTotal - input.total) > 0.02) throw new Error("Cart total changed. Please review your order.");
   await db.transaction(async (tx) => {
-    await tx.insert(orders).values({ reference, fullName: input.fullName, phone: input.phone, address: input.address, city: input.city, notes: input.notes, total: calculatedTotal.toFixed(2), paymentMethod: input.paymentMethod, paymentStatus: "pending", fulfillmentStatus: "pending" });
+    await tx.insert(orders).values({ reference, fullName: input.fullName, phone: input.phone, address: input.address, city: input.city, notes: input.notes, total: calculatedTotal.toFixed(2), paymentMethod: input.paymentMethod, bankAccount: input.bankAccount, paymentStatus: "pending", fulfillmentStatus: "pending" });
     const created = await tx.select({ id: orders.id }).from(orders).where(eq(orders.reference, reference)).limit(1);
     if (!created[0]) throw new Error("Order could not be created");
     await tx.insert(orderItems).values(input.items.map((item) => { const product = catalog.find((candidate) => candidate.id === item.productId); return { orderId: created[0].id, productId: item.productId, title: product?.title ?? "Poster", quantity: item.quantity, unitPrice: (product?.price ?? 0).toFixed(2), bundleId: item.bundleId ?? null, bundleTitle: item.bundleId ? pricing.validatedBundleTitles.get(item.bundleId) ?? null : null }; }));

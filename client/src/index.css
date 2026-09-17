@@ -200,6 +200,9 @@ button { cursor: pointer; }
 .bank-detail strong { font:500 14px 'DM Mono',monospace; }
 .iban-copy-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 .bank-copy-button { padding:7px 10px; font-size:10px; }
+.order-bank-badge { display:inline-flex; padding:6px 8px; border:1px solid var(--ink); font:500 10px 'DM Mono',monospace; white-space:nowrap; }
+.order-bank-badge.tbc { background:var(--blue); }
+.order-bank-badge.bog { background:var(--yellow); }
 
 .contact-page { padding:64px 0 96px; }
 .contact-hero { max-width:760px; padding:24px 0 54px; }

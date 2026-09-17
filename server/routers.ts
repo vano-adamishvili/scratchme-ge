@@ -8,7 +8,7 @@ import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 import { storagePut } from "./storage";
 
 const orderInput = z.object({
-  fullName: z.string().min(2), phone: z.string().min(6), address: z.string().min(4), city: z.string().min(2), notes: z.string().optional(), paymentMethod: z.enum(["bank_transfer", "card"]), total: z.number().nonnegative(), items: z.array(z.object({ productId: z.number(), quantity: z.number().int().positive(), bundleId: z.string().max(64).optional(), bundleTitle: z.string().max(180).optional() })).min(1),
+  fullName: z.string().min(2), phone: z.string().min(6), address: z.string().min(4), city: z.string().min(2), notes: z.string().optional(), paymentMethod: z.enum(["bank_transfer", "card"]), bankAccount: z.enum(["tbc", "bog"]), total: z.number().nonnegative(), items: z.array(z.object({ productId: z.number(), quantity: z.number().int().positive(), bundleId: z.string().max(64).optional(), bundleTitle: z.string().max(180).optional() })).min(1),
 });
 
 const imageUrlInput = z.string().min(1).refine((value) => value.startsWith("/manus-storage/") || /^https?:\/\//.test(value), "Use an image URL or uploaded storage path");
