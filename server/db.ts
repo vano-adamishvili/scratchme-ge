@@ -126,7 +126,7 @@ export async function getCatalogProductBySlug(slug: string) {
 }
 
 export type ProductInput = {
-  title: string; titleKa: string; subtitle: string; slug?: string; description: string; features: string[]; category: CategoryId; categories: CategoryId[]; price: number; stock: number; stockStatus: "in_stock" | "out_of_stock"; image: string; images: NonNullable<Product["images"]>; accent: string;
+  title: string; titleKa: string; subtitle: string; slug?: string; description: string; features: string[]; badge?: string; category: CategoryId; categories: CategoryId[]; price: number; stock: number; stockStatus: "in_stock" | "out_of_stock"; image: string; images: NonNullable<Product["images"]>; accent: string;
 };
 
 function slugify(value: string) { return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `poster-${Date.now()}`; }
@@ -136,14 +136,14 @@ export async function createCatalogProduct(input: ProductInput) {
   const db = await getDb();
   if (!db) return { ...input, id: Date.now(), slug: input.slug || slugify(input.title), categoryLabel: input.category, image: input.image } as Product;
   const slug = input.slug || slugify(input.title);
-  await db.insert(productTable).values({ slug, title: input.title, titleKa: input.titleKa, subtitle: input.subtitle, categoryId: input.category, categoryIds: JSON.stringify(input.categories), price: input.price.toFixed(2), description: input.description, features: JSON.stringify(input.features), imageUrl: input.image, images: JSON.stringify(input.images), accent: input.accent, stock: input.stock, stockStatus: input.stockStatus });
+  await db.insert(productTable).values({ slug, title: input.title, titleKa: input.titleKa, subtitle: input.subtitle, categoryId: input.category, categoryIds: JSON.stringify(input.categories), price: input.price.toFixed(2), description: input.description, features: JSON.stringify(input.features), imageUrl: input.image, images: JSON.stringify(input.images), accent: input.accent, stock: input.stock, stockStatus: input.stockStatus, tags: input.badge || null });
   return getCatalogProductBySlug(slug);
 }
 
 export async function updateCatalogProduct(id: number, input: ProductInput) {
   const db = await getDb();
   if (!db) return null;
-  await db.update(productTable).set({ title: input.title, titleKa: input.titleKa, subtitle: input.subtitle, slug: input.slug || slugify(input.title), categoryId: input.category, categoryIds: JSON.stringify(input.categories), price: input.price.toFixed(2), description: input.description, features: JSON.stringify(input.features), imageUrl: input.image, images: JSON.stringify(input.images), accent: input.accent, stock: input.stock, stockStatus: input.stockStatus }).where(eq(productTable.id, id));
+  await db.update(productTable).set({ title: input.title, titleKa: input.titleKa, subtitle: input.subtitle, slug: input.slug || slugify(input.title), categoryId: input.category, categoryIds: JSON.stringify(input.categories), price: input.price.toFixed(2), description: input.description, features: JSON.stringify(input.features), imageUrl: input.image, images: JSON.stringify(input.images), accent: input.accent, stock: input.stock, stockStatus: input.stockStatus, tags: input.badge || null }).where(eq(productTable.id, id));
   const result = await db.select().from(productTable).where(eq(productTable.id, id)).limit(1);
   return result[0] ? rowToProduct(result[0]) : null;
 }

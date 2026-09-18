@@ -138,6 +138,7 @@ button { cursor: pointer; }
 .detail-label { position:absolute; top:18px; left:18px; padding:8px 10px; background:var(--lime); border:1px solid var(--ink); font:500 11px 'DM Mono',monospace; text-transform:uppercase; }
 .detail-copy { padding-top:14px; }
 .detail-copy h1 { font:700 clamp(42px,6vw,78px)/.9 'Space Grotesk',sans-serif; letter-spacing:-.08em; margin:14px 0 18px; }
+.product-detail-badge { display:inline-flex; margin-top:14px; padding:7px 9px; background:var(--lime); border:1px solid var(--ink); font:500 10px 'DM Mono',monospace; text-transform:uppercase; }
 .detail-copy .georgian { color:var(--muted); font-size:17px; margin-bottom:30px; }
 .detail-copy .description { color:#5c5b53; font-size:16px; line-height:1.6; max-width:450px; }
 .detail-price { margin:30px 0; font:500 25px 'DM Mono',monospace; }
@@ -380,6 +381,7 @@ button { cursor: pointer; }
 .admin-product-actions .button { min-width:112px; }
 .admin-editor select[multiple] { min-height:132px; padding:8px; }
 .admin-editor select[multiple] option { padding:6px 8px; }
+.detail-editor-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
 .button.danger { background:#ffddd8; color:#9f2e24; border-color:#e24a3d; }
 .button.danger:hover { background:#e24a3d; color:var(--paper); box-shadow:4px 5px 0 var(--ink); }
 .admin-editor-backdrop { position:fixed; inset:0; z-index:50; display:flex; justify-content:flex-end; background:rgba(23,23,20,.58); backdrop-filter:blur(3px); }

@@ -20,6 +20,7 @@ const productInput = z.object({
   slug: z.string().optional(),
   description: z.string().min(10),
   features: z.array(z.string().min(1)).min(1),
+  badge: z.string().max(80).optional(),
   category: z.enum(categoryIds), categories: z.array(z.enum(categoryIds)).min(1),
   price: z.number().positive(),
   stock: z.number().int().nonnegative(),
