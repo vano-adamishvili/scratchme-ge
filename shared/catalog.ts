@@ -8,6 +8,7 @@ export type Product = {
   titleKa: string;
   subtitle?: string;
   category: CategoryId;
+  categories?: CategoryId[];
   categoryLabel: string;
   price: number;
   description: string;
@@ -41,6 +42,7 @@ export const getCategoryLabel = (categoryId: CategoryId, language: "ka" | "en" =
   const category = categories.find((item) => item.id === categoryId);
   return language === "ka" ? category?.labelKa ?? categoryId : category?.label ?? categoryId;
 };
+export const getCategoryLabels = (categoryIds: CategoryId[] | undefined, language: "ka" | "en" = "ka") => (categoryIds ?? []).map((id) => getCategoryLabel(id, language)).join(" · ");
 
 const img = (id: string) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=900&q=88`;
 
@@ -129,7 +131,8 @@ export const products: Product[] = [
     title: "Top 100 Cartoons",
     titleKa: "ტოპ 100 მულტფილმი",
     category: "watch",
-    categoryLabel: "Watch / ყურება",
+    categories: ["watch", "kids"],
+    categoryLabel: "Watch / ყურება · For Kids / საბავშვო",
     price: 19.9,
     description: "A bright hit of nostalgia, from Saturday mornings to forever favorites.",
     accent: "#ff8a3d",
@@ -141,7 +144,8 @@ export const products: Product[] = [
     title: "Top 30 Pixar Movies",
     titleKa: "ტოპ 30 პიქსარის მულტფილმი",
     category: "watch",
-    categoryLabel: "Watch / ყურება",
+    categories: ["watch", "kids"],
+    categoryLabel: "Watch / ყურება · For Kids / საბავშვო",
     price: 19.9,
     description: "Thirty perfect excuses to laugh, cry, and call it research.",
     accent: "#ffdb6e",
@@ -178,7 +182,8 @@ export const products: Product[] = [
     title: "35 Books for Kids Aged 6–9",
     titleKa: "35 წიგნი 6-9 წლამდე ბავშვებისთვის",
     category: "kids",
-    categoryLabel: "For Kids / საბავშვო",
+    categories: ["kids", "read"],
+    categoryLabel: "For Kids / საბავშვო · Read / კითხვა",
     price: 14.9,
     description: "Small readers, huge worlds. A playful reading adventure for curious kids.",
     accent: "#b8ee4e",
@@ -192,7 +197,8 @@ export const products: Product[] = [
     title: "35 Books for Kids Aged 9–12",
     titleKa: "35 წიგნი 9-12 წლამდე ბავშვებისთვის",
     category: "kids",
-    categoryLabel: "For Kids / საბავშვო",
+    categories: ["kids", "read"],
+    categoryLabel: "For Kids / საბავშვო · Read / კითხვა",
     price: 14.9,
     description: "A colorful challenge for big imaginations and even bigger opinions.",
     accent: "#77cdf4",

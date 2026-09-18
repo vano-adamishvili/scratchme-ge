@@ -378,6 +378,8 @@ button { cursor: pointer; }
 .admin-product-card p { margin:0 0 9px; color:var(--muted); font-size:11px; }
 .admin-product-actions { display:flex; flex-direction:column; gap:7px; align-items:stretch; }
 .admin-product-actions .button { min-width:112px; }
+.admin-editor select[multiple] { min-height:132px; padding:8px; }
+.admin-editor select[multiple] option { padding:6px 8px; }
 .button.danger { background:#ffddd8; color:#9f2e24; border-color:#e24a3d; }
 .button.danger:hover { background:#e24a3d; color:var(--paper); box-shadow:4px 5px 0 var(--ink); }
 .admin-editor-backdrop { position:fixed; inset:0; z-index:50; display:flex; justify-content:flex-end; background:rgba(23,23,20,.58); backdrop-filter:blur(3px); }

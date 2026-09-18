@@ -10,7 +10,7 @@ export default function Home() {
   const { language, t } = useI18n();
   const { catalogProducts, startBundle } = useStore();
   const [selected, setSelected] = useState<CategoryId | "all">("all");
-  const filtered = useMemo(() => selected === "all" ? catalogProducts : catalogProducts.filter((product) => product.category === selected), [catalogProducts, selected]);
+  const filtered = useMemo(() => selected === "all" ? catalogProducts : catalogProducts.filter((product) => (product.categories ?? [product.category]).includes(selected)), [catalogProducts, selected]);
   useEffect(() => {
     const id = window.location.hash.slice(1);
     if (!id) return;

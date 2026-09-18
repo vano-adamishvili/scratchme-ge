@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import { ArrowRight, Check, Heart, PackagePlus, ShoppingBag, Sparkles, X } from "lucide-react";
 import { useStore, type BundleTier } from "@/lib/store";
 import { useI18n } from "@/lib/i18n";
-import { formatPrice, getCategoryLabel, type Product } from "@shared/catalog";
+import { formatPrice, getCategoryLabels, type Product } from "@shared/catalog";
 
 export function SiteNav() {
   const { cartCount } = useStore();
@@ -40,7 +40,7 @@ export function Footer() {
 export function ProductCard({ product }: { product: Product }) {
   const { addToCart, showToast, bundleDraft, toggleBundleProduct } = useStore();
   const { language, productTitle, t } = useI18n();
-  const category = getCategoryLabel(product.category, language);
+  const category = getCategoryLabels(product.categories ?? [product.category], language);
   const outOfStock = product.stockStatus === "out_of_stock" || product.stock === 0;
   const bundleMode = bundleDraft.tier !== null;
   const selected = bundleDraft.productIds.includes(product.id);

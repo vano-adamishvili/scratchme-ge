@@ -20,7 +20,7 @@ const productInput = z.object({
   slug: z.string().optional(),
   description: z.string().min(10),
   features: z.array(z.string().min(1)).min(1),
-  category: z.enum(categoryIds),
+  category: z.enum(categoryIds), categories: z.array(z.enum(categoryIds)).min(1),
   price: z.number().positive(),
   stock: z.number().int().nonnegative(),
   stockStatus: z.enum(["in_stock", "out_of_stock"]),
@@ -37,7 +37,7 @@ export const appRouter = router({
   }),
   catalog: router({
     list: publicProcedure.query(async () => ({ products: await getCatalogProducts(), categories })),
-    byCategory: publicProcedure.input(z.object({ category: z.enum(categoryIds) })).query(async ({ input }) => (await getCatalogProducts()).filter((product) => product.category === input.category)),
+    byCategory: publicProcedure.input(z.object({ category: z.enum(categoryIds) })).query(async ({ input }) => (await getCatalogProducts()).filter((product) => (product.categories ?? [product.category]).includes(input.category))),
     bySlug: publicProcedure.input(z.object({ slug: z.string() })).query(({ input }) => getCatalogProductBySlug(input.slug)),
   }),
   store: router({ settings: publicProcedure.query(() => getStoreSettings()) }),

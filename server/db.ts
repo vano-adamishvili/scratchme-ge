@@ -61,14 +61,16 @@ function parseJson<T>(value: string | null | undefined, fallback: T): T {
 
 function rowToProduct(row: typeof productTable.$inferSelect): Product {
   const gallery = parseJson(row.images, [] as Product["images"]);
+  const productCategories = parseJson(row.categoryIds, [row.categoryId as CategoryId] as CategoryId[]);
   return {
     id: row.id,
     slug: row.slug,
     title: row.title,
     titleKa: row.titleKa,
     subtitle: row.subtitle,
-    category: row.categoryId as CategoryId,
-    categoryLabel: categories.find((category) => category.id === row.categoryId)?.label ?? row.categoryId,
+    category: productCategories[0] ?? row.categoryId as CategoryId,
+    categories: productCategories,
+    categoryLabel: productCategories.map((id) => categories.find((category) => category.id === id)?.label ?? id).join(" / "),
     price: Number(row.price),
     description: row.description,
     features: parseJson(row.features, [] as string[]),
@@ -95,6 +97,7 @@ export async function ensureCatalogSeeded() {
       titleKa: product.titleKa,
       subtitle: product.subtitle ?? "",
       categoryId: product.category,
+      categoryIds: JSON.stringify(product.categories ?? [product.category]),
       price: product.price.toFixed(2),
       description: product.description,
       features: JSON.stringify(product.features ?? ["სქელი მქრქალი ქაღალდი", "გადასაფხეკი ზედაპირი", "საჩუქრად მზად" ]),
@@ -123,7 +126,7 @@ export async function getCatalogProductBySlug(slug: string) {
 }
 
 export type ProductInput = {
-  title: string; titleKa: string; subtitle: string; slug?: string; description: string; features: string[]; category: CategoryId; price: number; stock: number; stockStatus: "in_stock" | "out_of_stock"; image: string; images: NonNullable<Product["images"]>; accent: string;
+  title: string; titleKa: string; subtitle: string; slug?: string; description: string; features: string[]; category: CategoryId; categories: CategoryId[]; price: number; stock: number; stockStatus: "in_stock" | "out_of_stock"; image: string; images: NonNullable<Product["images"]>; accent: string;
 };
 
 function slugify(value: string) { return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `poster-${Date.now()}`; }
@@ -133,14 +136,14 @@ export async function createCatalogProduct(input: ProductInput) {
   const db = await getDb();
   if (!db) return { ...input, id: Date.now(), slug: input.slug || slugify(input.title), categoryLabel: input.category, image: input.image } as Product;
   const slug = input.slug || slugify(input.title);
-  await db.insert(productTable).values({ slug, title: input.title, titleKa: input.titleKa, subtitle: input.subtitle, categoryId: input.category, price: input.price.toFixed(2), description: input.description, features: JSON.stringify(input.features), imageUrl: input.image, images: JSON.stringify(input.images), accent: input.accent, stock: input.stock, stockStatus: input.stockStatus });
+  await db.insert(productTable).values({ slug, title: input.title, titleKa: input.titleKa, subtitle: input.subtitle, categoryId: input.category, categoryIds: JSON.stringify(input.categories), price: input.price.toFixed(2), description: input.description, features: JSON.stringify(input.features), imageUrl: input.image, images: JSON.stringify(input.images), accent: input.accent, stock: input.stock, stockStatus: input.stockStatus });
   return getCatalogProductBySlug(slug);
 }
 
 export async function updateCatalogProduct(id: number, input: ProductInput) {
   const db = await getDb();
   if (!db) return null;
-  await db.update(productTable).set({ title: input.title, titleKa: input.titleKa, subtitle: input.subtitle, slug: input.slug || slugify(input.title), categoryId: input.category, price: input.price.toFixed(2), description: input.description, features: JSON.stringify(input.features), imageUrl: input.image, images: JSON.stringify(input.images), accent: input.accent, stock: input.stock, stockStatus: input.stockStatus }).where(eq(productTable.id, id));
+  await db.update(productTable).set({ title: input.title, titleKa: input.titleKa, subtitle: input.subtitle, slug: input.slug || slugify(input.title), categoryId: input.category, categoryIds: JSON.stringify(input.categories), price: input.price.toFixed(2), description: input.description, features: JSON.stringify(input.features), imageUrl: input.image, images: JSON.stringify(input.images), accent: input.accent, stock: input.stock, stockStatus: input.stockStatus }).where(eq(productTable.id, id));
   const result = await db.select().from(productTable).where(eq(productTable.id, id)).limit(1);
   return result[0] ? rowToProduct(result[0]) : null;
 }
