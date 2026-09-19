@@ -23,6 +23,7 @@ type StoreContextValue = {
   hasFreeShippingBundle: boolean;
   progressCount: number;
   bundleDraft: BundleDraft;
+  giftStock: Record<BundleGift, number>;
   selectedBundleProducts: Product[];
   toast: string | null;
   addToCart: (product: Product) => void;
@@ -53,6 +54,7 @@ function readJson<T>(key: string, fallback: T): T {
 export function StoreProvider({ children }: { children: ReactNode }) {
   const catalog = trpc.catalog.list.useQuery(undefined, { staleTime: 30_000 });
   const settings = trpc.store.settings.useQuery(undefined, { staleTime: 30_000 });
+  const giftStock = { stickers: settings.data?.giftStickersStock ?? 100, magnet: settings.data?.giftMagnetStock ?? 100, pin: settings.data?.giftPinStock ?? 100 };
   const catalogProducts = catalog.data?.products ?? seedProducts;
   const [cart, setCart] = useState<CartMap>(() => readJson("scratchme-cart-v2", readJson("scratchme-cart", {})));
   const [bundles, setBundles] = useState<CartBundle[]>(() => readJson("scratchme-cart-bundles", []));
@@ -114,10 +116,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   return <StoreContext.Provider value={{
     cart, catalogProducts, cartItems, cartBundles, cartCount, standaloneCount, retailTotal, posterTotal, shipping, total, savings,
-    hasFreeShippingBundle, progressCount, bundleDraft, selectedBundleProducts, toast,
+    hasFreeShippingBundle, progressCount, bundleDraft, selectedBundleProducts, giftStock, toast,
     addToCart(product) { setCart((current) => ({ ...current, [product.id]: (current[product.id] ?? 0) + 1 })); },
     startBundle,
-    setBundleGift(gift) { setBundleDraft((current) => ({ ...current, gift: current.tier === 4 ? gift : null })); },
+    setBundleGift(gift) { if (giftStock[gift] <= 0) return; setBundleDraft((current) => ({ ...current, gift: current.tier === 4 ? gift : null })); },
     toggleBundleProduct,
     cancelBundle() { setBundleDraft(EMPTY_DRAFT); },
     addSelectedBundle,

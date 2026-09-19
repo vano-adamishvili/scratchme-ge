@@ -353,6 +353,9 @@ button { cursor: pointer; }
 .gallery-thumb.active { border-color:var(--ink); box-shadow:3px 3px 0 var(--lime); }
 .gallery-thumb img { width:100%; height:102px; object-fit:cover; object-position:center; display:block; flex:none; }
 .gallery-thumb span { display:block; padding:8px; font:500 10px/1.3 'DM Mono',monospace; }
+.field-help { margin: -4px 0 10px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+.bundle-gift-picker label.disabled { opacity:.45; cursor:not-allowed; }
+.bundle-gift-picker label small { color:var(--muted); font:10px 'DM Mono',monospace; }
 .product-features { list-style:none; padding:0; margin:24px 0; display:grid; gap:9px; color:#5c5b53; font-size:13px; }
 .product-features li { display:flex; align-items:center; gap:8px; }
 .stock-pill { display:inline-flex; padding:6px 8px; background:var(--lime); border:1px solid var(--ink); font:500 10px 'DM Mono',monospace; text-transform:uppercase; }
@@ -534,7 +537,7 @@ button { cursor: pointer; }
 .checkout-bundle strong, .checkout-bundle span { display:block; }
 .checkout-bundle strong { margin-bottom:8px; font-size:12px; }
 .checkout-bundle span { padding:3px 0; color:var(--muted); font-size:10px; }
-.checkout-bundle .checkout-bundle-gift { color:#4a6900; font-weight:600; }
+.checkout-bundle .checkout-bundle-gift, .checkout-bundle .checkout-gift-summary { color:#4a6900; font-weight:600; }
 .checkout-bundle b { position:absolute; top:12px; right:12px; font:500 11px 'DM Mono',monospace; }
 .admin-order-bundle { margin:5px 0 10px; padding-left:8px; border-left:3px solid var(--lime); }
 .admin-order-bundle strong { display:block; font-size:11px; margin-bottom:4px; }

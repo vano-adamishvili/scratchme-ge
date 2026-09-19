@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, gte, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { categories as categoryTable, orderItems, orders, products as productTable, storeSettings, users, type InsertUser } from "../drizzle/schema";
 import { bundleGiftLabels, bundlePrice, categories, getProductGallery, products as seedProducts, type BundleGift, type CategoryId, type Product } from "../shared/catalog";
@@ -36,21 +36,21 @@ export async function getUserByOpenId(openId: string) {
   return result[0];
 }
 
-export type StoreSettings = { bankName: string; iban: string; receiverName: string; secondBankName: string; secondIban: string; secondReceiverName: string; shippingFee: number };
-const defaultStoreSettings: StoreSettings = { bankName: "TBC Bank", iban: "", receiverName: "", secondBankName: "საქართველოს ბანკი", secondIban: "", secondReceiverName: "", shippingFee: 5 };
+export type StoreSettings = { bankName: string; iban: string; receiverName: string; secondBankName: string; secondIban: string; secondReceiverName: string; shippingFee: number; giftStickersStock: number; giftMagnetStock: number; giftPinStock: number };
+const defaultStoreSettings: StoreSettings = { bankName: "TBC Bank", iban: "", receiverName: "", secondBankName: "საქართველოს ბანკი", secondIban: "", secondReceiverName: "", shippingFee: 5, giftStickersStock: 100, giftMagnetStock: 100, giftPinStock: 100 };
 
 export async function getStoreSettings(): Promise<StoreSettings> {
   const db = await getDb();
   if (!db) return defaultStoreSettings;
   const rows = await db.select().from(storeSettings).where(eq(storeSettings.id, 1)).limit(1);
   const row = rows[0];
-  return row ? { bankName: row.bankName, iban: row.iban, receiverName: row.receiverName, secondBankName: row.secondBankName, secondIban: row.secondIban, secondReceiverName: row.secondReceiverName, shippingFee: Number(row.shippingFee) } : defaultStoreSettings;
+  return row ? { bankName: row.bankName, iban: row.iban, receiverName: row.receiverName, secondBankName: row.secondBankName, secondIban: row.secondIban, secondReceiverName: row.secondReceiverName, shippingFee: Number(row.shippingFee), giftStickersStock: row.giftStickersStock, giftMagnetStock: row.giftMagnetStock, giftPinStock: row.giftPinStock } : defaultStoreSettings;
 }
 
 export async function updateStoreSettings(input: StoreSettings) {
   const db = await getDb();
   if (!db) throw new Error("Store settings service is temporarily unavailable");
-  await db.insert(storeSettings).values({ id: 1, bankName: input.bankName, iban: input.iban, receiverName: input.receiverName, secondBankName: input.secondBankName, secondIban: input.secondIban, secondReceiverName: input.secondReceiverName, shippingFee: input.shippingFee.toFixed(2) }).onDuplicateKeyUpdate({ set: { bankName: input.bankName, iban: input.iban, receiverName: input.receiverName, secondBankName: input.secondBankName, secondIban: input.secondIban, secondReceiverName: input.secondReceiverName, shippingFee: input.shippingFee.toFixed(2) } });
+  await db.insert(storeSettings).values({ id: 1, bankName: input.bankName, iban: input.iban, receiverName: input.receiverName, secondBankName: input.secondBankName, secondIban: input.secondIban, secondReceiverName: input.secondReceiverName, shippingFee: input.shippingFee.toFixed(2), giftStickersStock: input.giftStickersStock, giftMagnetStock: input.giftMagnetStock, giftPinStock: input.giftPinStock }).onDuplicateKeyUpdate({ set: { bankName: input.bankName, iban: input.iban, receiverName: input.receiverName, secondBankName: input.secondBankName, secondIban: input.secondIban, secondReceiverName: input.secondReceiverName, shippingFee: input.shippingFee.toFixed(2), giftStickersStock: input.giftStickersStock, giftMagnetStock: input.giftMagnetStock, giftPinStock: input.giftPinStock } });
   return getStoreSettings();
 }
 
@@ -196,7 +196,14 @@ export async function createPersistentOrder(input: { fullName: string; phone: st
   const pricing = calculateOrderPricing(input.items, catalog, settings.shippingFee);
   const calculatedTotal = pricing.total;
   if (Math.abs(calculatedTotal - input.total) > 0.02) throw new Error("Cart total changed. Please review your order.");
+  const gifts = new Map<BundleGift, number>();
+  for (const item of input.items) if (item.bundleGift) gifts.set(item.bundleGift, (gifts.get(item.bundleGift) ?? 0) + item.quantity);
   await db.transaction(async (tx) => {
+    for (const [gift, quantity] of Array.from(gifts.entries())) {
+      const column = gift === "stickers" ? storeSettings.giftStickersStock : gift === "magnet" ? storeSettings.giftMagnetStock : storeSettings.giftPinStock;
+      const result = await tx.update(storeSettings).set({ [column.name]: sql`${column} - ${quantity}` }).where(and(eq(storeSettings.id, 1), gte(column, quantity)));
+      if (!result[0]?.affectedRows) throw new Error("The selected gift is out of stock. Please choose another gift.");
+    }
     await tx.insert(orders).values({ reference, fullName: input.fullName, phone: input.phone, address: input.address, city: input.city, notes: input.notes, total: calculatedTotal.toFixed(2), paymentMethod: input.paymentMethod, bankAccount: input.bankAccount, paymentStatus: "pending", fulfillmentStatus: "pending" });
     const created = await tx.select({ id: orders.id }).from(orders).where(eq(orders.reference, reference)).limit(1);
     if (!created[0]) throw new Error("Order could not be created");

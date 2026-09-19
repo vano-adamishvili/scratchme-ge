@@ -50,6 +50,13 @@
       "when": 1789709820310,
       "tag": "0006_true_captain_cross",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1789811391542,
+      "tag": "0007_flashy_cargill",
+      "breakpoints": true
     }
   ]
 }
