@@ -1,12 +1,12 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { bundlePrice, formatPrice, products as seedProducts, type Product } from "@shared/catalog";
+import { bundlePrice, formatPrice, products as seedProducts, type BundleGift, type Product } from "@shared/catalog";
 import { trpc } from "@/lib/trpc";
 
 export type BundleTier = 2 | 3 | 4;
 type CartMap = Record<number, number>;
-export type CartBundle = { id: string; tier: BundleTier; productIds: number[]; createdAt: number };
+export type CartBundle = { id: string; tier: BundleTier; productIds: number[]; gift?: BundleGift; createdAt: number };
 export type ResolvedCartBundle = CartBundle & { products: Product[]; price: number };
-export type BundleDraft = { tier: BundleTier | null; productIds: number[] };
+export type BundleDraft = { tier: BundleTier | null; productIds: number[]; gift: BundleGift | null };
 
 type StoreContextValue = {
   cart: CartMap;
@@ -27,6 +27,7 @@ type StoreContextValue = {
   toast: string | null;
   addToCart: (product: Product) => void;
   startBundle: (tier: BundleTier) => void;
+  setBundleGift: (gift: BundleGift) => void;
   toggleBundleProduct: (product: Product) => void;
   cancelBundle: () => void;
   addSelectedBundle: () => boolean;
@@ -37,7 +38,7 @@ type StoreContextValue = {
   showToast: (message: string) => void;
 };
 
-const EMPTY_DRAFT: BundleDraft = { tier: null, productIds: [] };
+const EMPTY_DRAFT: BundleDraft = { tier: null, productIds: [], gift: null };
 const StoreContext = createContext<StoreContextValue | null>(null);
 
 function readJson<T>(key: string, fallback: T): T {
@@ -86,13 +87,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const bundleTotal = cartBundles.reduce((sum, bundle) => sum + bundle.price, 0);
   const posterTotal = standaloneRetail + bundleTotal;
   const savings = Math.max(0, retailTotal - posterTotal);
-  const hasFreeShippingBundle = cartBundles.some((bundle) => bundle.tier === 4);
+  const hasFreeShippingBundle = cartBundles.some((bundle) => bundle.tier >= 3);
   const shipping = cartCount === 0 || hasFreeShippingBundle ? 0 : (settings.data?.shippingFee ?? 5);
   const total = posterTotal + shipping;
   const largestBundle = cartBundles.reduce<BundleTier | 0>((largest, bundle) => Math.max(largest, bundle.tier) as BundleTier, 0);
   const progressCount = largestBundle || Math.min(standaloneCount, 4);
 
-  const startBundle = (tier: BundleTier) => setBundleDraft((current) => ({ tier, productIds: current.tier === tier ? current.productIds.slice(0, tier) : [] }));
+  const startBundle = (tier: BundleTier) => setBundleDraft((current) => ({ tier, productIds: current.tier === tier ? current.productIds.slice(0, tier) : [], gift: tier === 4 && current.tier === 4 ? current.gift : null }));
   const toggleBundleProduct = (product: Product) => {
     if (!bundleDraft.tier || product.stockStatus === "out_of_stock" || product.stock === 0) return;
     setBundleDraft((current) => {
@@ -104,8 +105,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     });
   };
   const addSelectedBundle = () => {
-    if (!bundleDraft.tier || bundleDraft.productIds.length !== bundleDraft.tier) return false;
-    const bundle: CartBundle = { id: crypto.randomUUID(), tier: bundleDraft.tier, productIds: [...bundleDraft.productIds], createdAt: Date.now() };
+    if (!bundleDraft.tier || bundleDraft.productIds.length !== bundleDraft.tier || (bundleDraft.tier === 4 && !bundleDraft.gift)) return false;
+    const bundle: CartBundle = { id: crypto.randomUUID(), tier: bundleDraft.tier, productIds: [...bundleDraft.productIds], gift: bundleDraft.gift ?? undefined, createdAt: Date.now() };
     setBundles((current) => [...current, bundle]);
     setBundleDraft(EMPTY_DRAFT);
     return true;
@@ -116,6 +117,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     hasFreeShippingBundle, progressCount, bundleDraft, selectedBundleProducts, toast,
     addToCart(product) { setCart((current) => ({ ...current, [product.id]: (current[product.id] ?? 0) + 1 })); },
     startBundle,
+    setBundleGift(gift) { setBundleDraft((current) => ({ ...current, gift: current.tier === 4 ? gift : null })); },
     toggleBundleProduct,
     cancelBundle() { setBundleDraft(EMPTY_DRAFT); },
     addSelectedBundle,

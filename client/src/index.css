@@ -514,6 +514,11 @@ button { cursor: pointer; }
 .bundle-dock-actions span, .bundle-dock-actions small { display:block; color:#aaa79d; font-size:10px; }
 .bundle-dock-actions strong { display:block; margin:4px 0; color:var(--lime); font:600 16px 'DM Mono',monospace; }
 .bundle-dock-actions .button { white-space:nowrap; }
+.bundle-gift-picker { display:grid; gap:6px; padding:10px; border:1px solid rgba(247,245,238,.28); background:rgba(247,245,238,.06); color:var(--paper); }
+.bundle-gift-picker strong { font-size:11px; color:var(--lime); }
+.bundle-gift-picker label { display:flex; align-items:center; gap:7px; color:#dddacf; font-size:11px; cursor:pointer; }
+.bundle-gift-picker input { accent-color:var(--lime); }
+.bundle-gift-summary { margin:10px 0 0; padding:8px 10px; background:var(--lime); border:1px solid var(--ink); color:var(--ink); font:600 11px/1.35 'DM Mono',monospace; }
 @keyframes bundle-dock-in { from { opacity:0; transform:translate(-50%,16px) scale(.98); } to { opacity:1; transform:translate(-50%,0) scale(1); } }
 
 .cart-bundle-item { padding:20px 0; border-bottom:1px solid var(--line); }
@@ -529,6 +534,7 @@ button { cursor: pointer; }
 .checkout-bundle strong, .checkout-bundle span { display:block; }
 .checkout-bundle strong { margin-bottom:8px; font-size:12px; }
 .checkout-bundle span { padding:3px 0; color:var(--muted); font-size:10px; }
+.checkout-bundle .checkout-bundle-gift { color:#4a6900; font-weight:600; }
 .checkout-bundle b { position:absolute; top:12px; right:12px; font:500 11px 'DM Mono',monospace; }
 .admin-order-bundle { margin:5px 0 10px; padding-left:8px; border-left:3px solid var(--lime); }
 .admin-order-bundle strong { display:block; font-size:11px; margin-bottom:4px; }
@@ -550,6 +556,7 @@ button { cursor: pointer; }
   .bundle-preview-slot img { width:36px; height:49px; }
   .bundle-dock-actions { align-items:flex-end; }
   .bundle-dock-actions .button { min-height:43px; padding:0 13px; font-size:11px; }
+  .bundle-gift-picker { margin:0; }
   .cart-bundle-members { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .cart-bundle-head h3 { font-size:19px; }
 }

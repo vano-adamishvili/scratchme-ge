@@ -22,6 +22,14 @@ export type Product = {
   popular?: boolean;
 };
 
+export type BundleGift = "stickers" | "magnet" | "pin";
+
+export const bundleGiftLabels: Record<BundleGift, { ka: string; en: string }> = {
+  stickers: { ka: "რენდომ 10 სტიკერი", en: "Random set of 10 stickers" },
+  magnet: { ka: "თემატური მისაკრობი მაგნიტი", en: "Themed magnetic sticker" },
+  pin: { ka: "თემატური დასამაგრებელი პინი", en: "Themed pin" },
+};
+
 export type GalleryImage = {
   url: string;
   labelKa: string;
@@ -54,7 +62,7 @@ export const products: Product[] = [
     titleKa: "ტოპ 100 ადგილი საქართველოში",
     category: "travel",
     categoryLabel: "Travel / მოგზაურობა",
-    price: 19.9,
+    price: 24.9,
     description: "A tactile bucket list for slow roads, wild valleys, and the places that make Georgia feel endless.",
     accent: "#ff5d4f",
     image: img("photo-1548013146-72479768bada"),
@@ -68,7 +76,7 @@ export const products: Product[] = [
     titleKa: "ტოპ 100 ადგილი ევროპაში",
     category: "travel",
     categoryLabel: "Travel / მოგზაურობა",
-    price: 19.9,
+    price: 24.9,
     description: "From hidden beaches to city corners worth missing your train for.",
     accent: "#ffcb45",
     image: img("photo-1502602898657-3e91760cbb34"),
@@ -81,7 +89,7 @@ export const products: Product[] = [
     titleKa: "ტოპ 100 ადგილი მსოფლიოში",
     category: "travel",
     categoryLabel: "Travel / მოგზაურობა",
-    price: 19.9,
+    price: 24.9,
     description: "The big one. A colorful, scratchable reminder that the map is still yours.",
     accent: "#c4ef38",
     image: img("photo-1500530855697-b586d89ba3ee"),
@@ -94,7 +102,7 @@ export const products: Product[] = [
     titleKa: "ტოპ 100 ფილმი",
     category: "watch",
     categoryLabel: "Watch / ყურება",
-    price: 19.9,
+    price: 24.9,
     description: "A film lover's wall of tiny dares. Scratch, watch, repeat.",
     accent: "#b7a0ff",
     image: img("photo-1489599849927-2ee91cede3ba"),
@@ -108,7 +116,7 @@ export const products: Product[] = [
     titleKa: "ტოპ 100 ანიმე",
     category: "watch",
     categoryLabel: "Watch / ყურება",
-    price: 19.9,
+    price: 24.9,
     description: "A hundred worlds, heroes, villains, and late-night marathons.",
     accent: "#ff8dd4",
     image: img("photo-1578632767115-351597cf2477"),
@@ -120,7 +128,7 @@ export const products: Product[] = [
     titleKa: "ტოპ 100 ტვ შოუ",
     category: "watch",
     categoryLabel: "Watch / ყურება",
-    price: 19.9,
+    price: 24.9,
     description: "For the shows that became personality traits.",
     accent: "#73d8ff",
     image: img("photo-1522869635100-9f4c5e86aa37"),
@@ -133,7 +141,7 @@ export const products: Product[] = [
     category: "watch",
     categories: ["watch", "kids"],
     categoryLabel: "Watch / ყურება · For Kids / საბავშვო",
-    price: 19.9,
+    price: 24.9,
     description: "A bright hit of nostalgia, from Saturday mornings to forever favorites.",
     accent: "#ff8a3d",
     image: img("photo-1608889825103-eb5ed706fc64"),
@@ -146,7 +154,7 @@ export const products: Product[] = [
     category: "watch",
     categories: ["watch", "kids"],
     categoryLabel: "Watch / ყურება · For Kids / საბავშვო",
-    price: 19.9,
+    price: 24.9,
     description: "Thirty perfect excuses to laugh, cry, and call it research.",
     accent: "#ffdb6e",
     image: img("photo-1594736797933-d0501ba2fe65"),
@@ -158,7 +166,7 @@ export const products: Product[] = [
     titleKa: "ტოპ 100 წიგნი",
     category: "read",
     categoryLabel: "Read / კითხვა",
-    price: 19.9,
+    price: 24.9,
     description: "A lifetime of rabbit holes, dog-eared pages, and one more chapter.",
     accent: "#a9e6d1",
     image: img("photo-1495446815901-a7297e633e8d"),
@@ -171,7 +179,7 @@ export const products: Product[] = [
     titleKa: "ტოპ 100 წიგნი თინეიჯერებისთვის",
     category: "read",
     categoryLabel: "Read / კითხვა",
-    price: 19.9,
+    price: 24.9,
     description: "The stories that meet you halfway through becoming yourself.",
     accent: "#f8a9c4",
     image: img("photo-1512820790803-83ca734da794"),
@@ -184,7 +192,7 @@ export const products: Product[] = [
     category: "kids",
     categories: ["kids", "read"],
     categoryLabel: "For Kids / საბავშვო · Read / კითხვა",
-    price: 14.9,
+    price: 24.9,
     description: "Small readers, huge worlds. A playful reading adventure for curious kids.",
     accent: "#b8ee4e",
     image: img("photo-1606092195730-5d7b9af1efc5"),
@@ -199,7 +207,7 @@ export const products: Product[] = [
     category: "kids",
     categories: ["kids", "read"],
     categoryLabel: "For Kids / საბავშვო · Read / კითხვა",
-    price: 14.9,
+    price: 24.9,
     description: "A colorful challenge for big imaginations and even bigger opinions.",
     accent: "#77cdf4",
     image: img("photo-1550745165-9bc0b252726f"),
@@ -217,15 +225,15 @@ export const getProductGallery = (product: Product): GalleryImage[] => product.i
 export const formatPrice = (amount: number) => `${amount.toFixed(2)} ₾`;
 
 export const bundlePrice = (count: number) => {
-  if (count === 2) return 29.9;
-  if (count === 3) return 39.9;
-  if (count === 4) return 49.9;
+  if (count === 2) return 39.9;
+  if (count === 3) return 49.9;
+  if (count === 4) return 59.9;
   return null;
 };
 
 export const bundleLabel = (count: number) => {
   if (count === 2) return "2 posters";
-  if (count === 3) return "3 posters";
-  if (count === 4) return "4 posters + free shipping";
+  if (count === 3) return "3 posters + free shipping";
+  if (count === 4) return "4 posters + free shipping + gift";
   return "single poster";
 };

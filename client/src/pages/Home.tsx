@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowRight, Check, MapPin, PackageCheck, SlidersHorizontal, Sparkles } from "lucide-react";
 import { Link } from "wouter";
-import { BundleBuilder, Footer, ProductCard, SiteNav } from "@/components/storefront";
+import { BundleBuilder, BundleSelectionDock, Footer, ProductCard, SiteNav } from "@/components/storefront";
 import { useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 import { categories, type CategoryId } from "@shared/catalog";
@@ -31,5 +31,5 @@ export default function Home() {
     <section className="section bundle-feature" id="bundle-builder"><div className="container"><BundleBuilder /></div></section>
 
     <section className="section" id="how-it-works" style={{ paddingTop: 34 }}><div className="container"><div className="section-head"><div><div className="eyebrow">03 / {t("trust.eyebrow")}</div><h2>{t("trust.title")}</h2></div><p>{t("section.pickBody")}</p></div><div className="trust-grid"><div className="trust-card" style={{ background: "var(--blue)" }}><MapPin size={22} /><b>{t("trust.pick")}</b><span>{t("trust.pickBody")}</span></div><div className="trust-card" style={{ background: "var(--yellow)" }}><Sparkles size={22} /><b>{t("trust.scratch")}</b><span>{t("trust.scratchBody")}</span></div><div className="trust-card" style={{ background: "var(--lilac)" }}><Check size={22} /><b>{t("trust.goals")}</b><span>{t("trust.goalsBody")}</span></div></div><div className="trust-badges"><span><PackageCheck size={16} /> {t("trust.delivery")}</span><span><Sparkles size={16} /> {t("trust.gifting")}</span><span><Check size={16} /> {t("trust.quality")}</span></div></div></section>
-  </main><Footer /></div>;
+  </main><BundleSelectionDock /><Footer /></div>;
 }

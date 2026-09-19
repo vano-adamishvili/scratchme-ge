@@ -32,7 +32,7 @@ export default function CheckoutPage() {
     if (!form.fullName || !form.phone || !form.address || !form.city) { showToast(t("toast.required")); return; }
     const items = [
       ...cartItems.map(({ product, quantity }) => ({ productId: product.id, quantity })),
-      ...cartBundles.flatMap((bundle) => bundle.products.map((product) => ({ productId: product.id, quantity: 1, bundleId: bundle.id, bundleTitle: `Custom ${bundle.tier}-Poster Bundle` }))),
+      ...cartBundles.flatMap((bundle) => bundle.products.map((product) => ({ productId: product.id, quantity: 1, bundleId: bundle.id, bundleTitle: `Custom ${bundle.tier}-Poster Bundle`, bundleGift: bundle.gift }))),
     ];
     createOrder.mutate({ fullName: form.fullName, phone: form.phone, address: form.address, city: form.city, notes: form.notes, paymentMethod, bankAccount: bankChoice, total, items }, { onSuccess: (result) => { setConfirmation(result.reference); clearCart(); } });
   };

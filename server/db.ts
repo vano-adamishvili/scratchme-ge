@@ -1,7 +1,7 @@
 import { desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { categories as categoryTable, orderItems, orders, products as productTable, storeSettings, users, type InsertUser } from "../drizzle/schema";
-import { bundlePrice, categories, getProductGallery, products as seedProducts, type CategoryId, type Product } from "../shared/catalog";
+import { bundleGiftLabels, bundlePrice, categories, getProductGallery, products as seedProducts, type BundleGift, type CategoryId, type Product } from "../shared/catalog";
 import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -158,7 +158,7 @@ export async function deleteCatalogProduct(id: number) {
   return { deleted: true };
 }
 
-type OrderInputItem = { productId: number; quantity: number; bundleId?: string; bundleTitle?: string };
+type OrderInputItem = { productId: number; quantity: number; bundleId?: string; bundleTitle?: string; bundleGift?: BundleGift };
 
 export function calculateOrderPricing(items: OrderInputItem[], catalog: Product[], shippingFee = 5) {
   const bundleGroups = new Map<string, OrderInputItem[]>();
@@ -177,8 +177,11 @@ export function calculateOrderPricing(items: OrderInputItem[], catalog: Product[
     const price = bundlePrice(posterCount);
     if (!price || items.some((item) => item.quantity !== 1)) throw new Error("Invalid custom bundle configuration");
     packageTotal += price;
-    freeShipping ||= posterCount === 4;
-    validatedBundleTitles.set(bundleId, `Custom ${posterCount}-Poster Bundle`);
+    freeShipping ||= posterCount >= 3;
+    const gift = posterCount === 4 ? items.find((item) => item.bundleGift)?.bundleGift : undefined;
+    if (posterCount === 4 && !gift) throw new Error("Choose a gift for the four-poster bundle");
+    const giftLabel = gift ? ` — Gift: ${bundleGiftLabels[gift].en}` : "";
+    validatedBundleTitles.set(bundleId, `Custom ${posterCount}-Poster Bundle${giftLabel}`);
   }
   const shipping = freeShipping ? 0 : shippingFee;
   return { standaloneTotal, packageTotal, shipping, total: standaloneTotal + packageTotal + shipping, validatedBundleTitles };
