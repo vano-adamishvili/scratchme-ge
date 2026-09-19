@@ -28,7 +28,7 @@ button { cursor: pointer; }
 .text-balance { text-wrap: balance; }
 
 .site-shell { min-height: 100vh; background: var(--paper); }
-.site-nav { border-bottom: 1px solid var(--line); background: rgba(247,245,238,.92); backdrop-filter: blur(12px); }
+.site-nav { position:sticky; top:0; z-index:40; border-bottom:1px solid var(--line); background:rgba(247,245,238,.92); backdrop-filter:blur(12px); }
 .nav-inner { min-height: 78px; display:flex; align-items:center; justify-content:space-between; gap:20px; }
 .nav-links { display:flex; align-items:center; gap:24px; }
 .nav-link { color: var(--ink); text-decoration: none; font-size: 14px; font-weight:600; opacity:.78; transition: opacity .18s ease, transform .18s var(--ease-out); }
@@ -133,7 +133,7 @@ button { cursor: pointer; }
 
 .product-detail { display:grid; grid-template-columns:minmax(0,1fr) minmax(360px,.78fr); gap:clamp(30px,7vw,100px); padding:54px 0 90px; align-items:start; }
 .detail-image { position:relative; aspect-ratio:.82; max-height:700px; border:1px solid var(--ink); overflow:hidden; }
-.gallery-main { touch-action:pan-y; }
+.gallery-main { touch-action:pan-y; -webkit-user-select:none; user-select:none; }
 .detail-image img { width:100%; height:100%; object-fit:contain; object-position:center; display:block; background:var(--cream); }
 .detail-label { position:absolute; top:18px; left:18px; padding:8px 10px; background:var(--lime); border:1px solid var(--ink); font:500 11px 'DM Mono',monospace; text-transform:uppercase; }
 .detail-copy { padding-top:14px; }
@@ -464,7 +464,7 @@ button { cursor: pointer; }
 @keyframes confetti-fall { 0% { opacity:1; transform:translateY(-10px) rotate(0deg); } 100% { opacity:0; transform:translateY(220px) rotate(620deg); } }
 
 @media (max-width:640px) {
-  .mobile-anchor-nav { display:flex; gap:18px; overflow-x:auto; padding:11px 16px; border-bottom:1px solid var(--line); background:var(--paper); scrollbar-width:none; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; }
+  .mobile-anchor-nav { position:sticky; top:66px; z-index:39; display:flex; gap:18px; overflow-x:auto; padding:11px 16px; border-bottom:1px solid var(--line); background:rgba(247,245,238,.96); box-shadow:0 3px 10px rgba(23,23,20,.06); scrollbar-width:none; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; }
   .mobile-anchor-nav::-webkit-scrollbar { display:none; }
   .mobile-anchor-nav a { flex:0 0 auto; color:var(--ink); text-decoration:none; font:600 11px 'DM Sans',sans-serif; }
   .catalog-filters { flex-wrap:nowrap; overflow-x:auto; padding-bottom:14px; scrollbar-width:none; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; }
@@ -474,6 +474,7 @@ button { cursor: pointer; }
   .scratch-reveal { max-height:none; }
   .scratch-instruction { font-size:9px; }
   .scratch-thumb-art { min-height:82px; }
+  .gallery-main:after { content:"←  გადაფურცლე  →"; position:absolute; left:50%; bottom:12px; transform:translateX(-50%); padding:6px 8px; background:rgba(247,245,238,.9); border:1px solid var(--ink); font:500 9px 'DM Mono',monospace; pointer-events:none; opacity:.82; }
 }
 
 /* Custom bundle builder */
