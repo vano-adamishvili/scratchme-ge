@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { bundlePrice, formatPrice, products as seedProducts, type BundleGift, type Product } from "@shared/catalog";
+import { bundlePrice, defaultBundlePrices, formatPrice, products as seedProducts, type BundleGift, type BundlePrices, type Product } from "@shared/catalog";
 import { trpc } from "@/lib/trpc";
 
 export type BundleTier = 2 | 3 | 4;
@@ -18,11 +18,13 @@ type StoreContextValue = {
   retailTotal: number;
   posterTotal: number;
   shipping: number;
+  shippingFee: number;
   total: number;
   savings: number;
   hasFreeShippingBundle: boolean;
   progressCount: number;
   bundleDraft: BundleDraft;
+  bundlePrices: BundlePrices;
   giftStock: Record<BundleGift, number>;
   selectedBundleProducts: Product[];
   toast: string | null;
@@ -54,6 +56,8 @@ function readJson<T>(key: string, fallback: T): T {
 export function StoreProvider({ children }: { children: ReactNode }) {
   const catalog = trpc.catalog.list.useQuery(undefined, { staleTime: 30_000 });
   const settings = trpc.store.settings.useQuery(undefined, { staleTime: 30_000 });
+  const bundlePrices: BundlePrices = { 2: settings.data?.bundlePrices[2] ?? defaultBundlePrices[2], 3: settings.data?.bundlePrices[3] ?? defaultBundlePrices[3], 4: settings.data?.bundlePrices[4] ?? defaultBundlePrices[4] };
+  const shippingFee = settings.data?.shippingFee ?? 5;
   const giftStock = { stickers: settings.data?.giftStickersStock ?? 100, magnet: settings.data?.giftMagnetStock ?? 100, pin: settings.data?.giftPinStock ?? 100 };
   const catalogProducts = catalog.data?.products ?? seedProducts;
   const [cart, setCart] = useState<CartMap>(() => readJson("scratchme-cart-v2", readJson("scratchme-cart", {})));
@@ -73,8 +77,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const cartBundles = useMemo<ResolvedCartBundle[]>(() => bundles.map((bundle) => ({
     ...bundle,
     products: bundle.productIds.map((id) => catalogProducts.find((product) => product.id === id)).filter((product): product is Product => Boolean(product)),
-    price: bundlePrice(bundle.tier) ?? 0,
-  })).filter((bundle) => bundle.products.length === bundle.tier), [bundles, catalogProducts]);
+    price: bundlePrice(bundle.tier, bundlePrices) ?? 0,
+  })).filter((bundle) => bundle.products.length === bundle.tier), [bundles, catalogProducts, bundlePrices[2], bundlePrices[3], bundlePrices[4]]);
 
   const selectedBundleProducts = useMemo(() => bundleDraft.productIds
     .map((id) => catalogProducts.find((product) => product.id === id))
@@ -90,7 +94,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const posterTotal = standaloneRetail + bundleTotal;
   const savings = Math.max(0, retailTotal - posterTotal);
   const hasFreeShippingBundle = cartBundles.some((bundle) => bundle.tier >= 3);
-  const shipping = cartCount === 0 || hasFreeShippingBundle ? 0 : (settings.data?.shippingFee ?? 5);
+  const shipping = cartCount === 0 || hasFreeShippingBundle ? 0 : shippingFee;
   const total = posterTotal + shipping;
   const largestBundle = cartBundles.reduce<BundleTier | 0>((largest, bundle) => Math.max(largest, bundle.tier) as BundleTier, 0);
   const progressCount = largestBundle || Math.min(standaloneCount, 4);
@@ -116,7 +120,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   return <StoreContext.Provider value={{
     cart, catalogProducts, cartItems, cartBundles, cartCount, standaloneCount, retailTotal, posterTotal, shipping, total, savings,
-    hasFreeShippingBundle, progressCount, bundleDraft, selectedBundleProducts, giftStock, toast,
+    hasFreeShippingBundle, progressCount, bundleDraft, bundlePrices, shippingFee, selectedBundleProducts, giftStock, toast,
     addToCart(product) { setCart((current) => ({ ...current, [product.id]: (current[product.id] ?? 0) + 1 })); },
     startBundle,
     setBundleGift(gift) { if (giftStock[gift] <= 0) return; setBundleDraft((current) => ({ ...current, gift: current.tier === 4 ? gift : null })); },

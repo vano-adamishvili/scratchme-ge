@@ -53,28 +53,22 @@ export function ProductCard({ product }: { product: Product }) {
   </article>;
 }
 
-const tierCopy: Record<BundleTier, { price: string; extra?: string }> = {
-  2: { price: "39.90 ₾", extra: "მიტანა 5 ₾" },
-  3: { price: "49.90 ₾", extra: "უფასო მიტანა" },
-  4: { price: "59.90 ₾", extra: "უფასო მიტანა + საჩუქარი" },
-};
-
 export function BundleBuilder() {
-  const { bundleDraft, startBundle } = useStore();
+  const { bundleDraft, bundlePrices, startBundle, shippingFee } = useStore();
   const { language, t } = useI18n();
   const choose = (tier: BundleTier) => {
     startBundle(tier);
     window.setTimeout(() => document.getElementById("catalog")?.scrollIntoView({ behavior: "smooth", block: "start" }), 90);
   };
   return <div className="bundle-banner interactive-bundle"><div><div className="eyebrow" style={{ color: "var(--lime)" }}>{language === "ka" ? "ნაბიჯი 1 / აირჩიე ზომა" : "Step 1 / Choose a size"}</div><h2>{t("bundle.title")}</h2><p>{t("bundle.builderBody")}</p><a href="#catalog" className="button coral" style={{ marginTop: 26 }}>{t("bundle.browse")} <ArrowRight size={16} /></a></div><div className="bundle-steps">
-    {([2, 3, 4] as BundleTier[]).map((tier) => <button key={tier} className={`bundle-step bundle-step-button ${bundleDraft.tier === tier ? "active" : ""}`} onClick={() => choose(tier)}><span className="step-no">{tier}</span><span>{language === "ka" ? `${tier}-პოსტერიანი ნაკრები` : `${tier}-Poster Bundle`}</span><small>{tierCopy[tier].price}{tierCopy[tier].extra ? ` + ${tierCopy[tier].extra}` : ""}</small><strong>{bundleDraft.tier === tier ? t("bundle.choosing") : t("bundle.chooseTier")}</strong></button>)}
+    {([2, 3, 4] as BundleTier[]).map((tier) => <button key={tier} className={`bundle-step bundle-step-button ${bundleDraft.tier === tier ? "active" : ""}`} onClick={() => choose(tier)}><span className="step-no">{tier}</span><span>{language === "ka" ? `${tier}-პოსტერიანი ნაკრები` : `${tier}-Poster Bundle`}</span><small>{formatPrice(bundlePrices[tier])}{tier === 2 ? ` + ${language === "ka" ? "მიტანა" : "delivery"} ${formatPrice(shippingFee)}` : ` + ${language === "ka" ? "უფასო მიტანა" : "free delivery"}${tier === 4 ? ` + ${language === "ka" ? "საჩუქარი" : "gift"}` : ""}`}</small><strong>{bundleDraft.tier === tier ? t("bundle.choosing") : t("bundle.chooseTier")}</strong></button>)}
     <div className="bundle-builder-note"><PackagePlus size={17} /><span>{language === "ka" ? "ჯერ აირჩიე ნაკრები, შემდეგ მონიშნე ზუსტად ის პოსტერები, რომლებიც გინდა." : "Choose a tier, then select the exact posters you want."}</span></div>
   </div></div>;
 }
 
 export function BundleSelectionDock() {
   const [, navigate] = useLocation();
-  const { bundleDraft, selectedBundleProducts, toggleBundleProduct, cancelBundle, addSelectedBundle, setBundleGift, showToast, giftStock } = useStore();
+  const { bundleDraft, bundlePrices, selectedBundleProducts, toggleBundleProduct, cancelBundle, addSelectedBundle, setBundleGift, showToast, giftStock } = useStore();
   const { language, productTitle, t } = useI18n();
   if (!bundleDraft.tier) return null;
   const selected = selectedBundleProducts.length;
@@ -86,7 +80,7 @@ export function BundleSelectionDock() {
     navigate("/cart");
   };
   const giftOptions: BundleGift[] = ["stickers", "magnet", "pin"];
-  return <aside className={`bundle-selection-dock ${complete ? "complete" : ""}`} aria-live="polite"><div className="bundle-dock-top"><div><div className="eyebrow">{language === "ka" ? "ნაბიჯი 2 / შეარჩიე პოსტერები" : "Step 2 / Select posters"}</div><strong>{complete ? t("bundle.complete") : t("bundle.progress", { selected, total: bundleDraft.tier })}</strong><span>{complete ? t("bundle.review") : t("bundle.left", { count: remaining })}</span></div><button className="bundle-dock-close" onClick={cancelBundle} aria-label={t("bundle.cancel")}><X size={18} /></button></div><div className="bundle-dock-preview">{Array.from({ length: bundleDraft.tier }, (_, index) => { const product = selectedBundleProducts[index]; return <div className={`bundle-preview-slot ${product ? "filled" : ""}`} key={index}>{product ? <><img src={product.image} alt="" /><button onClick={() => toggleBundleProduct(product)} aria-label={`${t("bundle.removeSelection")} ${productTitle(product)}`}><X size={12} /></button><span>{productTitle(product)}</span></> : <><span className="slot-number">{index + 1}</span><small>{language === "ka" ? "აირჩიე" : "Choose"}</small></>}</div>; })}</div>{bundleDraft.tier === 4 && <div className="bundle-gift-picker"><strong>{language === "ka" ? "აირჩიე შენი საჩუქარი" : "Choose your gift"}</strong>{giftOptions.map((gift) => <label key={gift} className={giftStock[gift] === 0 ? "disabled" : ""}><input type="radio" name="bundle-gift" disabled={giftStock[gift] === 0} checked={bundleDraft.gift === gift} onChange={() => setBundleGift(gift)} />{language === "ka" ? bundleGiftLabels[gift].ka : bundleGiftLabels[gift].en} <small>({language === "ka" ? `დარჩა ${giftStock[gift]}` : `${giftStock[gift]} left`})</small></label>)}</div>}<div className="bundle-dock-actions"><div><span>{language === "ka" ? `${bundleDraft.tier}-პოსტერიანი ნაკრები` : `${bundleDraft.tier}-Poster Bundle`}</span><strong>{tierCopy[bundleDraft.tier].price}</strong><small>{tierCopy[bundleDraft.tier].extra}</small></div><button className="button coral" disabled={!complete} onClick={submit}>{complete ? t("bundle.addPackage") : t("bundle.pickMore", { count: remaining })} <ShoppingBag size={16} /></button></div></aside>;
+  return <aside className={`bundle-selection-dock ${complete ? "complete" : ""}`} aria-live="polite"><div className="bundle-dock-top"><div><div className="eyebrow">{language === "ka" ? "ნაბიჯი 2 / შეარჩიე პოსტერები" : "Step 2 / Select posters"}</div><strong>{complete ? t("bundle.complete") : t("bundle.progress", { selected, total: bundleDraft.tier })}</strong><span>{complete ? t("bundle.review") : t("bundle.left", { count: remaining })}</span></div><button className="bundle-dock-close" onClick={cancelBundle} aria-label={t("bundle.cancel")}><X size={18} /></button></div><div className="bundle-dock-preview">{Array.from({ length: bundleDraft.tier }, (_, index) => { const product = selectedBundleProducts[index]; return <div className={`bundle-preview-slot ${product ? "filled" : ""}`} key={index}>{product ? <><img src={product.image} alt="" /><button onClick={() => toggleBundleProduct(product)} aria-label={`${t("bundle.removeSelection")} ${productTitle(product)}`}><X size={12} /></button><span>{productTitle(product)}</span></> : <><span className="slot-number">{index + 1}</span><small>{language === "ka" ? "აირჩიე" : "Choose"}</small></>}</div>; })}</div>{bundleDraft.tier === 4 && <div className="bundle-gift-picker"><strong>{language === "ka" ? "აირჩიე შენი საჩუქარი" : "Choose your gift"}</strong>{giftOptions.map((gift) => <label key={gift} className={giftStock[gift] === 0 ? "disabled" : ""}><input type="radio" name="bundle-gift" disabled={giftStock[gift] === 0} checked={bundleDraft.gift === gift} onChange={() => setBundleGift(gift)} />{language === "ka" ? bundleGiftLabels[gift].ka : bundleGiftLabels[gift].en} <small>({language === "ka" ? `დარჩა ${giftStock[gift]}` : `${giftStock[gift]} left`})</small></label>)}</div>}<div className="bundle-dock-actions"><div><span>{language === "ka" ? `${bundleDraft.tier}-პოსტერიანი ნაკრები` : `${bundleDraft.tier}-Poster Bundle`}</span><strong>{formatPrice(bundlePrices[bundleDraft.tier])}</strong><small>{bundleDraft.tier === 2 ? (language === "ka" ? "მიტანა ცალკე" : "delivery added") : (language === "ka" ? `უფასო მიტანა${bundleDraft.tier === 4 ? " + საჩუქარი" : ""}` : `free delivery${bundleDraft.tier === 4 ? " + gift" : ""}`)}</small></div><button className="button coral" disabled={!complete} onClick={submit}>{complete ? t("bundle.addPackage") : t("bundle.pickMore", { count: remaining })} <ShoppingBag size={16} /></button></div></aside>;
 }
 
 export function Toast() {

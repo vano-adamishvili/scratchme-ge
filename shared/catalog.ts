@@ -224,10 +224,14 @@ export const getProductGallery = (product: Product): GalleryImage[] => product.i
 
 export const formatPrice = (amount: number) => `${amount.toFixed(2)} ₾`;
 
-export const bundlePrice = (count: number) => {
-  if (count === 2) return 39.9;
-  if (count === 3) return 49.9;
-  if (count === 4) return 59.9;
+export type BundlePrices = Record<2 | 3 | 4, number>;
+
+export const defaultBundlePrices: BundlePrices = { 2: 39.9, 3: 49.9, 4: 59.9 };
+
+export const bundlePrice = (count: number, prices: BundlePrices = defaultBundlePrices) => {
+  if (count === 2) return prices[2];
+  if (count === 3) return prices[3];
+  if (count === 4) return prices[4];
   return null;
 };
 

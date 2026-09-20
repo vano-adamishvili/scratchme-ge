@@ -38,4 +38,12 @@ describe("custom bundle pricing", () => {
     expect(pricing.packageTotal).toBe(49.9);
     expect(pricing.shipping).toBe(0);
   });
+
+  it("uses admin-configured bundle prices for order validation", () => {
+    const items = products.slice(0, 4).map((product) => ({ productId: product.id, quantity: 1, bundleId: "custom-price", bundleGift: "pin" as const }));
+    const pricing = calculateOrderPricing(items, products, 5, { 2: 35, 3: 44, 4: 52 });
+
+    expect(pricing.packageTotal).toBe(52);
+    expect(pricing.total).toBe(52);
+  });
 });

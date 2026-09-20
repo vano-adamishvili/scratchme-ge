@@ -1,7 +1,7 @@
 import { and, desc, eq, gte, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { categories as categoryTable, orderItems, orders, products as productTable, storeSettings, users, type InsertUser } from "../drizzle/schema";
-import { bundleGiftLabels, bundlePrice, categories, getProductGallery, products as seedProducts, type BundleGift, type CategoryId, type Product } from "../shared/catalog";
+import { bundleGiftLabels, bundlePrice, categories, defaultBundlePrices, getProductGallery, products as seedProducts, type BundleGift, type BundlePrices, type CategoryId, type Product } from "../shared/catalog";
 import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -36,21 +36,21 @@ export async function getUserByOpenId(openId: string) {
   return result[0];
 }
 
-export type StoreSettings = { bankName: string; iban: string; receiverName: string; secondBankName: string; secondIban: string; secondReceiverName: string; shippingFee: number; giftStickersStock: number; giftMagnetStock: number; giftPinStock: number };
-const defaultStoreSettings: StoreSettings = { bankName: "TBC Bank", iban: "", receiverName: "", secondBankName: "საქართველოს ბანკი", secondIban: "", secondReceiverName: "", shippingFee: 5, giftStickersStock: 100, giftMagnetStock: 100, giftPinStock: 100 };
+export type StoreSettings = { bankName: string; iban: string; receiverName: string; secondBankName: string; secondIban: string; secondReceiverName: string; shippingFee: number; bundlePrices: BundlePrices; giftStickersStock: number; giftMagnetStock: number; giftPinStock: number };
+const defaultStoreSettings: StoreSettings = { bankName: "TBC Bank", iban: "", receiverName: "", secondBankName: "საქართველოს ბანკი", secondIban: "", secondReceiverName: "", shippingFee: 5, bundlePrices: defaultBundlePrices, giftStickersStock: 100, giftMagnetStock: 100, giftPinStock: 100 };
 
 export async function getStoreSettings(): Promise<StoreSettings> {
   const db = await getDb();
   if (!db) return defaultStoreSettings;
   const rows = await db.select().from(storeSettings).where(eq(storeSettings.id, 1)).limit(1);
   const row = rows[0];
-  return row ? { bankName: row.bankName, iban: row.iban, receiverName: row.receiverName, secondBankName: row.secondBankName, secondIban: row.secondIban, secondReceiverName: row.secondReceiverName, shippingFee: Number(row.shippingFee), giftStickersStock: row.giftStickersStock, giftMagnetStock: row.giftMagnetStock, giftPinStock: row.giftPinStock } : defaultStoreSettings;
+  return row ? { bankName: row.bankName, iban: row.iban, receiverName: row.receiverName, secondBankName: row.secondBankName, secondIban: row.secondIban, secondReceiverName: row.secondReceiverName, shippingFee: Number(row.shippingFee), bundlePrices: { 2: Number(row.bundlePrice2), 3: Number(row.bundlePrice3), 4: Number(row.bundlePrice4) }, giftStickersStock: row.giftStickersStock, giftMagnetStock: row.giftMagnetStock, giftPinStock: row.giftPinStock } : defaultStoreSettings;
 }
 
 export async function updateStoreSettings(input: StoreSettings) {
   const db = await getDb();
   if (!db) throw new Error("Store settings service is temporarily unavailable");
-  await db.insert(storeSettings).values({ id: 1, bankName: input.bankName, iban: input.iban, receiverName: input.receiverName, secondBankName: input.secondBankName, secondIban: input.secondIban, secondReceiverName: input.secondReceiverName, shippingFee: input.shippingFee.toFixed(2), giftStickersStock: input.giftStickersStock, giftMagnetStock: input.giftMagnetStock, giftPinStock: input.giftPinStock }).onDuplicateKeyUpdate({ set: { bankName: input.bankName, iban: input.iban, receiverName: input.receiverName, secondBankName: input.secondBankName, secondIban: input.secondIban, secondReceiverName: input.secondReceiverName, shippingFee: input.shippingFee.toFixed(2), giftStickersStock: input.giftStickersStock, giftMagnetStock: input.giftMagnetStock, giftPinStock: input.giftPinStock } });
+  await db.insert(storeSettings).values({ id: 1, bankName: input.bankName, iban: input.iban, receiverName: input.receiverName, secondBankName: input.secondBankName, secondIban: input.secondIban, secondReceiverName: input.secondReceiverName, shippingFee: input.shippingFee.toFixed(2), bundlePrice2: input.bundlePrices[2].toFixed(2), bundlePrice3: input.bundlePrices[3].toFixed(2), bundlePrice4: input.bundlePrices[4].toFixed(2), giftStickersStock: input.giftStickersStock, giftMagnetStock: input.giftMagnetStock, giftPinStock: input.giftPinStock }).onDuplicateKeyUpdate({ set: { bankName: input.bankName, iban: input.iban, receiverName: input.receiverName, secondBankName: input.secondBankName, secondIban: input.secondIban, secondReceiverName: input.secondReceiverName, shippingFee: input.shippingFee.toFixed(2), bundlePrice2: input.bundlePrices[2].toFixed(2), bundlePrice3: input.bundlePrices[3].toFixed(2), bundlePrice4: input.bundlePrices[4].toFixed(2), giftStickersStock: input.giftStickersStock, giftMagnetStock: input.giftMagnetStock, giftPinStock: input.giftPinStock } });
   return getStoreSettings();
 }
 
@@ -160,7 +160,7 @@ export async function deleteCatalogProduct(id: number) {
 
 type OrderInputItem = { productId: number; quantity: number; bundleId?: string; bundleTitle?: string; bundleGift?: BundleGift };
 
-export function calculateOrderPricing(items: OrderInputItem[], catalog: Product[], shippingFee = 5) {
+export function calculateOrderPricing(items: OrderInputItem[], catalog: Product[], shippingFee = 5, bundlePrices: BundlePrices = defaultBundlePrices) {
   const bundleGroups = new Map<string, OrderInputItem[]>();
   let standaloneTotal = 0;
   for (const item of items) {
@@ -174,7 +174,7 @@ export function calculateOrderPricing(items: OrderInputItem[], catalog: Product[
   const validatedBundleTitles = new Map<string, string>();
   for (const [bundleId, items] of Array.from(bundleGroups.entries())) {
     const posterCount = items.reduce((sum, item) => sum + item.quantity, 0);
-    const price = bundlePrice(posterCount);
+    const price = bundlePrice(posterCount, bundlePrices);
     if (!price || items.some((item) => item.quantity !== 1)) throw new Error("Invalid custom bundle configuration");
     packageTotal += price;
     freeShipping ||= posterCount >= 3;
@@ -193,7 +193,7 @@ export async function createPersistentOrder(input: { fullName: string; phone: st
   const reference = `SCR-${Math.floor(1000 + Math.random() * 8999)}`;
   const catalog = await getCatalogProducts();
   const settings = await getStoreSettings();
-  const pricing = calculateOrderPricing(input.items, catalog, settings.shippingFee);
+  const pricing = calculateOrderPricing(input.items, catalog, settings.shippingFee, settings.bundlePrices);
   const calculatedTotal = pricing.total;
   if (Math.abs(calculatedTotal - input.total) > 0.02) throw new Error("Cart total changed. Please review your order.");
   const gifts = new Map<BundleGift, number>();
