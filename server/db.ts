@@ -1,7 +1,7 @@
 import { and, desc, eq, gte, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { categories as categoryTable, orderItems, orders, products as productTable, storeSettings, users, type InsertUser } from "../drizzle/schema";
-import { bundleGiftLabels, bundlePrice, categories, defaultBundlePrices, getProductGallery, products as seedProducts, type BundleGift, type BundlePrices, type CategoryId, type Product } from "../shared/catalog";
+import { bundlePrice, categories, defaultBundleGiftLabels, defaultBundlePrices, getProductGallery, products as seedProducts, type BundleGift, type BundleGiftLabels, type BundlePrices, type CategoryId, type Product } from "../shared/catalog";
 import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -36,21 +36,21 @@ export async function getUserByOpenId(openId: string) {
   return result[0];
 }
 
-export type StoreSettings = { bankName: string; iban: string; receiverName: string; secondBankName: string; secondIban: string; secondReceiverName: string; shippingFee: number; bundlePrices: BundlePrices; giftStickersStock: number; giftMagnetStock: number; giftPinStock: number };
-const defaultStoreSettings: StoreSettings = { bankName: "TBC Bank", iban: "", receiverName: "", secondBankName: "საქართველოს ბანკი", secondIban: "", secondReceiverName: "", shippingFee: 5, bundlePrices: defaultBundlePrices, giftStickersStock: 100, giftMagnetStock: 100, giftPinStock: 100 };
+export type StoreSettings = { bankName: string; iban: string; receiverName: string; secondBankName: string; secondIban: string; secondReceiverName: string; shippingFee: number; bundlePrices: BundlePrices; giftLabels: BundleGiftLabels; giftStickersStock: number; giftMagnetStock: number; giftPinStock: number };
+const defaultStoreSettings: StoreSettings = { bankName: "TBC Bank", iban: "", receiverName: "", secondBankName: "საქართველოს ბანკი", secondIban: "", secondReceiverName: "", shippingFee: 5, bundlePrices: defaultBundlePrices, giftLabels: defaultBundleGiftLabels, giftStickersStock: 100, giftMagnetStock: 100, giftPinStock: 100 };
 
 export async function getStoreSettings(): Promise<StoreSettings> {
   const db = await getDb();
   if (!db) return defaultStoreSettings;
   const rows = await db.select().from(storeSettings).where(eq(storeSettings.id, 1)).limit(1);
   const row = rows[0];
-  return row ? { bankName: row.bankName, iban: row.iban, receiverName: row.receiverName, secondBankName: row.secondBankName, secondIban: row.secondIban, secondReceiverName: row.secondReceiverName, shippingFee: Number(row.shippingFee), bundlePrices: { 2: Number(row.bundlePrice2), 3: Number(row.bundlePrice3), 4: Number(row.bundlePrice4) }, giftStickersStock: row.giftStickersStock, giftMagnetStock: row.giftMagnetStock, giftPinStock: row.giftPinStock } : defaultStoreSettings;
+  return row ? { bankName: row.bankName, iban: row.iban, receiverName: row.receiverName, secondBankName: row.secondBankName, secondIban: row.secondIban, secondReceiverName: row.secondReceiverName, shippingFee: Number(row.shippingFee), bundlePrices: { 2: Number(row.bundlePrice2), 3: Number(row.bundlePrice3), 4: Number(row.bundlePrice4) }, giftLabels: { stickers: { ka: row.giftStickersNameKa, en: row.giftStickersNameEn }, magnet: { ka: row.giftMagnetNameKa, en: row.giftMagnetNameEn }, pin: { ka: row.giftPinNameKa, en: row.giftPinNameEn } }, giftStickersStock: row.giftStickersStock, giftMagnetStock: row.giftMagnetStock, giftPinStock: row.giftPinStock } : defaultStoreSettings;
 }
 
 export async function updateStoreSettings(input: StoreSettings) {
   const db = await getDb();
   if (!db) throw new Error("Store settings service is temporarily unavailable");
-  await db.insert(storeSettings).values({ id: 1, bankName: input.bankName, iban: input.iban, receiverName: input.receiverName, secondBankName: input.secondBankName, secondIban: input.secondIban, secondReceiverName: input.secondReceiverName, shippingFee: input.shippingFee.toFixed(2), bundlePrice2: input.bundlePrices[2].toFixed(2), bundlePrice3: input.bundlePrices[3].toFixed(2), bundlePrice4: input.bundlePrices[4].toFixed(2), giftStickersStock: input.giftStickersStock, giftMagnetStock: input.giftMagnetStock, giftPinStock: input.giftPinStock }).onDuplicateKeyUpdate({ set: { bankName: input.bankName, iban: input.iban, receiverName: input.receiverName, secondBankName: input.secondBankName, secondIban: input.secondIban, secondReceiverName: input.secondReceiverName, shippingFee: input.shippingFee.toFixed(2), bundlePrice2: input.bundlePrices[2].toFixed(2), bundlePrice3: input.bundlePrices[3].toFixed(2), bundlePrice4: input.bundlePrices[4].toFixed(2), giftStickersStock: input.giftStickersStock, giftMagnetStock: input.giftMagnetStock, giftPinStock: input.giftPinStock } });
+  await db.insert(storeSettings).values({ id: 1, bankName: input.bankName, iban: input.iban, receiverName: input.receiverName, secondBankName: input.secondBankName, secondIban: input.secondIban, secondReceiverName: input.secondReceiverName, shippingFee: input.shippingFee.toFixed(2), bundlePrice2: input.bundlePrices[2].toFixed(2), bundlePrice3: input.bundlePrices[3].toFixed(2), bundlePrice4: input.bundlePrices[4].toFixed(2), giftStickersNameKa: input.giftLabels.stickers.ka, giftStickersNameEn: input.giftLabels.stickers.en, giftMagnetNameKa: input.giftLabels.magnet.ka, giftMagnetNameEn: input.giftLabels.magnet.en, giftPinNameKa: input.giftLabels.pin.ka, giftPinNameEn: input.giftLabels.pin.en, giftStickersStock: input.giftStickersStock, giftMagnetStock: input.giftMagnetStock, giftPinStock: input.giftPinStock }).onDuplicateKeyUpdate({ set: { bankName: input.bankName, iban: input.iban, receiverName: input.receiverName, secondBankName: input.secondBankName, secondIban: input.secondIban, secondReceiverName: input.secondReceiverName, shippingFee: input.shippingFee.toFixed(2), bundlePrice2: input.bundlePrices[2].toFixed(2), bundlePrice3: input.bundlePrices[3].toFixed(2), bundlePrice4: input.bundlePrices[4].toFixed(2), giftStickersNameKa: input.giftLabels.stickers.ka, giftStickersNameEn: input.giftLabels.stickers.en, giftMagnetNameKa: input.giftLabels.magnet.ka, giftMagnetNameEn: input.giftLabels.magnet.en, giftPinNameKa: input.giftLabels.pin.ka, giftPinNameEn: input.giftLabels.pin.en, giftStickersStock: input.giftStickersStock, giftMagnetStock: input.giftMagnetStock, giftPinStock: input.giftPinStock } });
   return getStoreSettings();
 }
 
@@ -160,31 +160,39 @@ export async function deleteCatalogProduct(id: number) {
 
 type OrderInputItem = { productId: number; quantity: number; bundleId?: string; bundleTitle?: string; bundleGift?: BundleGift };
 
-export function calculateOrderPricing(items: OrderInputItem[], catalog: Product[], shippingFee = 5, bundlePrices: BundlePrices = defaultBundlePrices) {
+export function calculateOrderPricing(items: OrderInputItem[], catalog: Product[], shippingFee = 5, bundlePrices: BundlePrices = defaultBundlePrices, giftLabels: BundleGiftLabels = defaultBundleGiftLabels) {
   const bundleGroups = new Map<string, OrderInputItem[]>();
   let standaloneTotal = 0;
   for (const item of items) {
     const product = catalog.find((candidate) => candidate.id === item.productId);
     if (!product) throw new Error("A selected poster is no longer available");
     if (item.bundleId) bundleGroups.set(item.bundleId, [...(bundleGroups.get(item.bundleId) ?? []), item]);
-    else standaloneTotal += product.price * item.quantity;
+    else {
+      if (item.bundleGift) throw new Error("A gift can only be selected for a four-poster bundle");
+      standaloneTotal += product.price * item.quantity;
+    }
   }
   let packageTotal = 0;
   let freeShipping = false;
   const validatedBundleTitles = new Map<string, string>();
+  const giftAllocations = new Map<BundleGift, number>();
   for (const [bundleId, items] of Array.from(bundleGroups.entries())) {
     const posterCount = items.reduce((sum, item) => sum + item.quantity, 0);
     const price = bundlePrice(posterCount, bundlePrices);
     if (!price || items.some((item) => item.quantity !== 1)) throw new Error("Invalid custom bundle configuration");
     packageTotal += price;
     freeShipping ||= posterCount >= 3;
-    const gift = posterCount === 4 ? items.find((item) => item.bundleGift)?.bundleGift : undefined;
-    if (posterCount === 4 && !gift) throw new Error("Choose a gift for the four-poster bundle");
-    const giftLabel = gift ? ` — Gift: ${bundleGiftLabels[gift].en}` : "";
+    const giftCandidates = items.map((item) => item.bundleGift).filter((value): value is BundleGift => Boolean(value));
+    const giftSet = new Set(giftCandidates);
+    if (posterCount !== 4 && giftSet.size > 0) throw new Error("A gift can only be selected for a four-poster bundle");
+    const gift = posterCount === 4 ? giftCandidates[0] : undefined;
+    if (posterCount === 4 && (giftSet.size !== 1 || !gift)) throw new Error("Choose exactly one gift for the four-poster bundle");
+    if (gift) giftAllocations.set(gift, (giftAllocations.get(gift) ?? 0) + 1);
+    const giftLabel = gift ? ` — Gift: ${giftLabels[gift].en}` : "";
     validatedBundleTitles.set(bundleId, `Custom ${posterCount}-Poster Bundle${giftLabel}`);
   }
   const shipping = freeShipping ? 0 : shippingFee;
-  return { standaloneTotal, packageTotal, shipping, total: standaloneTotal + packageTotal + shipping, validatedBundleTitles };
+  return { standaloneTotal, packageTotal, shipping, total: standaloneTotal + packageTotal + shipping, validatedBundleTitles, giftAllocations };
 }
 
 export async function createPersistentOrder(input: { fullName: string; phone: string; address: string; city: string; notes?: string; paymentMethod: "bank_transfer" | "card"; bankAccount: "tbc" | "bog"; total: number; items: OrderInputItem[] }) {
@@ -193,11 +201,10 @@ export async function createPersistentOrder(input: { fullName: string; phone: st
   const reference = `SCR-${Math.floor(1000 + Math.random() * 8999)}`;
   const catalog = await getCatalogProducts();
   const settings = await getStoreSettings();
-  const pricing = calculateOrderPricing(input.items, catalog, settings.shippingFee, settings.bundlePrices);
+  const pricing = calculateOrderPricing(input.items, catalog, settings.shippingFee, settings.bundlePrices, settings.giftLabels);
   const calculatedTotal = pricing.total;
   if (Math.abs(calculatedTotal - input.total) > 0.02) throw new Error("Cart total changed. Please review your order.");
-  const gifts = new Map<BundleGift, number>();
-  for (const item of input.items) if (item.bundleGift) gifts.set(item.bundleGift, (gifts.get(item.bundleGift) ?? 0) + item.quantity);
+  const gifts = pricing.giftAllocations;
   await db.transaction(async (tx) => {
     for (const [gift, quantity] of Array.from(gifts.entries())) {
       const column = gift === "stickers" ? storeSettings.giftStickersStock : gift === "magnet" ? storeSettings.giftMagnetStock : storeSettings.giftPinStock;

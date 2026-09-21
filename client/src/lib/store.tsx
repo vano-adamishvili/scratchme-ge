@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { bundlePrice, defaultBundlePrices, formatPrice, products as seedProducts, type BundleGift, type BundlePrices, type Product } from "@shared/catalog";
+import { bundlePrice, bundleGiftLabels, defaultBundlePrices, formatPrice, products as seedProducts, type BundleGift, type BundleGiftLabels, type BundlePrices, type Product } from "@shared/catalog";
 import { trpc } from "@/lib/trpc";
 
 export type BundleTier = 2 | 3 | 4;
@@ -25,6 +25,7 @@ type StoreContextValue = {
   progressCount: number;
   bundleDraft: BundleDraft;
   bundlePrices: BundlePrices;
+  giftLabels: BundleGiftLabels;
   giftStock: Record<BundleGift, number>;
   selectedBundleProducts: Product[];
   toast: string | null;
@@ -59,6 +60,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const bundlePrices: BundlePrices = { 2: settings.data?.bundlePrices[2] ?? defaultBundlePrices[2], 3: settings.data?.bundlePrices[3] ?? defaultBundlePrices[3], 4: settings.data?.bundlePrices[4] ?? defaultBundlePrices[4] };
   const shippingFee = settings.data?.shippingFee ?? 5;
   const giftStock = { stickers: settings.data?.giftStickersStock ?? 100, magnet: settings.data?.giftMagnetStock ?? 100, pin: settings.data?.giftPinStock ?? 100 };
+  const giftLabels = settings.data?.giftLabels ?? bundleGiftLabels;
   const catalogProducts = catalog.data?.products ?? seedProducts;
   const [cart, setCart] = useState<CartMap>(() => readJson("scratchme-cart-v2", readJson("scratchme-cart", {})));
   const [bundles, setBundles] = useState<CartBundle[]>(() => readJson("scratchme-cart-bundles", []));
@@ -120,7 +122,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   return <StoreContext.Provider value={{
     cart, catalogProducts, cartItems, cartBundles, cartCount, standaloneCount, retailTotal, posterTotal, shipping, total, savings,
-    hasFreeShippingBundle, progressCount, bundleDraft, bundlePrices, shippingFee, selectedBundleProducts, giftStock, toast,
+    hasFreeShippingBundle, progressCount, bundleDraft, bundlePrices, shippingFee, giftLabels, selectedBundleProducts, giftStock, toast,
     addToCart(product) { setCart((current) => ({ ...current, [product.id]: (current[product.id] ?? 0) + 1 })); },
     startBundle,
     setBundleGift(gift) { if (giftStock[gift] <= 0) return; setBundleDraft((current) => ({ ...current, gift: current.tier === 4 ? gift : null })); },

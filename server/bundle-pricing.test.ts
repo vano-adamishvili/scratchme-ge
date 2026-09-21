@@ -10,6 +10,7 @@ describe("custom bundle pricing", () => {
     expect(pricing.packageTotal).toBe(59.9);
     expect(pricing.shipping).toBe(0);
     expect(pricing.total).toBe(59.9);
+    expect(pricing.giftAllocations.get("stickers")).toBe(1);
     expect(pricing.validatedBundleTitles.get("bundle-4")).toBe("Custom 4-Poster Bundle — Gift: Random set of 10 stickers");
   });
 
@@ -45,5 +46,20 @@ describe("custom bundle pricing", () => {
 
     expect(pricing.packageTotal).toBe(52);
     expect(pricing.total).toBe(52);
+  });
+
+  it("uses configured gift names in the validated order bundle title", () => {
+    const items = products.slice(0, 4).map((product) => ({ productId: product.id, quantity: 1, bundleId: "named-gift", bundleGift: "magnet" as const }));
+    const pricing = calculateOrderPricing(items, products, 5, { 2: 39.9, 3: 49.9, 4: 59.9 }, { stickers: { ka: "სტიკერები", en: "Stickers" }, magnet: { ka: "მოგზაურობის მაგნიტი", en: "Travel magnet" }, pin: { ka: "პინი", en: "Pin" } });
+
+    expect(pricing.validatedBundleTitles.get("named-gift")).toContain("Travel magnet");
+  });
+
+  it("rejects gifts on non-four-poster bundles and conflicting gift choices", () => {
+    const threePosterGift = products.slice(0, 3).map((product) => ({ productId: product.id, quantity: 1, bundleId: "three-with-gift", bundleGift: "pin" as const }));
+    expect(() => calculateOrderPricing(threePosterGift, products)).toThrow("A gift can only be selected for a four-poster bundle");
+
+    const conflictingGifts = products.slice(0, 4).map((product, index) => ({ productId: product.id, quantity: 1, bundleId: "conflicting-gifts", bundleGift: (index % 2 === 0 ? "pin" : "magnet") as "pin" | "magnet" }));
+    expect(() => calculateOrderPricing(conflictingGifts, products)).toThrow("Choose exactly one gift for the four-poster bundle");
   });
 });
