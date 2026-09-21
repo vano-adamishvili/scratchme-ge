@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
+import { useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { I18nProvider } from "./lib/i18n";
@@ -34,5 +35,7 @@ function Router() {
 }
 
 export default function App() {
-  return <ErrorBoundary><ThemeProvider defaultTheme="light"><TooltipProvider><Toaster /><I18nProvider><StoreProvider><Router /><BundleSelectionDock /></StoreProvider></I18nProvider></TooltipProvider></ThemeProvider></ErrorBoundary>;
+  const [location] = useLocation();
+  const showBundleDock = location !== "/checkout";
+  return <ErrorBoundary><ThemeProvider defaultTheme="light"><TooltipProvider><Toaster /><I18nProvider><StoreProvider><Router />{showBundleDock && <BundleSelectionDock />}</StoreProvider></I18nProvider></TooltipProvider></ThemeProvider></ErrorBoundary>;
 }
