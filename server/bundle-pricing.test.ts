@@ -62,4 +62,10 @@ describe("custom bundle pricing", () => {
     const conflictingGifts = products.slice(0, 4).map((product, index) => ({ productId: product.id, quantity: 1, bundleId: "conflicting-gifts", bundleGift: (index % 2 === 0 ? "pin" : "magnet") as "pin" | "magnet" }));
     expect(() => calculateOrderPricing(conflictingGifts, products)).toThrow("Choose exactly one gift for the four-poster bundle");
   });
+
+  it("rejects a gift that an admin marked as inactive", () => {
+    const items = products.slice(0, 4).map((product) => ({ productId: product.id, quantity: 1, bundleId: "inactive-gift", bundleGift: "pin" as const }));
+    const labels = { stickers: { ka: "სტიკერები", en: "Stickers", active: true }, magnet: { ka: "მაგნიტი", en: "Magnet", active: true }, pin: { ka: "", en: "", active: false } };
+    expect(() => calculateOrderPricing(items, products, 5, { 2: 39.9, 3: 49.9, 4: 59.9 }, labels)).toThrow("The selected gift is unavailable");
+  });
 });

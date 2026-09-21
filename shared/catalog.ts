@@ -24,12 +24,12 @@ export type Product = {
 
 export type BundleGift = "stickers" | "magnet" | "pin";
 
-export type BundleGiftLabels = Record<BundleGift, { ka: string; en: string }>;
+export type BundleGiftLabels = Record<BundleGift, { ka: string; en: string; image?: string; active?: boolean }>;
 
 export const defaultBundleGiftLabels: BundleGiftLabels = {
-  stickers: { ka: "რენდომ 10 სტიკერი", en: "Random set of 10 stickers" },
-  magnet: { ka: "თემატური მისაკრობი მაგნიტი", en: "Themed magnetic sticker" },
-  pin: { ka: "თემატური დასამაგრებელი პინი", en: "Themed pin" },
+  stickers: { ka: "რენდომ 10 სტიკერი", en: "Random set of 10 stickers", active: true },
+  magnet: { ka: "თემატური მისაკრობი მაგნიტი", en: "Themed magnetic sticker", active: true },
+  pin: { ka: "თემატური დასამაგრებელი პინი", en: "Themed pin", active: true },
 };
 
 export const bundleGiftLabels = defaultBundleGiftLabels;

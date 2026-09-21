@@ -113,7 +113,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     });
   };
   const addSelectedBundle = () => {
-    if (!bundleDraft.tier || bundleDraft.productIds.length !== bundleDraft.tier || (bundleDraft.tier === 4 && !bundleDraft.gift)) return false;
+    if (!bundleDraft.tier || bundleDraft.productIds.length !== bundleDraft.tier || (bundleDraft.tier === 4 && (!bundleDraft.gift || giftLabels[bundleDraft.gift].active === false || giftStock[bundleDraft.gift] <= 0))) return false;
     const bundle: CartBundle = { id: crypto.randomUUID(), tier: bundleDraft.tier, productIds: [...bundleDraft.productIds], gift: bundleDraft.gift ?? undefined, createdAt: Date.now() };
     setBundles((current) => [...current, bundle]);
     setBundleDraft(EMPTY_DRAFT);
@@ -125,7 +125,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     hasFreeShippingBundle, progressCount, bundleDraft, bundlePrices, shippingFee, giftLabels, selectedBundleProducts, giftStock, toast,
     addToCart(product) { setCart((current) => ({ ...current, [product.id]: (current[product.id] ?? 0) + 1 })); },
     startBundle,
-    setBundleGift(gift) { if (giftStock[gift] <= 0) return; setBundleDraft((current) => ({ ...current, gift: current.tier === 4 ? gift : null })); },
+    setBundleGift(gift) { if (giftLabels[gift].active === false || giftStock[gift] <= 0) return; setBundleDraft((current) => ({ ...current, gift: current.tier === 4 ? gift : null })); },
     toggleBundleProduct,
     cancelBundle() { setBundleDraft(EMPTY_DRAFT); },
     addSelectedBundle,
