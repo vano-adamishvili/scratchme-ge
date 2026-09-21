@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { ArrowRight, Check, Heart, PackagePlus, ShoppingBag, Sparkles, X } from "lucide-react";
+import { ArrowRight, Check, Gift, Heart, PackagePlus, ShoppingBag, Sparkles, X } from "lucide-react";
 import { useStore, type BundleTier } from "@/lib/store";
 import { useI18n } from "@/lib/i18n";
 import { formatPrice, getCategoryLabels, type BundleGift, type Product } from "@shared/catalog";
@@ -63,7 +63,7 @@ export function BundleBuilder() {
     window.setTimeout(() => document.getElementById("catalog")?.scrollIntoView({ behavior: "smooth", block: "start" }), 90);
   };
   return <div className="bundle-banner interactive-bundle"><div><div className="eyebrow" style={{ color: "var(--lime)" }}>{language === "ka" ? "ნაბიჯი 1 / აირჩიე ზომა" : "Step 1 / Choose a size"}</div><h2>{t("bundle.title")}</h2><p>{t("bundle.builderBody")}</p><a href="#catalog" className="button coral" style={{ marginTop: 26 }}>{t("bundle.browse")} <ArrowRight size={16} /></a></div><div className="bundle-steps">
-    {([2, 3, 4] as BundleTier[]).map((tier) => <button key={tier} className={`bundle-step bundle-step-button ${bundleDraft.tier === tier ? "active" : ""}`} onClick={() => choose(tier)}><span className="step-no">{tier}</span><span>{language === "ka" ? `${tier}-პოსტერიანი ნაკრები` : `${tier}-Poster Bundle`}</span><small>{formatPrice(bundlePrices[tier])}{tier === 2 ? ` + ${language === "ka" ? "მიტანა" : "delivery"} ${formatPrice(shippingFee)}` : ` + ${language === "ka" ? "უფასო მიტანა" : "free delivery"}${tier === 4 ? ` + ${language === "ka" ? "საჩუქარი" : "gift"}` : ""}`}</small><strong>{bundleDraft.tier === tier ? t("bundle.choosing") : t("bundle.chooseTier")}</strong></button>)}
+    {([2, 3, 4] as BundleTier[]).map((tier) => <button key={tier} className={`bundle-step bundle-step-button offer-tier-${tier} ${bundleDraft.tier === tier ? "active" : ""}`} onClick={() => choose(tier)}><span className="bundle-step-mark"><span className="step-no">{tier}</span>{tier === 4 && <Gift size={18} aria-hidden="true" />}</span><span className="bundle-step-content"><span className="bundle-step-title">{language === "ka" ? `${tier}-პოსტერიანი ნაკრები` : `${tier}-Poster Bundle`}</span><small>{formatPrice(bundlePrices[tier])}{tier === 2 ? ` + ${language === "ka" ? "მიტანა" : "delivery"} ${formatPrice(shippingFee)}` : ` + ${language === "ka" ? "უფასო მიტანა" : "free delivery"}`}</small><strong>{bundleDraft.tier === tier ? t("bundle.choosing") : t("bundle.chooseTier")}</strong></span>{tier === 4 && <span className="bundle-step-perk"><Gift size={13} /> {language === "ka" ? "საჩუქარი" : "Gift"}</span>}</button>)}
     <div className="bundle-builder-note"><PackagePlus size={17} /><span>{language === "ka" ? "ჯერ აირჩიე ნაკრები, შემდეგ მონიშნე ზუსტად ის პოსტერები, რომლებიც გინდა." : "Choose a tier, then select the exact posters you want."}</span></div>
   </div></div>;
 }
