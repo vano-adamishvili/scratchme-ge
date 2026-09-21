@@ -8,8 +8,9 @@ import { formatPrice, getCategoryLabels, type BundleGift, type Product } from "@
 export function SiteNav() {
   const { cartCount } = useStore();
   const { language, setLanguage, t } = useI18n();
+  const announcementOffers = t("announcement").split(" · ");
   return <>
-    <div className="announcement"><Sparkles size={13} /><span>{t("announcement")}</span></div>
+    <div className="announcement"><Sparkles size={14} /><div className="announcement-offers">{announcementOffers.map((offer, index) => <span className={`announcement-offer offer-${index + 1}`} key={offer}>{offer}</span>)}</div></div>
     <header className="site-nav"><div className="container nav-inner">
       <Link href="/" className="brand-mark">scratchme<span>.</span>ge</Link>
       <nav className="nav-links">
