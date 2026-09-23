@@ -36,6 +36,6 @@ function Router() {
 
 export default function App() {
   const [location] = useLocation();
-  const showBundleDock = location !== "/checkout";
+  const showBundleDock = location === "/" || location === "/shop";
   return <ErrorBoundary><ThemeProvider defaultTheme="light"><TooltipProvider><Toaster /><I18nProvider><StoreProvider><Router />{showBundleDock && <BundleSelectionDock />}</StoreProvider></I18nProvider></TooltipProvider></ThemeProvider></ErrorBoundary>;
 }

@@ -34,7 +34,7 @@ export function Footer() {
   return <footer className="footer" id="contact"><div className="container"><div className="footer-grid">
     <div><Link href="/" className="brand-mark">scratchme<span>.</span>ge</Link><p className="footer-note" style={{ marginTop: 16 }}>{t("footer.note")}</p></div>
     <div><h4>{t("footer.explore")}</h4><a href="/#catalog">{t("nav.shop")}</a><a href="/#bundle-builder">{t("nav.bundle")}</a><a href="/#how-it-works">{t("nav.how")}</a><Link href="/contact">{t("nav.contact")}</Link></div>
-    <div><h4>{t("footer.help")}</h4><a href="mailto:hello@scratchme.ge">hello@scratchme.ge</a><a href="tel:+995579555510">579 55 55 10</a><span className="footer-contact-line">თბილისი, 37მ ილია ჭავჭავაძის გამზირი, აქსის თაუერსი</span><a href="/contact">{t("nav.contact")}</a></div>
+    <div><h4>{t("footer.help")}</h4><a href="mailto:scratchmege@gmail.com">scratchmege@gmail.com</a><a href="tel:+995579555510">579 55 55 10</a><span className="footer-contact-line">თბილისი, 37მ ილია ჭავჭავაძის გამზირი, აქსის თაუერსი</span><a href="/contact">{t("nav.contact")}</a></div>
     <div><h4>{t("footer.made")}</h4><p className="footer-note">{t("footer.note")}</p><div className="payment-marks" aria-label="Visa and Mastercard accepted"><span>VISA</span><span>Mastercard</span></div></div>
   </div><div className="footer-bottom"><span>© {new Date().getFullYear()} scratchme.ge</span><span className="footer-legal-links"><Link href="/privacy-policy">კონფიდენციალურობა</Link><Link href="/terms">წესები და პირობები</Link><Link href="/delivery-returns">მიწოდება და დაბრუნება</Link></span><span>გადასაფხეკი პოსტერები / scratch-off posters</span></div></div></footer>;
 }

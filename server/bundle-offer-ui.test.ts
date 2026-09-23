@@ -22,7 +22,7 @@ describe("bundle offer presentation", () => {
   });
 
   it("keeps the active bundle dock away from checkout", () => {
-    expect(app).toContain('const showBundleDock = location !== "/checkout";');
+    expect(app).toContain('const showBundleDock = location === "/" || location === "/shop";');
     expect(app).toContain("{showBundleDock && <BundleSelectionDock />}");
   });
 });
