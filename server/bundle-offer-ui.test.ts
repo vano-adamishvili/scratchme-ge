@@ -25,4 +25,11 @@ describe("bundle offer presentation", () => {
     expect(app).toContain('const showBundleDock = location === "/" || location === "/shop";');
     expect(app).toContain("{showBundleDock && <BundleSelectionDock />}");
   });
+
+  it("reveals the four-poster gift step only after all posters are selected", () => {
+    expect(storefront).toContain("const postersComplete = remaining === 0;");
+    expect(storefront).toContain("const giftStepVisible = bundleDraft.tier === 4 && postersComplete;");
+    expect(storefront).toContain("{giftStepVisible && <div className=\"bundle-gift-picker\">");
+    expect(storefront).not.toContain("{bundleDraft.tier === 4 && <div className=\"bundle-gift-picker\">");
+  });
 });
