@@ -94,7 +94,7 @@ describe("admin.deleteProduct", () => {
   });
 
   it("allows an admin to read and update store settings", async () => {
-    const settings = { bankName: "TBC Bank", iban: "GE00TB0000000000000000", receiverName: "Irakli Gulordava", secondBankName: "Bank of Georgia", secondIban: "GE00BG0000000000000000", secondReceiverName: "Irakli Gulordava", shippingFee: 7, bundlePrices: { 2: 35, 3: 44, 4: 52 }, giftLabels: { stickers: { ka: "ტესტი სტიკერები", en: "Test stickers", active: true }, magnet: { ka: "ტესტი მაგნიტი", en: "Test magnet", active: true }, pin: { ka: "ტესტი პინი", en: "Test pin", active: true } }, giftStickersStock: 40, giftMagnetStock: 25, giftPinStock: 12 };
+    const settings = { bankName: "TBC Bank", iban: "GE00TB0000000000000000", receiverName: "Irakli Gulordava", secondBankName: "Bank of Georgia", secondIban: "GE00BG0000000000000000", secondReceiverName: "Irakli Gulordava", shippingFee: 7, bundlePrices: { 2: 35, 3: 44, 4: 52 }, facebookFollowers: 1200, instagramFollowers: 3400, tiktokFollowers: 560, giftLabels: { stickers: { ka: "ტესტი სტიკერები", en: "Test stickers", active: true }, magnet: { ka: "ტესტი მაგნიტი", en: "Test magnet", active: true }, pin: { ka: "ტესტი პინი", en: "Test pin", active: true } }, giftStickersStock: 40, giftMagnetStock: 25, giftPinStock: 12 };
     getStoreSettings.mockResolvedValueOnce(settings);
     updateStoreSettings.mockResolvedValueOnce(settings);
     const caller = appRouter.createCaller(createContext());
@@ -106,7 +106,7 @@ describe("admin.deleteProduct", () => {
 
   it("rejects store settings changes for non-admin users", async () => {
     const caller = appRouter.createCaller(createContext("user"));
-    await expect(caller.admin.updateSettings({ bankName: "TBC Bank", iban: "GE00TB0000000000000000", receiverName: "Owner", secondBankName: "Bank of Georgia", secondIban: "GE00BG0000000000000000", secondReceiverName: "Owner", shippingFee: 5, bundlePrices: { 2: 39.9, 3: 49.9, 4: 59.9 }, giftLabels: { stickers: { ka: "სტიკერები", en: "Stickers", active: true }, magnet: { ka: "მაგნიტი", en: "Magnet", active: true }, pin: { ka: "პინი", en: "Pin", active: true } }, giftStickersStock: 100, giftMagnetStock: 100, giftPinStock: 100 })).rejects.toMatchObject({ code: "FORBIDDEN" });
+    await expect(caller.admin.updateSettings({ bankName: "TBC Bank", iban: "GE00TB0000000000000000", receiverName: "Owner", secondBankName: "Bank of Georgia", secondIban: "GE00BG0000000000000000", secondReceiverName: "Owner", shippingFee: 5, bundlePrices: { 2: 39.9, 3: 49.9, 4: 59.9 }, facebookFollowers: 0, instagramFollowers: 0, tiktokFollowers: 0, giftLabels: { stickers: { ka: "სტიკერები", en: "Stickers", active: true }, magnet: { ka: "მაგნიტი", en: "Magnet", active: true }, pin: { ka: "პინი", en: "Pin", active: true } }, giftStickersStock: 100, giftMagnetStock: 100, giftPinStock: 100 })).rejects.toMatchObject({ code: "FORBIDDEN" });
     expect(updateStoreSettings).not.toHaveBeenCalled();
   });
 });

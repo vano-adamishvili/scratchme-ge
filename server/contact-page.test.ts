@@ -20,9 +20,13 @@ const storefront = readFileSync(resolve(process.cwd(), "client/src/components/st
     expect(contactPage).toContain("https://m.me/100069933595746");
   });
 
-  it("shows a follow CTA and avoids inventing follower counts", () => {
+  it("shows a follow CTA and renders configured follower counts", () => {
     expect(contactPage).toContain('t("contact.socialFollow")');
     expect(contactPage).toContain('t("contact.socialCount")');
-    expect(translations).toContain("მიმდინარე გამომწერების რაოდენობა იხილე თითოეული პლატფორმის გვერდზე.");
+    expect(contactPage).toContain("settings.data?.facebookFollowers");
+    expect(contactPage).toContain("settings.data?.instagramFollowers");
+    expect(contactPage).toContain("settings.data?.tiktokFollowers");
+    expect(contactPage).toContain("trpc.contact.submit.useMutation");
+    expect(translations).toContain("რაოდენობები ადმინისტრატორის პანელიდან იმართება");
   });
 });

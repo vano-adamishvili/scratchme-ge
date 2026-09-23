@@ -43,6 +43,15 @@ export const appRouter = router({
   }),
   store: router({ settings: publicProcedure.query(() => getStoreSettings()) }),
   orders: router({ create: publicProcedure.input(orderInput).mutation(({ input }) => createPersistentOrder(input)) }),
+  contact: router({
+    submit: publicProcedure.input(z.object({ name: z.string().min(2).max(120), email: z.string().email().max(320), message: z.string().min(5).max(5000) })).mutation(async ({ input }) => {
+      const apiKey = process.env.RESEND_API_KEY;
+      if (!apiKey) throw new Error("Contact email delivery is not configured yet");
+      const response = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" }, body: JSON.stringify({ from: process.env.CONTACT_FROM_EMAIL || "Scratchme.ge <onboarding@resend.dev>", to: ["scratchmege@gmail.com"], reply_to: input.email, subject: `Scratchme.ge — ${input.name}`, text: `Name: ${input.name}\nEmail: ${input.email}\n\n${input.message}` }) });
+      if (!response.ok) throw new Error("The message could not be delivered. Please try again.");
+      return { sent: true } as const;
+    }),
+  }),
   admin: router({
     overview: adminProcedure.query(async () => {
       const [orderList, productList] = await Promise.all([getPersistentOrders(), getCatalogProducts()]);
@@ -53,7 +62,7 @@ export const appRouter = router({
     deleteOrder: adminProcedure.input(z.object({ id: z.number().int().positive() })).mutation(({ input }) => deletePersistentOrder(input.id)),
     products: adminProcedure.query(() => getCatalogProducts()),
     settings: adminProcedure.query(() => getStoreSettings()),
-    updateSettings: adminProcedure.input(z.object({ bankName: z.string().min(2).max(100), iban: z.string().min(8).max(64), receiverName: z.string().min(2).max(160), secondBankName: z.string().min(2).max(100), secondIban: z.string().min(8).max(64), secondReceiverName: z.string().min(2).max(160), shippingFee: z.number().nonnegative().max(1000), bundlePrices: z.object({ 2: z.number().positive().max(10000), 3: z.number().positive().max(10000), 4: z.number().positive().max(10000) }), giftLabels: z.object({ stickers: z.object({ ka: z.string().min(1).max(160), en: z.string().min(1).max(160), image: imageUrlInput.optional(), active: z.boolean() }), magnet: z.object({ ka: z.string().min(1).max(160), en: z.string().min(1).max(160), image: imageUrlInput.optional(), active: z.boolean() }), pin: z.object({ ka: z.string().min(1).max(160), en: z.string().min(1).max(160), image: imageUrlInput.optional(), active: z.boolean() }) }), giftStickersStock: z.number().int().nonnegative().max(1_000_000), giftMagnetStock: z.number().int().nonnegative().max(1_000_000), giftPinStock: z.number().int().nonnegative().max(1_000_000) })).mutation(({ input }) => updateStoreSettings(input)),
+    updateSettings: adminProcedure.input(z.object({ bankName: z.string().min(2).max(100), iban: z.string().min(8).max(64), receiverName: z.string().min(2).max(160), secondBankName: z.string().min(2).max(100), secondIban: z.string().min(8).max(64), secondReceiverName: z.string().min(2).max(160), shippingFee: z.number().nonnegative().max(1000), bundlePrices: z.object({ 2: z.number().positive().max(10000), 3: z.number().positive().max(10000), 4: z.number().positive().max(10000) }), facebookFollowers: z.number().int().nonnegative().max(1000000000), instagramFollowers: z.number().int().nonnegative().max(1000000000), tiktokFollowers: z.number().int().nonnegative().max(1000000000), giftLabels: z.object({ stickers: z.object({ ka: z.string().min(1).max(160), en: z.string().min(1).max(160), image: imageUrlInput.optional(), active: z.boolean() }), magnet: z.object({ ka: z.string().min(1).max(160), en: z.string().min(1).max(160), image: imageUrlInput.optional(), active: z.boolean() }), pin: z.object({ ka: z.string().min(1).max(160), en: z.string().min(1).max(160), image: imageUrlInput.optional(), active: z.boolean() }) }), giftStickersStock: z.number().int().nonnegative().max(1_000_000), giftMagnetStock: z.number().int().nonnegative().max(1_000_000), giftPinStock: z.number().int().nonnegative().max(1_000_000) })).mutation(({ input }) => updateStoreSettings(input)),
     createProduct: adminProcedure.input(productInput).mutation(({ input }) => createCatalogProduct(input)),
     updateProduct: adminProcedure.input(productInput.extend({ id: z.number() })).mutation(({ input }) => { const { id, ...data } = input; return updateCatalogProduct(id, data); }),
     deleteProduct: adminProcedure.input(z.object({ id: z.number().int().positive() })).mutation(({ input }) => deleteCatalogProduct(input.id)),
