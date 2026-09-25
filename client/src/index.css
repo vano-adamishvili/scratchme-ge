@@ -173,12 +173,24 @@ button { cursor: pointer; }
 .trust-card-icon span { color:var(--ink); font:500 11px 'DM Mono',monospace; letter-spacing:.08em; }
 .trust-card b { font:600 22px/1.02 'Space Grotesk',sans-serif; letter-spacing:-.05em; max-width:270px; }
 .trust-card > span { color:#57564e; font-size:13px; line-height:1.5; max-width:270px; }
+.trust-card { will-change:transform; transition:transform .22s var(--ease-out), box-shadow .22s ease; }
+.trust-card:hover { box-shadow:7px 8px 0 var(--ink); }
+.trust-card:hover .trust-card-icon svg { transform:rotate(-8deg) scale(1.08); }
+.trust-card-icon svg { transition:transform .2s var(--ease-out); }
+.trust-card-pick:hover { transform:translateY(-6px) rotate(-1deg); }
+.trust-card-discover:hover { transform:translateY(5px) rotate(-2deg); }
+.trust-card-scratch:hover { transform:translateY(-4px) rotate(2deg); }
 .trust-card-discover { transform:translateY(12px) rotate(-1deg); }
 .trust-card-scratch { transform:translateY(3px) rotate(1deg); }
 .scratch-preview { display:flex; gap:6px; margin-top:14px; }
 .scratch-cell { width:29px; height:29px; display:grid; place-items:center; border:1px solid var(--ink); background:#f8f6ed; color:#77746b; font:600 14px 'DM Mono',monospace; box-shadow:2px 2px 0 rgba(20,20,18,.18); }
 .scratch-cell.revealed { background:var(--coral); color:var(--ink); position:relative; }
 .scratch-cell.revealed::after { content:""; position:absolute; inset:4px; border:1px dashed rgba(20,20,18,.5); transform:rotate(-7deg); }
+.scratch-demo-wrap { display:flex; align-items:center; gap:8px; margin-top:12px; }
+.scratch-demo { width:112px; height:34px; display:grid; place-items:center; border:1px solid var(--ink); box-shadow:3px 3px 0 var(--ink); color:var(--ink); cursor:crosshair; user-select:none; touch-action:none; font:500 10px 'DM Mono',monospace; text-transform:uppercase; transition:box-shadow .16s ease, transform .16s var(--ease-out); }
+.scratch-demo:hover, .scratch-demo:focus-visible { transform:translate(-1px,-1px); box-shadow:5px 5px 0 var(--ink); outline:2px solid var(--coral); outline-offset:2px; }
+.scratch-demo-reset { border:0; background:transparent; color:var(--ink); padding:4px; text-decoration:underline; font:500 10px 'DM Mono',monospace; }
+.scratch-demo-reset:hover { color:var(--coral); }
 .trust-story { max-width:720px; margin:34px auto 18px; text-align:center; font:600 clamp(20px,3vw,30px)/1.08 'Space Grotesk',sans-serif; letter-spacing:-.05em; }
 .trust-cta { display:flex; width:max-content; margin:0 auto 24px; }
 .trust-badges { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }

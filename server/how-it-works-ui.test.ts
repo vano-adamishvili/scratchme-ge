@@ -16,13 +16,20 @@ describe("How It Works section", () => {
     expect(i18n).toContain("ეს უბრალოდ სია არ არის — ეს შენი აღმოჩენებისა და მიღწევების თვალსაჩინო ისტორიაა.");
     expect(i18n).toContain('"trust.cta": "აირჩიე პოსტერი"');
     expect(home).toContain('href="/shop" className="button trust-cta"');
+    expect(home).toContain('href="#how-it-works" className="button secondary hero-how-button"');
     expect(home).toContain('className="scratch-cell revealed"');
     expect(home).toContain('className="scratch-cell">?</span>');
+    expect(home).toContain('className="scratch-demo"');
+    expect(home).toContain('onPointerDown={() => setScratchProgress');
+    expect(home).toContain('className="scratch-demo-reset"');
   });
 
   it("keeps the colorful cards readable and stacked on mobile", () => {
     expect(styles).toContain(".trust-card-icon");
+    expect(styles).toContain(".trust-card:hover");
+    expect(styles).toContain(".trust-card-pick:hover");
     expect(styles).toContain(".scratch-preview");
+    expect(styles).toContain(".scratch-demo");
     expect(styles).toContain(".trust-story");
     expect(styles).toContain(".trust-card, .trust-card-discover, .trust-card-scratch { min-height:210px; transform:none; }");
   });
