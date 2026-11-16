@@ -8,7 +8,7 @@ const ok = inStock(p);
 <article class="pc" data-cats={p.categories.join(' ')} style={`--a:${p.accent}`}>
   <a href={`/product/${p.slug}`} class="img" aria-label={p.title}>
     <img src={p.images[0]?.url} alt={p.title} loading={eager ? 'eager' : 'lazy'} decoding="async" width="600" height="800" />
-    {p.images[1] && <img class="alt" src={p.images[1].url} alt="" loading="lazy" decoding="async" width="600" height="800" />}
+    {p.images[1] && <img class="alt" data-src={p.images[1].url} alt="" decoding="async" width="600" height="800" />}
     {p.badge && <span class="badge">{p.badge}</span>}
   </a>
   <div class="body">
@@ -26,7 +26,7 @@ const ok = inStock(p);
   .img { position: relative; display: block; aspect-ratio: 3 / 4; background: color-mix(in srgb, var(--a) 22%, var(--paper)); overflow: hidden; border-bottom: 1.5px solid var(--ink); }
   .img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 6%; transition: opacity .35s ease, transform .35s var(--ease); }
   .img .alt { opacity: 0; }
-  .pc:hover .img .alt { opacity: 1; } .pc:hover .img img:first-child { opacity: 0; }
+  .pc:hover .img .alt.on { opacity: 1; } .pc:hover .img:has(.alt.on) img:first-child { opacity: 0; }
   .img .badge { position: absolute; top: 19%; left: 0; max-width: 90%; background: var(--a); border-left: 0; box-shadow: 2px 2px 0 var(--ink); }
   @media (max-width: 520px) { .img .badge { font-size: 9px; padding: 3px 6px; } }
   .body { display: flex; flex-direction: column; gap: 8px; padding: 14px; flex: 1; }
@@ -35,3 +35,13 @@ const ok = inStock(p);
   .row { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   @media (hover: none) { .pc:hover .img .alt { opacity: 0; } .pc:hover .img img:first-child { opacity: 1; } }
 </style>
+<script>
+  // მეორე (გადაფხეკილი) ფოტო მხოლოდ მაუსის მიტანისას იტვირთება — ტელეფონზე საერთოდ არა
+  document.addEventListener('pointerover', (e) => {
+    if ((e as PointerEvent).pointerType !== 'mouse') return;
+    const alt = (e.target as HTMLElement).closest?.('.pc')?.querySelector<HTMLImageElement>('img.alt[data-src]');
+    if (!alt) return;
+    alt.addEventListener('load', () => alt.classList.add('on'), { once: true });
+    alt.src = alt.dataset.src!; alt.removeAttribute('data-src');
+  });
+</script>

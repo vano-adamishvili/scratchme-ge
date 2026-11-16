@@ -26,7 +26,7 @@ const ld = { '@context': 'https://schema.org', '@type': 'Store', name: 'scratchm
       {demoOk && (
         <a class="sd" id="sd" href={`/product/${demo.slug}`} aria-label={`${demo.title} — ნახე პოსტერი`} data-grid={JSON.stringify(grid)} data-cover={demo.images[0].url}>
           <div class="sd-box">
-            <img class="sd-under" src={demo.images[1].url} alt="" decoding="async" />
+            <img class="sd-under" data-src={demo.images[1].url} alt="" decoding="async" />
             <canvas aria-hidden="true"></canvas>
             <span class="coin" aria-hidden="true">₾</span>
           </div>
@@ -140,7 +140,8 @@ const ld = { '@context': 'https://schema.org', '@type': 'Store', name: 'scratchm
       let w0 = box.clientWidth;
       new ResizeObserver(() => { const w = box.clientWidth; if (w && Math.abs(w - w0) > 2) { w0 = w; paint(); } }).observe(box);
     };
-    cover.onload = ready; cover.src = sd.dataset.cover!;
-    if (under.complete && under.naturalWidth) ready(); else under.addEventListener('load', ready, { once: true });
+    // დემოს ფოტოები გვერდის ჩატვირთვის შემდეგ იტვირთება, რომ კატალოგს არ შეეჯიბროს
+    const start = () => { cover.onload = ready; under.addEventListener('load', ready, { once: true }); cover.src = sd.dataset.cover!; under.src = under.dataset.src!; };
+    if (document.readyState === 'complete') start(); else window.addEventListener('load', start, { once: true });
   }
 </script>
