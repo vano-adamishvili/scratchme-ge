@@ -66,7 +66,7 @@ const ld = { '@context': 'https://schema.org', '@type': 'Product', name: p.title
   .crumbs { margin-bottom: 18px; } .crumbs a { text-decoration: none; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 4vw, 56px); align-items: start; }
   .main { background: color-mix(in srgb, var(--a) 22%, var(--paper)); }
-  .main img { width: 100%; aspect-ratio: 3/4; object-fit: contain; padding: 4%; }
+  .main img { display: block; width: 100%; height: auto; }
   .thumbs { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
   .th { display: grid; gap: 4px; width: 92px; padding: 4px; border: 1.5px solid var(--line); background: #fff; font-size: 11px; line-height: 1.2; text-align: center; }
   .th.on { border-color: var(--ink); box-shadow: 3px 3px 0 var(--a); }
