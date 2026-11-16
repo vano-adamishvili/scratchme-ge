@@ -6,9 +6,11 @@ import { productBySlug } from '../../data/catalog';
 export function getStaticPaths() { return POSTS.map((p) => ({ params: { slug: p.slug }, props: { post: p } })); }
 const { post } = Astro.props as { post: Post };
 const prod = post.product ? productBySlug(post.product) : undefined;
-const ld = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title, datePublished: post.date, description: post.description, image: post.cover };
+const cover = post.cover ? new URL(localImage(post.cover)?.lg ?? post.cover, Astro.site).href : undefined;
+const ld = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title, datePublished: post.date, description: post.description, image: cover };
+import { localImage } from '../../data/catalog';
 ---
-<Base title={post.title} description={post.description} image={post.cover} type="article" jsonLd={ld}>
+<Base title={post.title} description={post.description} image={cover} type="article" jsonLd={ld}>
   <article class="container">
     <div class="page-head"><a href="/blog" class="eyebrow">← ბლოგი</a> <span class="eyebrow">· {fmtDate(post.date)}</span><h1>{post.title}</h1></div>
     <div class="prose"><post.Content /></div>
