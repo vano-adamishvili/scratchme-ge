@@ -8,6 +8,8 @@ const nav = [
   { href: '/blog', label: 'ბლოგი' },
   { href: '/contact', label: 'კონტაქტი' },
 ];
+// ლოგო ჯერ ძველი საიტიდან იტვირთება; თუ ვერ ჩაიტვირთა, ტექსტური ლოგო ჩანს
+const LOGO = 'https://scratchme.ge/logo-wordmark-dark.webp';
 const b2 = BUNDLES.find((b) => b.size === 2);
 const free = BUNDLES.find((b) => b.freeShipping);
 const gift = BUNDLES.find((b) => b.gift);
@@ -19,7 +21,10 @@ const gift = BUNDLES.find((b) => b.gift);
 </div>
 <header class="nav">
   <div class="container in">
-    <a href="/" class="brand" aria-label="scratchme.ge — მთავარი"><Logo /></a>
+    <a href="/" class="brand" aria-label="scratchme.ge — მთავარი">
+      <img class="lg" src={LOGO} alt="scratchme.ge" height="46" decoding="async" onerror="this.hidden=true;this.nextElementSibling.hidden=false" />
+      <span hidden><Logo /></span>
+    </a>
     <nav class="links" aria-label="მთავარი მენიუ">
       {nav.map((n) => <a href={n.href}>{n.label}</a>)}
     </nav>
@@ -40,22 +45,34 @@ const gift = BUNDLES.find((b) => b.gift);
   .announce { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 7px 12px; background: var(--ink); border-bottom: 2px solid var(--coral); font: 600 11px/1.2 var(--mono); }
   .offer { padding: 5px 9px; border: 1px solid var(--ink); color: var(--ink); box-shadow: 3px 3px 0 rgba(247,245,238,.25); white-space: nowrap; }
   .o1 { background: var(--lime); } .o2 { background: var(--yellow); } .o3 { background: var(--coral); }
-  .nav { position: sticky; top: 0; z-index: 40; background: rgba(247,245,238,.94); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  .nav { position: sticky; top: 0; z-index: 40; background: rgba(247,245,238,.94); backdrop-filter: blur(12px); border-bottom: 1.5px solid var(--ink); }
+  .nav::after { content: ''; position: absolute; left: 0; right: 0; bottom: -5px; height: 4px; background: linear-gradient(90deg, var(--lime) 0 25%, var(--yellow) 25% 50%, var(--coral) 50% 75%, var(--lilac) 75% 100%); pointer-events: none; }
   .in { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
-  .brand { text-decoration: none; }
-  .links { display: flex; gap: 22px; }
-  .links a { text-decoration: none; font-weight: 600; font-size: 15px; opacity: .8; }
-  .links a:hover { opacity: 1; text-decoration: underline; text-decoration-color: var(--coral); text-underline-offset: 5px; text-decoration-thickness: 2px; }
+  .brand { text-decoration: none; display: flex; align-items: center; transition: transform .2s var(--ease); }
+  .brand:hover { transform: rotate(-2deg) scale(1.04); }
+  .lg { height: 46px; width: auto; max-width: 190px; object-fit: contain; }
+  .links { display: flex; gap: 6px; }
+  .links a { --h: var(--lime); padding: 7px 11px; border: 1.5px solid transparent; text-decoration: none; font-weight: 700; font-size: 15px; transition: background .15s ease, transform .15s var(--ease), box-shadow .15s ease, border-color .15s ease; }
+  .links a:nth-child(2) { --h: var(--yellow); background: var(--yellow); border-color: var(--ink); box-shadow: 2px 2px 0 var(--ink); }
+  .links a:nth-child(3) { --h: var(--mint); } .links a:nth-child(4) { --h: var(--lilac); } .links a:nth-child(5) { --h: var(--blue); }
+  .links a:hover { background: var(--h); border-color: var(--ink); box-shadow: 3px 3px 0 var(--ink); transform: translateY(-2px) rotate(-1.5deg); }
   .right { display: flex; align-items: center; gap: 8px; }
-  .cart { position: relative; display: grid; place-items: center; width: 46px; height: 46px; border: 1.5px solid var(--ink); background: #fff; box-shadow: 3px 3px 0 var(--ink); }
-  .cart .n { position: absolute; top: -9px; right: -9px; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 11px; background: var(--coral); border: 1.5px solid var(--ink); font: 700 12px/19px var(--mono); text-align: center; }
+  .cart { position: relative; display: grid; place-items: center; width: 46px; height: 46px; border: 1.5px solid var(--ink); background: var(--coral); box-shadow: 3px 3px 0 var(--ink); transition: transform .15s var(--ease), box-shadow .15s ease, background .15s ease; }
+  .cart:hover { transform: translate(-1px, -2px) rotate(-3deg); box-shadow: 5px 5px 0 var(--ink); background: var(--lime); }
+  .cart .n { position: absolute; top: -9px; right: -9px; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 11px; background: var(--lime); border: 1.5px solid var(--ink); font: 700 12px/19px var(--mono); text-align: center; }
+  .cart:hover .n { background: var(--coral); }
+  .cart.pop { animation: pop .45s var(--ease); }
+  @keyframes pop { 30% { transform: scale(1.22) rotate(-8deg); } 60% { transform: scale(.94) rotate(4deg); } }
   .burger { display: none; width: 46px; height: 46px; border: 1.5px solid var(--ink); background: var(--lime); font-size: 20px; box-shadow: 3px 3px 0 var(--ink); }
   .mnav { display: grid; border-top: 1px solid var(--line); background: var(--paper); }
   .mnav[hidden] { display: none; }
   .mnav a { padding: 14px 16px; border-bottom: 1px solid var(--line); text-decoration: none; font-weight: 700; }
-  @media (max-width: 860px) { .links { display: none; } .burger { display: block; } .offer.o3 { display: none; } }
+  @media (max-width: 860px) { .links { display: none; } .burger { display: block; } .offer.o3 { display: none; } .lg { height: 40px; max-width: 160px; } }
+  @media (prefers-reduced-motion: reduce) { .cart.pop { animation: none; } }
 </style>
 <script>
+  const cartEl = document.querySelector<HTMLElement>('.nav .cart');
+  window.addEventListener('cart', () => { if (!cartEl) return; cartEl.classList.remove('pop'); void cartEl.offsetWidth; cartEl.classList.add('pop'); });
   const b = document.querySelector<HTMLButtonElement>('.burger')!, m = document.getElementById('mnav')!;
   b.addEventListener('click', () => { const o = m.hidden; m.hidden = !o; b.setAttribute('aria-expanded', String(o)); });
   m.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('a')) { m.hidden = true; b.setAttribute('aria-expanded', 'false'); } });
