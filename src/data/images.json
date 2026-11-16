@@ -1,1 +1,230 @@
-{}
+{
+  "https://scratchme.ge/logo-wordmark-dark.webp": {
+    "sm": "/img/logo-2424add6.webp",
+    "lg": "/img/logo-2424add6.webp",
+    "w": 676,
+    "h": 150
+  },
+  "https://scratchme.ge/uploads/products/1/poster-30-weeks-30-books-covered_23fdb86e.webp": {
+    "sm": "/img/30-weeks-30-books-2a72deb1-sm.webp",
+    "lg": "/img/30-weeks-30-books-2a72deb1-lg.webp",
+    "w": 1200,
+    "h": 1688
+  },
+  "https://scratchme.ge/uploads/products/1/poster-30-weeks-30-books-scratched_50327ac9.webp": {
+    "sm": "/img/30-weeks-30-books-c64b8204-sm.webp",
+    "lg": "/img/30-weeks-30-books-c64b8204-lg.webp",
+    "w": 1200,
+    "h": 1688
+  },
+  "https://scratchme.ge/uploads/products/1/Kids_Books_7-10_covered_0f1a73cd.png": {
+    "sm": "/img/35-books-kids-6-9-a7838341-sm.webp",
+    "lg": "/img/35-books-kids-6-9-a7838341-lg.webp",
+    "w": 1600,
+    "h": 2251
+  },
+  "https://scratchme.ge/uploads/products/1/Kids_Books_7-10_scratched_03611a47.png": {
+    "sm": "/img/35-books-kids-6-9-30e160f4-sm.webp",
+    "lg": "/img/35-books-kids-6-9-30e160f4-lg.webp",
+    "w": 1600,
+    "h": 2251
+  },
+  "https://scratchme.ge/uploads/products/1/----------03.11--3-_d73ed8d4.png": {
+    "sm": "/img/35-books-kids-9-12-aee4cdb1-sm.webp",
+    "lg": "/img/35-books-kids-9-12-aee4cdb1-lg.webp",
+    "w": 1422,
+    "h": 2000
+  },
+  "https://scratchme.ge/uploads/products/1/----------03.11--2-_0b659a34.png": {
+    "sm": "/img/35-books-kids-9-12-fa2c6a9d-sm.webp",
+    "lg": "/img/35-books-kids-9-12-fa2c6a9d-lg.webp",
+    "w": 1422,
+    "h": 2000
+  },
+  "https://scratchme.ge/uploads/products/1/poster-date-night-ideas-covered_a0d1d787.webp": {
+    "sm": "/img/date-night-ideas-7ed28f0c-sm.webp",
+    "lg": "/img/date-night-ideas-7ed28f0c-lg.webp",
+    "w": 1200,
+    "h": 1688
+  },
+  "https://scratchme.ge/uploads/products/1/poster-date-night-ideas-scratched_54637d4a.webp": {
+    "sm": "/img/date-night-ideas-b2fc2eaa-sm.webp",
+    "lg": "/img/date-night-ideas-b2fc2eaa-lg.webp",
+    "w": 1200,
+    "h": 1688
+  },
+  "https://scratchme.ge/uploads/products/1/poster-discover-tbilisi-covered_95b899b9.webp": {
+    "sm": "/img/discover-tbilisi-590324cf-sm.webp",
+    "lg": "/img/discover-tbilisi-590324cf-lg.webp",
+    "w": 1200,
+    "h": 1688
+  },
+  "https://scratchme.ge/uploads/products/1/poster-discover-tbilisi-scratched_2f16f32b.webp": {
+    "sm": "/img/discover-tbilisi-d53d9c84-sm.webp",
+    "lg": "/img/discover-tbilisi-d53d9c84-lg.webp",
+    "w": 1200,
+    "h": 1688
+  },
+  "https://scratchme.ge/uploads/products/1/poster-oscars-best-picture-covered_b8c7ea39.webp": {
+    "sm": "/img/oscars-best-picture-3c765bcb-sm.webp",
+    "lg": "/img/oscars-best-picture-3c765bcb-lg.webp",
+    "w": 1200,
+    "h": 1688
+  },
+  "https://scratchme.ge/uploads/products/1/poster-oscars-best-picture-scratched_05100155.webp": {
+    "sm": "/img/oscars-best-picture-e0eb5d1a-sm.webp",
+    "lg": "/img/oscars-best-picture-e0eb5d1a-lg.webp",
+    "w": 1200,
+    "h": 1688
+  },
+  "https://scratchme.ge/uploads/products/1/----------03.11--2-_fa7390d9.png": {
+    "sm": "/img/top-100-anime-7edbd2ef-sm.webp",
+    "lg": "/img/top-100-anime-7edbd2ef-lg.webp",
+    "w": 1422,
+    "h": 2000
+  },
+  "https://scratchme.ge/uploads/products/1/----------03.11_35a77d1e.png": {
+    "sm": "/img/top-100-anime-9619d9aa-sm.webp",
+    "lg": "/img/top-100-anime-9619d9aa-lg.webp",
+    "w": 1422,
+    "h": 2000
+  },
+  "https://scratchme.ge/uploads/products/1/poster-top-100-books-covered_2bd3f051.webp": {
+    "sm": "/img/top-100-books-b33e29aa-sm.webp",
+    "lg": "/img/top-100-books-b33e29aa-lg.webp",
+    "w": 1200,
+    "h": 1688
+  },
+  "https://scratchme.ge/uploads/products/1/poster-top-100-books-scratched_1fda6c59.webp": {
+    "sm": "/img/top-100-books-1d8ab98e-sm.webp",
+    "lg": "/img/top-100-books-1d8ab98e-lg.webp",
+    "w": 1200,
+    "h": 1688
+  },
+  "https://scratchme.ge/uploads/products/1/------------_c22d7dcc.png": {
+    "sm": "/img/top-100-books-8bb61905-sm.webp",
+    "lg": "/img/top-100-books-8bb61905-lg.webp",
+    "w": 1422,
+    "h": 2000
+  },
+  "https://scratchme.ge/uploads/products/1/10_f7911dae.jpg": {
+    "sm": "/img/top-100-cartoons-7a3d176b-sm.webp",
+    "lg": "/img/top-100-cartoons-7a3d176b-lg.webp",
+    "w": 2667,
+    "h": 3750
+  },
+  "https://scratchme.ge/uploads/products/1/8_7f37f7ea.jpg": {
+    "sm": "/img/top-100-cartoons-dee17a5a-sm.webp",
+    "lg": "/img/top-100-cartoons-dee17a5a-lg.webp",
+    "w": 2667,
+    "h": 3750
+  },
+  "https://scratchme.ge/uploads/products/1/Top_100_Movies_covered_88937017.png": {
+    "sm": "/img/top-100-movies-7cf79b65-sm.webp",
+    "lg": "/img/top-100-movies-7cf79b65-lg.webp",
+    "w": 1600,
+    "h": 2251
+  },
+  "https://scratchme.ge/uploads/products/1/Top_100_Movies_scratched_0689c24f.png": {
+    "sm": "/img/top-100-movies-42874069-sm.webp",
+    "lg": "/img/top-100-movies-42874069-lg.webp",
+    "w": 1600,
+    "h": 2251
+  },
+  "https://scratchme.ge/uploads/products/1/poster-top-100-places-europe-covered_1c9e45ca.webp": {
+    "sm": "/img/top-100-places-europe-eda97f88-sm.webp",
+    "lg": "/img/top-100-places-europe-eda97f88-lg.webp",
+    "w": 1200,
+    "h": 1688
+  },
+  "https://scratchme.ge/uploads/products/1/poster-top-100-places-europe-scratched_e7b89c56.webp": {
+    "sm": "/img/top-100-places-europe-9d05bf4c-sm.webp",
+    "lg": "/img/top-100-places-europe-9d05bf4c-lg.webp",
+    "w": 1200,
+    "h": 1688
+  },
+  "https://scratchme.ge/uploads/products/1/------------_42a9787c.png": {
+    "sm": "/img/top-100-places-europe-ca2f3046-sm.webp",
+    "lg": "/img/top-100-places-europe-ca2f3046-lg.webp",
+    "w": 1422,
+    "h": 2000
+  },
+  "https://scratchme.ge/uploads/products/1/poster-top-100-places-georgia-covered_b261bbc3.webp": {
+    "sm": "/img/top-100-places-georgia-d5305b00-sm.webp",
+    "lg": "/img/top-100-places-georgia-d5305b00-lg.webp",
+    "w": 1200,
+    "h": 1688
+  },
+  "https://scratchme.ge/uploads/products/1/poster-top-100-places-georgia-scratched_57f63ea1.webp": {
+    "sm": "/img/top-100-places-georgia-769b6718-sm.webp",
+    "lg": "/img/top-100-places-georgia-769b6718-lg.webp",
+    "w": 1200,
+    "h": 1688
+  },
+  "https://scratchme.ge/uploads/products/1/3_e035db9e.png": {
+    "sm": "/img/top-100-places-georgia-58d51549-sm.webp",
+    "lg": "/img/top-100-places-georgia-58d51549-lg.webp",
+    "w": 1422,
+    "h": 2000
+  },
+  "https://scratchme.ge/uploads/products/1/poster-top-100-places-world-covered_7bda230c.webp": {
+    "sm": "/img/top-100-places-world-3e09e99c-sm.webp",
+    "lg": "/img/top-100-places-world-3e09e99c-lg.webp",
+    "w": 1200,
+    "h": 1688
+  },
+  "https://scratchme.ge/uploads/products/1/poster-top-100-places-world-scratched_a3e25d11.webp": {
+    "sm": "/img/top-100-places-world-b5a8a54f-sm.webp",
+    "lg": "/img/top-100-places-world-b5a8a54f-lg.webp",
+    "w": 1200,
+    "h": 1688
+  },
+  "https://scratchme.ge/uploads/products/1/3_e1112d60.png": {
+    "sm": "/img/top-100-tv-shows-2ba7cd53-sm.webp",
+    "lg": "/img/top-100-tv-shows-2ba7cd53-lg.webp",
+    "w": 1422,
+    "h": 2000
+  },
+  "https://scratchme.ge/uploads/products/1/3_e2757df1.png": {
+    "sm": "/img/top-100-tv-shows-64ea3204-sm.webp",
+    "lg": "/img/top-100-tv-shows-64ea3204-lg.webp",
+    "w": 2133,
+    "h": 3000
+  },
+  "https://scratchme.ge/uploads/products/1/----------03.11--2-_314179ba.png": {
+    "sm": "/img/top-30-anime-4912f7af-sm.webp",
+    "lg": "/img/top-30-anime-4912f7af-lg.webp",
+    "w": 1422,
+    "h": 2000
+  },
+  "https://scratchme.ge/uploads/products/1/----------03.11_a4bededf.png": {
+    "sm": "/img/top-30-anime-83720ed0-sm.webp",
+    "lg": "/img/top-30-anime-83720ed0-lg.webp",
+    "w": 1422,
+    "h": 2000
+  },
+  "https://scratchme.ge/uploads/products/1/poster-top-30-hikes-georgia-covered_0a0195dc.webp": {
+    "sm": "/img/top-30-hikes-georgia-7f91df27-sm.webp",
+    "lg": "/img/top-30-hikes-georgia-7f91df27-lg.webp",
+    "w": 1200,
+    "h": 1688
+  },
+  "https://scratchme.ge/uploads/products/1/poster-top-30-hikes-georgia-scratched_1db1b9b9.webp": {
+    "sm": "/img/top-30-hikes-georgia-32fa2413-sm.webp",
+    "lg": "/img/top-30-hikes-georgia-32fa2413-lg.webp",
+    "w": 1200,
+    "h": 1688
+  },
+  "https://scratchme.ge/uploads/products/1/----------03.11--2-_9355a47a.png": {
+    "sm": "/img/top-30-pixar-02fee7d4-sm.webp",
+    "lg": "/img/top-30-pixar-02fee7d4-lg.webp",
+    "w": 1422,
+    "h": 2000
+  },
+  "https://scratchme.ge/uploads/products/1/----------03.11_22e592ec.png": {
+    "sm": "/img/top-30-pixar-b0584fc8-sm.webp",
+    "lg": "/img/top-30-pixar-b0584fc8-lg.webp",
+    "w": 1422,
+    "h": 2000
+  }
+}
