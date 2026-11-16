@@ -1,20 +1,21 @@
 ---
 import { PRODUCTS, BUNDLES, GIFTS, SETTINGS, inStock } from '../data/catalog';
-const items = PRODUCTS.filter(inStock).map((p) => ({ slug: p.slug, title: p.title, img: p.images[0]?.url, price: p.price, accent: p.accent }));
+const items = Object.fromEntries(PRODUCTS.filter(inStock).map((p) => [p.slug, { t: p.title, i: p.images[0]?.url }]));
+const bundles = BUNDLES.map((b) => ({ size: b.size, price: b.price, free: b.freeShipping, gift: b.gift }));
 ---
 <section id="bundle-builder" class="section bb">
   <div class="container">
     <div class="section-head">
       <div>
-        <span class="eyebrow">ნაბიჯი 1 / აირჩიე ზომა</span>
+        <span class="eyebrow">ნაკრები / აირჩიე ზომა</span>
         <h2>მეტი პოსტერი. მეტი გეგმა.<br />ნაკლები ფიქრი.</h2>
       </div>
-      <p>აირჩიე ნაკრების ზომა, შემდეგ თავად მონიშნე ზუსტად ის პოსტერები, რომლებიც გინდა.</p>
+      <p>აირჩიე ნაკრების ზომა და პოსტერები პირდაპირ კატალოგში მონიშნე — როგორც კი შეავსებ, ნაკრები კალათაში გადავა.</p>
     </div>
 
-    <div class="sizes" role="radiogroup" aria-label="ნაკრების ზომა">
-      {BUNDLES.map((b, i) => (
-        <button type="button" class:list={['size', { on: i === 1 }]} role="radio" aria-checked={i === 1 ? 'true' : 'false'} data-size={b.size} data-price={b.price}>
+    <div class="sizes">
+      {BUNDLES.map((b) => (
+        <button type="button" class="size" data-size={b.size} aria-pressed="false">
           <span class="n">{b.size}</span>
           <span class="t">{b.size}-პოსტერიანი ნაკრები</span>
           <span class="p">{b.price.toFixed(2)} ₾</span>
@@ -22,106 +23,189 @@ const items = PRODUCTS.filter(inStock).map((p) => ({ slug: p.slug, title: p.titl
             {b.freeShipping ? <em class="free">უფასო მიტანა</em> : <em>+ მიტანა {SETTINGS.shippingFee.toFixed(2)} ₾</em>}
             {b.gift && <em class="gift">🎁 საჩუქარი</em>}
           </span>
+          <span class="go">აირჩიე პოსტერები →</span>
         </button>
       ))}
-    </div>
-
-    <p class="eyebrow step2">ნაბიჯი 2 / მონიშნე პოსტერები — <b id="bb-count">0</b> / <b id="bb-need">3</b></p>
-    <div class="picks" id="bb-picks">
-      {items.map((p) => (
-        <button type="button" class="pick" data-slug={p.slug} aria-pressed="false" style={`--a:${p.accent}`}>
-          <img src={p.img} alt="" loading="lazy" decoding="async" width="300" height="400" />
-          <span>{p.title}</span>
-          <i aria-hidden="true">✓</i>
-        </button>
-      ))}
-    </div>
-
-    <div class="gifts" id="bb-gifts" hidden>
-      <p class="eyebrow">ნაბიჯი 3 / აირჩიე საჩუქარი</p>
-      <div class="gl">
-        {GIFTS.map((g) => <label class="chip"><input type="radio" name="bb-gift" value={g.id} /> {g.name}</label>)}
-      </div>
-    </div>
-
-    <div class="bar card">
-      <div>
-        <strong id="bb-title">3-პოსტერიანი ნაკრები</strong>
-        <span class="muted" id="bb-hint">მონიშნე 3 პოსტერი</span>
-      </div>
-      <span class="price" id="bb-price"></span>
-      <button class="btn coral" id="bb-add" disabled>ნაკრები კალათაში</button>
     </div>
   </div>
 </section>
 
+<div id="bb-tray" class="tray" role="region" aria-label="ნაკრების აწყობა" hidden>
+  <div class="tray-in">
+    <div class="info">
+      <span class="step">ნაკრები / შეარჩიე პოსტერები</span>
+      <strong>არჩეულია <b id="bb-count">0</b> / <b id="bb-need">3</b></strong>
+      <span class="left" id="bb-hint"></span>
+    </div>
+    <div class="slots" id="bb-slots"></div>
+    <div class="sum">
+      <span id="bb-title"></span>
+      <b id="bb-price"></b>
+      <span id="bb-perk"></span>
+    </div>
+    <button type="button" class="x" id="bb-close" aria-label="ნაკრების გაუქმება">✕</button>
+  </div>
+  <div class="tray-gift" id="bb-gifts" hidden>
+    <span>🎁 აირჩიე საჩუქარი:</span>
+    {GIFTS.map((g) => <button type="button" data-gift={g.id}>{g.name}</button>)}
+  </div>
+</div>
+<script type="application/json" id="bb-data" set:html={JSON.stringify({ items, bundles })} />
+
 <style>
   .bb { background: var(--cream); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
   .sizes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-  .size { position: relative; display: grid; gap: 4px; text-align: left; padding: 18px; background: #fff; border: 1.5px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); transition: transform .15s var(--ease); }
-  .size:hover { transform: translateY(-2px); }
-  .size.on { background: var(--lime); box-shadow: 6px 6px 0 var(--ink); }
+  .size { position: relative; display: grid; gap: 4px; text-align: left; padding: 18px; background: #fff; border: 1.5px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); transition: transform .15s var(--ease), box-shadow .15s ease; }
+  .size:hover { transform: translateY(-3px); box-shadow: 7px 8px 0 var(--ink); }
+  .size[aria-pressed='true'] { background: var(--lime); box-shadow: 6px 6px 0 var(--ink); }
   .size .n { position: absolute; right: 14px; top: 6px; font: 700 54px/1 var(--display); opacity: .15; }
   .size .t { font-weight: 700; font-size: 17px; }
   .size .p { font: 700 26px var(--display); letter-spacing: -.03em; }
   .perks { display: flex; flex-wrap: wrap; gap: 6px; }
   .perks em { font: 600 11px var(--mono); font-style: normal; padding: 3px 7px; border: 1px solid var(--ink); background: var(--paper); }
   .perks .free { background: var(--yellow); } .perks .gift { background: var(--coral); }
-  .step2 { margin: 30px 0 12px; } .step2 b { color: var(--ink); }
-  .picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
-  .pick { position: relative; display: grid; gap: 6px; padding: 8px; background: #fff; border: 1.5px solid var(--ink); text-align: left; font-size: 13px; font-weight: 600; line-height: 1.25; }
-  .pick img { aspect-ratio: 3/4; width: 100%; object-fit: contain; background: color-mix(in srgb, var(--a) 22%, var(--paper)); }
-  .pick i { position: absolute; top: -9px; right: -9px; width: 28px; height: 28px; border-radius: 50%; background: var(--lime); border: 1.5px solid var(--ink); display: none; place-items: center; font-style: normal; font-weight: 900; }
-  .pick[aria-pressed='true'] { outline: 3px solid var(--ink); background: var(--lime); }
-  .pick[aria-pressed='true'] i { display: grid; }
-  .pick.dim { opacity: .45; }
-  .gifts { margin-top: 22px; } .gl { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-  .gl input { accent-color: var(--coral); }
-  .bar { position: sticky; bottom: 12px; z-index: 5; margin-top: 22px; display: flex; align-items: center; gap: 16px; justify-content: space-between; padding: 12px 14px; flex-wrap: wrap; }
-  .bar > div { display: grid; }
-  @media (max-width: 700px) { .sizes { grid-template-columns: 1fr; } .size { padding: 12px 14px; } .size .n { font-size: 40px; } }
+  .go { margin-top: 8px; font-weight: 700; font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
+
+  .tray { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; padding: 0 12px 12px; pointer-events: none; }
+  .tray-in, .tray-gift { pointer-events: auto; width: min(1200px, 100%); margin: 0 auto; background: var(--ink); color: var(--paper); box-shadow: 6px 6px 0 var(--coral); }
+  .tray-in { display: flex; align-items: center; gap: 16px; padding: 12px 14px; }
+  .info { display: grid; gap: 2px; min-width: 0; }
+  .step { font: 600 11px var(--mono); text-transform: uppercase; color: var(--lime); }
+  .info strong { font: 700 20px var(--display); letter-spacing: -.02em; white-space: nowrap; }
+  .left { font-size: 12px; opacity: .7; }
+  .slots { display: flex; gap: 8px; flex: 1; min-width: 0; }
+  .sum { display: grid; text-align: right; font-size: 12px; line-height: 1.35; white-space: nowrap; }
+  .sum b { font: 700 20px var(--display); color: var(--lime); }
+  .x { flex: none; width: 38px; height: 38px; background: transparent; border: 1.5px solid rgba(247, 245, 238, .5); color: var(--paper); font-size: 15px; }
+  .x:hover { background: var(--coral); color: var(--ink); }
+  .tray-gift { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 14px; border-top: 1px solid rgba(247, 245, 238, .2); font-weight: 700; }
+  .tray-gift button { padding: 8px 12px; background: var(--lime); border: 1.5px solid var(--lime); color: var(--ink); font-weight: 700; font-size: 14px; }
+  .tray-gift button:hover { background: var(--paper); }
+  @media (max-width: 700px) {
+    .sizes { grid-template-columns: 1fr; gap: 10px; } .size { padding: 12px 14px; } .size .n { font-size: 40px; } .go { margin-top: 2px; }
+    .tray { padding: 0 6px 6px; } .tray-in { gap: 10px; padding: 9px 10px; }
+    .step, .left, .sum span { display: none; } .info strong { font-size: 14px; } .info strong b { font-size: 17px; }
+    .sum b { font-size: 15px; } .x { width: 32px; height: 32px; }
+  }
+</style>
+<style is:global>
+  .bb-slot { position: relative; flex: 1; max-width: 190px; min-width: 0; height: 60px; display: flex; align-items: center; gap: 8px; padding: 5px; border: 1.5px dashed rgba(247, 245, 238, .4); font-size: 12px; font-weight: 600; line-height: 1.2; color: rgba(247, 245, 238, .6); }
+  .bb-slot.full { border-style: solid; border-color: var(--lime); background: rgba(247, 245, 238, .1); color: var(--paper); cursor: pointer; }
+  .bb-slot img { height: 100%; width: auto; aspect-ratio: 3/4; object-fit: cover; flex: none; background: var(--paper); }
+  .bb-slot span { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .bb-slot .num { flex: none; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid currentColor; display: grid; place-items: center; }
+  .bb-slot .rm { position: absolute; top: -8px; right: -8px; width: 22px; height: 22px; display: grid; place-items: center; background: var(--coral); color: var(--ink); border: 1.5px solid var(--ink); font-size: 11px; font-weight: 900; }
+  #catalog { scroll-margin-top: 84px; }
+  body.bb-on { padding-bottom: 110px; }
+  body.bb-on #toast { bottom: 110px; }
+  body.bb-on #catalog .pc { cursor: pointer; }
+  body.bb-on #catalog .pc.bb-picked { outline: 4px solid var(--lime); box-shadow: 6px 7px 0 var(--ink); }
+  body.bb-on #catalog .pc.bb-picked [data-add] { background: var(--lime); color: var(--ink); }
+  body.bb-on #catalog .pc.bb-dim { opacity: .5; }
+  @media (max-width: 700px) {
+    .bb-slot { height: 48px; padding: 3px; max-width: 44px; justify-content: center; }
+    .bb-slot span:not(.num) { display: none; } .bb-slot .num { width: 22px; height: 22px; font-size: 11px; }
+    body.bb-on { padding-bottom: 80px; } body.bb-on #toast { bottom: 84px; }
+  }
 </style>
 
 <script>
   import { addBundle } from '../lib/cart';
+  type B = { size: number; price: number; free: boolean; gift: boolean };
+  const { items, bundles } = JSON.parse(document.getElementById('bb-data')!.textContent!) as { items: Record<string, { t: string; i?: string }>; bundles: B[] };
   const $ = (id: string) => document.getElementById(id)!;
-  let size = 3, price = 0, chosen: string[] = [];
-  const sizes = document.querySelectorAll<HTMLButtonElement>('.size');
-  const picks = document.querySelectorAll<HTMLButtonElement>('.pick');
-  const gift = () => document.querySelector<HTMLInputElement>('input[name="bb-gift"]:checked')?.value;
-  const hasGift = () => [...sizes].find((s) => +s.dataset.size! === size)?.querySelector('.gift') != null;
+  const KEY = 'scratchme-bundle-v1';
+  const toast = (m: string) => window.dispatchEvent(new CustomEvent('toast', { detail: m }));
+  const tray = $('bb-tray'), slots = $('bb-slots'), gifts = $('bb-gifts');
+  const sizeBtns = document.querySelectorAll<HTMLButtonElement>('.size');
+  const addBtns = () => document.querySelectorAll<HTMLElement>('#catalog [data-add]');
+  let size = 0, chosen: string[] = [], busy = false;
+
+  const bundle = () => bundles.find((b) => b.size === size);
+  const save = () => { try { size ? sessionStorage.setItem(KEY, JSON.stringify({ size, chosen })) : sessionStorage.removeItem(KEY); } catch {} };
+
   function render() {
-    chosen = chosen.slice(0, size);
-    picks.forEach((p) => { const on = chosen.includes(p.dataset.slug!); p.setAttribute('aria-pressed', String(on)); p.classList.toggle('dim', !on && chosen.length >= size); });
+    const b = bundle();
+    const on = !!b;
+    tray.hidden = !on;
+    document.body.classList.toggle('bb-on', on);
+    sizeBtns.forEach((s) => s.setAttribute('aria-pressed', String(on && +s.dataset.size! === size)));
+    addBtns().forEach((btn) => {
+      const picked = on && chosen.includes(btn.dataset.add!);
+      const card = btn.closest('.pc');
+      card?.classList.toggle('bb-picked', picked);
+      card?.classList.toggle('bb-dim', on && !picked && chosen.length >= size);
+      btn.textContent = !on ? '+ კალათა' : picked ? '✓ არჩეულია' : 'არჩევა';
+    });
+    save();
+    if (!b) return;
+    const full = chosen.length >= size;
     $('bb-count').textContent = String(chosen.length); $('bb-need').textContent = String(size);
+    $('bb-hint').textContent = full ? (b.gift ? 'აირჩიე საჩუქარი' : 'მზადაა ✓') : `დარჩა ასარჩევი: ${size - chosen.length}`;
     $('bb-title').textContent = `${size}-პოსტერიანი ნაკრები`;
-    $('bb-price').textContent = `${price.toFixed(2)} ₾`;
-    ($('bb-gifts') as HTMLElement).hidden = !hasGift();
-    const left = size - chosen.length;
-    const needGift = hasGift() && !gift();
-    $('bb-hint').textContent = left > 0 ? `მონიშნე კიდევ ${left} პოსტერი` : needGift ? 'აირჩიე საჩუქარი' : 'მზადაა ✓';
-    ($('bb-add') as HTMLButtonElement).disabled = left > 0 || needGift;
+    $('bb-price').textContent = `${b.price.toFixed(2)} ₾`;
+    $('bb-perk').textContent = (b.free ? 'უფასო მიტანა' : '') + (b.gift ? ' + საჩუქარი' : '');
+    gifts.hidden = !(full && b.gift);
+    slots.replaceChildren(...Array.from({ length: size }, (_, n) => {
+      const slug = chosen[n], it = slug ? items[slug] : undefined;
+      const el = document.createElement(it ? 'button' : 'div');
+      el.className = 'bb-slot' + (it ? ' full' : '');
+      if (it) {
+        (el as HTMLButtonElement).type = 'button'; el.dataset.rm = slug; el.setAttribute('aria-label', `${it.t} — ამოღება`);
+        if (it.i) { const im = document.createElement('img'); im.src = it.i; im.alt = ''; el.append(im); }
+        const t = document.createElement('span'); t.textContent = it.t;
+        const x = document.createElement('i'); x.className = 'rm'; x.textContent = '✕'; x.style.fontStyle = 'normal';
+        el.append(t, x);
+      } else {
+        const num = document.createElement('span'); num.className = 'num'; num.textContent = String(n + 1);
+        const t = document.createElement('span'); t.textContent = 'აირჩიე';
+        el.append(num, t);
+      }
+      return el;
+    }));
   }
-  sizes.forEach((s) => s.addEventListener('click', () => {
-    sizes.forEach((x) => { x.classList.toggle('on', x === s); x.setAttribute('aria-checked', String(x === s)); });
-    size = +s.dataset.size!; price = +s.dataset.price!; render();
-  }));
-  picks.forEach((p) => p.addEventListener('click', () => {
-    const slug = p.dataset.slug!;
+
+  function finish(gift?: string) {
+    if (busy) return; busy = true;
+    addBundle(size, chosen, gift);
+    size = 0; chosen = []; save();
+    toast('ნაკრები კალათაშია ✓');
+    setTimeout(() => { location.href = '/cart'; }, 450);
+  }
+
+  function toggle(slug: string) {
+    if (busy || !items[slug]) return;
     if (chosen.includes(slug)) chosen = chosen.filter((s) => s !== slug);
     else if (chosen.length < size) chosen.push(slug);
-    else window.dispatchEvent(new CustomEvent('toast', { detail: `ნაკრებში მხოლოდ ${size} პოსტერი ეტევა` }));
+    else return toast(`ნაკრებში მხოლოდ ${size} პოსტერი ეტევა`);
     render();
+    if (chosen.length === size && !bundle()!.gift) finish();
+  }
+
+  sizeBtns.forEach((s) => s.addEventListener('click', () => {
+    size = +s.dataset.size!; chosen = chosen.filter((c) => items[c]).slice(0, size);
+    render();
+    document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (chosen.length === size && !bundle()!.gift) finish();
   }));
-  document.querySelectorAll('input[name="bb-gift"]').forEach((i) => i.addEventListener('change', render));
-  $('bb-add').addEventListener('click', () => {
-    addBundle(size, chosen, hasGift() ? gift() : undefined);
-    chosen = []; render();
-    window.dispatchEvent(new CustomEvent('toast', { detail: 'ნაკრები კალათაშია ✓' }));
-  });
-  // ?bundle=slug — პროდუქტის გვერდიდან „ნაკრებში დამატება“
+  $('bb-close').addEventListener('click', () => { size = 0; chosen = []; render(); });
+  slots.addEventListener('click', (e) => { const r = (e.target as HTMLElement).closest<HTMLElement>('[data-rm]'); if (r) toggle(r.dataset.rm!); });
+  gifts.addEventListener('click', (e) => { const g = (e.target as HTMLElement).closest<HTMLElement>('[data-gift]'); if (g && chosen.length === size) finish(g.dataset.gift); });
+
+  // ნაკრების რეჟიმში კატალოგის ბარათზე დაჭერა პოსტერს ნაკრებში ამატებს (კალათის ნაცვლად)
+  document.addEventListener('click', (e) => {
+    if (!size) return;
+    const t = e.target as HTMLElement;
+    const card = t.closest<HTMLElement>('#catalog .pc');
+    if (!card || !(t.closest('[data-add]') || t.closest('.img'))) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    const slug = card.querySelector<HTMLElement>('[data-add]')?.dataset.add;
+    slug ? toggle(slug) : toast('ამ პოსტერის მარაგი ამოიწურა');
+  }, true);
+
+  try { const s = JSON.parse(sessionStorage.getItem(KEY) || 'null'); if (s && bundles.some((b) => b.size === s.size)) { size = s.size; chosen = (s.chosen || []).filter((c: string) => items[c]).slice(0, size); } } catch {}
+  // /?add=slug — პროდუქტის გვერდიდან „დაამატე ნაკრებში“
   const pre = new URLSearchParams(location.search).get('add');
-  const on = [...sizes].find((s) => s.classList.contains('on'))!; size = +on.dataset.size!; price = +on.dataset.price!;
-  if (pre && [...picks].some((p) => p.dataset.slug === pre)) chosen = [pre];
+  if (pre && items[pre] && !chosen.includes(pre) && (!size || chosen.length < size)) chosen.push(pre);
   render();
 </script>
