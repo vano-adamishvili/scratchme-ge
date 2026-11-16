@@ -1,0 +1,9 @@
+---
+import Base from './Base.astro';
+interface Props { title: string; description: string; eyebrow?: string }
+const { title, description, eyebrow = 'scratchme.ge' } = Astro.props;
+---
+<Base title={title} description={description}>
+  <div class="container page-head"><span class="eyebrow">{eyebrow}</span><h1>{title}</h1></div>
+  <div class="container prose"><slot /></div>
+</Base>

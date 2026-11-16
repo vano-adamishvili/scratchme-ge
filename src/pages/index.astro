@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import Catalog from '../components/Catalog.astro';
+import BundleBuilder from '../components/BundleBuilder.astro';
+import HowItWorks from '../components/HowItWorks.astro';
+import { PRODUCTS, productBySlug } from '../data/catalog';
+const hero = productBySlug('top-100-places-georgia') ?? PRODUCTS[0];
+const ld = { '@context': 'https://schema.org', '@type': 'Store', name: 'scratchme.ge', url: 'https://scratchme.ge', description: 'გადასაფხეკი პოსტერები — ფილმები, წიგნები, მოგზაურობა და გამოწვევები.', address: { '@type': 'PostalAddress', addressLocality: 'Tbilisi', addressCountry: 'GE' } };
+---
+<Base title="scratchme.ge — გადასაფხეკი პოსტერები" description="გადასაფხეკი პოსტერები ფილმების, წიგნების, მოგზაურობისა და გამოწვევების მოყვარულებისთვის. გადაფხიკე, აღმოაჩინე, გაიხსენე. მიტანა მთელ საქართველოში." jsonLd={ld}>
+  <section class="hero">
+    <div class="copy">
+      <span class="eyebrow">გადაფხიკე / აღმოაჩინე</span>
+      <h1>აქციე კედელი შენს ისტორიად.</h1>
+      <p>პოსტერები, რომლებიც შენთან ერთად იცვლება. თითოეული უჯრის უკან ახალი შთაბეჭდილებაა — გადაფხიკე და ფერადად აღნიშნე ნანახი ფილმები, წაკითხული წიგნები და გავლილი გზები.</p>
+      <div class="cta">
+        <a href="#catalog" class="btn">პოსტერების ნახვა</a>
+        <a href="#how-it-works" class="btn ghost">როგორ მუშაობს</a>
+      </div>
+      <span class="eyebrow made">შექმნილია ცნობისმოყვარეებისთვის</span>
+    </div>
+    <div class="art">
+      <a href={`/product/${hero.slug}`} class="poster" aria-label={hero.title}>
+        <img src={hero.images[0]?.url} alt={hero.title} width="600" height="800" fetchpriority="high" />
+      </a>
+      <span class="stk s1">კარგი მიზეზი ახალი გეგმისთვის</span>
+      <span class="stk s2">{PRODUCTS.length} თემა</span>
+    </div>
+  </section>
+  <Catalog />
+  <BundleBuilder />
+  <HowItWorks />
+</Base>
+<style>
+  .hero { display: grid; grid-template-columns: 1.05fr .95fr; border-bottom: 1px solid var(--line); min-height: 560px; }
+  .copy { padding: clamp(40px, 7vw, 96px) clamp(16px, 6vw, 80px); display: flex; flex-direction: column; justify-content: center; }
+  h1 { font-size: clamp(46px, 7vw, 96px); line-height: .92; letter-spacing: -.06em; margin: 16px 0 22px; max-width: 640px; }
+  .copy p { font-size: 18px; color: #57564e; max-width: 500px; margin: 0 0 28px; }
+  .cta { display: flex; gap: 10px; flex-wrap: wrap; }
+  .made { margin-top: 26px; }
+  .art { position: relative; overflow: hidden; background: var(--coral); min-height: 460px; }
+  .art::before { content: ''; position: absolute; inset: 0; opacity: .22; background-image: radial-gradient(#171714 1px, transparent 1px); background-size: 16px 16px; }
+  .poster { position: absolute; left: 50%; top: 50%; width: min(62%, 400px); transform: translate(-50%, -50%) rotate(5deg); background: var(--paper); padding: 12px; box-shadow: 16px 18px 0 var(--ink); border: 1.5px solid var(--ink); transition: transform .3s var(--ease); }
+  .poster:hover { transform: translate(-50%, -52%) rotate(2deg); }
+  .poster img { width: 100%; aspect-ratio: 3/4; object-fit: contain; }
+  .stk { position: absolute; z-index: 2; padding: 10px 14px; background: var(--lime); border: 1.5px solid var(--ink); font: 700 12px var(--mono); text-transform: uppercase; box-shadow: 4px 4px 0 var(--ink); }
+  .s1 { top: 9%; right: 6%; transform: rotate(-7deg); max-width: 210px; }
+  .s2 { bottom: 10%; left: 7%; background: var(--paper); transform: rotate(5deg); }
+  @media (max-width: 860px) { .hero { grid-template-columns: 1fr; } .art { min-height: 400px; } .poster { width: min(58%, 300px); } }
+</style>

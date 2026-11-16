@@ -1,0 +1,42 @@
+---
+import Base from '../layouts/Base.astro';
+import { SETTINGS } from '../data/catalog';
+const tel = '+995' + SETTINGS.phone.replace(/\s/g, '');
+---
+<Base title="კონტაქტი" description="დაგვიკავშირდი: ტელეფონი, ელფოსტა, მისამართი თბილისში ან მოგვწერე პირდაპირ საიტიდან.">
+  <div class="container page-head"><span class="eyebrow">კონტაქტი</span><h1>მოგვწერე ან დაგვირეკე</h1></div>
+  <div class="container grid">
+    <div class="info card">
+      <a href={`tel:${tel}`}>📞 {SETTINGS.phone}</a>
+      <a href={`mailto:${SETTINGS.email}`}>✉️ {SETTINGS.email}</a>
+      <span>📍 {SETTINGS.address}</span>
+      <p class="muted">კორპორატიული შეკვეთის, საჩუქრის ან ინდივიდუალური პოსტერის იდეა გაქვს? მოგვწერე — ერთად მოვიფიქრებთ.</p>
+    </div>
+    <form id="cf" class="card form">
+      <label class="field">სახელი<input name="name" required autocomplete="name" /></label>
+      <label class="field">ტელეფონი ან ელფოსტა<input name="contact" required /></label>
+      <label class="field">შეტყობინება<textarea name="message" required></textarea></label>
+      <input name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true" />
+      <p id="cm" role="status" class="msg"></p>
+      <button class="btn coral">გაგზავნა</button>
+    </form>
+  </div>
+</Base>
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 24px; align-items: start; }
+  .info, .form { padding: 22px; display: grid; gap: 14px; }
+  .info a, .info span { font-weight: 700; font-size: 17px; text-decoration: none; }
+  .msg { margin: 0; font-weight: 700; min-height: 1em; }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+</style>
+<script>
+  const f = document.getElementById('cf') as HTMLFormElement, m = document.getElementById('cm')!;
+  f.addEventListener('submit', async (e) => {
+    e.preventDefault(); const b = f.querySelector('button')!; b.disabled = true; m.textContent = '';
+    try {
+      const r = await fetch('/api/contact', { method: 'POST', body: new FormData(f) }); const d = await r.json();
+      if (!r.ok) throw new Error(d.error); f.reset(); m.textContent = 'მადლობა! მალე დაგიკავშირდებით ✓';
+    } catch (err) { m.textContent = (err as Error).message || 'ვერ გაიგზავნა, სცადე თავიდან'; }
+    b.disabled = false;
+  });
+</script>

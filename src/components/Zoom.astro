@@ -1,0 +1,93 @@
+---
+// სურათის გადიდება: ნებისმიერ ელემენტზე data-zoom="/images/..." → სრულ ეკრანზე იხსნება.
+// შეხება/დაწკაპება ადიდებს ამ ადგილას, თითით ან მაუსით გადაადგილება, ორი თითით / ბორბლით ზუმი.
+---
+<dialog id="zoom-dlg" aria-label="სურათის გადიდება">
+  <div class="zm-stage" id="zm-stage"><img id="zm-img" alt="" draggable="false" /></div>
+  <button type="button" class="zm-x" id="zm-x" aria-label="დახურვა">✕</button>
+  <p class="zm-hint" id="zm-hint">შეეხე გასადიდებლად · ორი თითით ზუმი</p>
+</dialog>
+
+<style is:global>
+  #zoom-dlg { position: fixed; inset: 0; width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: rgba(12, 10, 20, .94); overflow: hidden; }
+  #zoom-dlg::backdrop { background: transparent; }
+  #zoom-dlg .zm-stage { position: absolute; inset: 0; display: grid; place-items: center; touch-action: none; cursor: zoom-in; }
+  #zoom-dlg.z .zm-stage { cursor: grab; }
+  #zoom-dlg img { max-width: 94vw; max-height: 86dvh; object-fit: contain; background: #fff; border-radius: 14px; transform-origin: 0 0; user-select: none; will-change: transform; }
+  #zoom-dlg .zm-x { position: absolute; top: 12px; right: 12px; width: 44px; height: 44px; border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,.4); color: #fff; font: 900 1.2rem var(--font, sans-serif); cursor: pointer; }
+  #zoom-dlg .zm-hint { position: absolute; bottom: 14px; left: 0; right: 0; text-align: center; color: #fff; opacity: .75; font-size: .85rem; margin: 0; pointer-events: none; }
+  #zoom-dlg.z .zm-hint { opacity: 0; }
+  [data-zoom] { cursor: zoom-in; }
+  .zm-btn { position: absolute; top: 6px; left: 6px; width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,.92); border: 2px solid var(--ink); display: grid; place-items: center; font-size: .9rem; line-height: 1; z-index: 2; }
+  .zm-btn:hover { background: var(--yellow); }
+</style>
+
+<script>
+  const dlg = document.getElementById('zoom-dlg') as HTMLDialogElement;
+  const img = document.getElementById('zm-img') as HTMLImageElement;
+  const stage = document.getElementById('zm-stage')!;
+  let s = 1, x = 0, y = 0;
+  const MAX = 4;
+  const apply = () => { img.style.transform = `translate(${x}px, ${y}px) scale(${s})`; dlg.classList.toggle('z', s > 1.01); };
+  const reset = () => { s = 1; x = 0; y = 0; apply(); };
+  // ზუმი ეკრანის წერტილის (cx, cy) გარშემო
+  const zoomAt = (ns: number, cx: number, cy: number) => {
+    ns = Math.min(MAX, Math.max(1, ns));
+    const r = img.getBoundingClientRect();
+    const ox = r.left - x, oy = r.top - y; // სურათის საწყისი პოზიცია (transform-ის გარეშე)
+    const px = (cx - ox - x) / s, py = (cy - oy - y) / s;
+    x = cx - ox - px * ns; y = cy - oy - py * ns; s = ns;
+    if (s <= 1.01) { s = 1; x = 0; y = 0; }
+    apply();
+  };
+  const open = (src: string) => { img.src = src; reset(); dlg.showModal(); };
+  const close = () => dlg.close();
+
+  // data-zoom ელემენტზე დაწკაპება (capture — რომ ღილაკის სხვა მოქმედება არ შესრულდეს)
+  document.addEventListener('click', (e) => {
+    const el = (e.target as HTMLElement).closest<HTMLElement>('[data-zoom]');
+    if (!el || dlg.contains(el)) return;
+    e.preventDefault(); e.stopPropagation();
+    open(el.dataset.zoom!);
+  }, true);
+
+  document.getElementById('zm-x')!.addEventListener('click', close);
+  dlg.addEventListener('close', reset);
+
+  // შეხება / მაუსი
+  const pts = new Map<number, { x: number; y: number }>();
+  let moved = false, startDist = 0, startS = 1, last = { x: 0, y: 0 }, downAt = 0;
+  stage.addEventListener('pointerdown', (e) => {
+    stage.setPointerCapture(e.pointerId);
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    moved = false; downAt = Date.now(); last = { x: e.clientX, y: e.clientY };
+    if (pts.size === 2) { const [a, b] = [...pts.values()]; startDist = Math.hypot(a.x - b.x, a.y - b.y); startS = s; }
+  });
+  stage.addEventListener('pointermove', (e) => {
+    if (!pts.has(e.pointerId)) return;
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pts.size === 2) {
+      const [a, b] = [...pts.values()];
+      zoomAt(startS * Math.hypot(a.x - b.x, a.y - b.y) / startDist, (a.x + b.x) / 2, (a.y + b.y) / 2);
+      moved = true;
+    } else if (s > 1) {
+      const dx = e.clientX - last.x, dy = e.clientY - last.y;
+      if (Math.abs(dx) + Math.abs(dy) > 2) moved = true;
+      x += dx; y += dy; apply();
+    } else if (Math.abs(e.clientX - last.x) + Math.abs(e.clientY - last.y) > 8) moved = true;
+    if (pts.size === 1) last = { x: e.clientX, y: e.clientY };
+  });
+  const up = (e: PointerEvent) => {
+    const wasTap = pts.size === 1 && !moved && Date.now() - downAt < 400;
+    pts.delete(e.pointerId);
+    if (pts.size === 1) last = [...pts.values()][0];
+    if (!wasTap) return;
+    const r = img.getBoundingClientRect();
+    const onImg = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+    if (!onImg && s <= 1) return close();           // ფონზე შეხება — დახურვა
+    s > 1 ? reset() : zoomAt(2.5, e.clientX, e.clientY);
+  };
+  stage.addEventListener('pointerup', up);
+  stage.addEventListener('pointercancel', (e) => pts.delete(e.pointerId));
+  stage.addEventListener('wheel', (e) => { e.preventDefault(); zoomAt(s * (e.deltaY < 0 ? 1.2 : 1 / 1.2), e.clientX, e.clientY); }, { passive: false });
+</script>

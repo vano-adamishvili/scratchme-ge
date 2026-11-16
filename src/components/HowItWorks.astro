@@ -1,0 +1,76 @@
+---
+const steps = [
+  { n: '01', t: 'აირჩიე შენი თემა', d: 'ფილმები, წიგნები, მოგზაურობა თუ ახალი გამოწვევები — იპოვე პოსტერი, რომელიც შენს ინტერესებს შეეფერება.', c: 'var(--yellow)' },
+  { n: '02', t: 'გამოსცადე და აღმოაჩინე', d: 'უყურე ფილმს, წაიკითხე წიგნი, ეწვიე ადგილს ან შეასრულე გამოწვევა. პოსტერი ახალ იდეებსაც მოგცემს.', c: 'var(--lilac)' },
+  { n: '03', t: 'გადაფხიკე და შეინახე მოგონება', d: 'ყოველი მიღწევის შემდეგ შესაბამისი უჯრა გადაფხიკე. ნახე, როგორ ივსება შენი პოსტერი პირადი ისტორიებით.', c: 'var(--mint)' },
+];
+---
+<section id="how-it-works" class="section">
+  <div class="container">
+    <div class="section-head">
+      <div><span class="eyebrow">როგორ მუშაობს</span><h2>როგორ მუშაობს ScratchMe?</h2></div>
+      <p>აირჩიე საყვარელი თემა, აღმოაჩინე ახალი იდეები და ყოველი მიღწევა პოსტერზე გადაფხიკვით აღნიშნე.</p>
+    </div>
+    <div class="steps">
+      {steps.map((s, i) => (
+        <article class="step card" style={`--c:${s.c}`}>
+          <span class="n">{s.n}</span>
+          <h3>{s.t}</h3>
+          <p>{s.d}</p>
+          {i === 2 && (
+            <div class="demo">
+              <div class="box"><div class="under"><span>🎬</span><b>ნანახია!</b></div>
+              <canvas width="280" height="150" aria-label="გადაფხიკე აქ — სცადე თითით ან მაუსით"></canvas></div>
+              <div class="dm-row"><span class="eyebrow" id="sc-p">გადაფხიკე აქ</span><button type="button" class="btn sm ghost" id="sc-r">თავიდან</button></div>
+            </div>
+          )}
+        </article>
+      ))}
+    </div>
+    <p class="note">ეს უბრალოდ სია არ არის — ეს შენი აღმოჩენებისა და მიღწევების თვალსაჩინო ისტორიაა.</p>
+    <a href="/shop" class="btn">აირჩიე პოსტერი →</a>
+  </div>
+</section>
+<style>
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .step { padding: 22px; background: var(--c); transition: transform .2s var(--ease); }
+  .step:hover { transform: translateY(-4px) rotate(-.6deg); }
+  .n { font: 500 12px var(--mono); }
+  .step h3 { font-size: 22px; margin: 12px 0 8px; }
+  .step p { margin: 0; }
+  .demo { margin-top: 14px; }
+  .box { position: relative; aspect-ratio: 280 / 150; border: 1.5px solid var(--ink); }
+  .under, canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .under { display: flex; align-items: center; justify-content: center; gap: 10px; background: #fff; font-size: 34px; }
+  .under b { font: 700 22px var(--display); }
+  canvas { touch-action: none; cursor: crosshair; }
+  .dm-row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+  .note { font: 600 18px var(--display); margin: 28px 0 16px; }
+  @media (max-width: 800px) { .steps { grid-template-columns: 1fr; } }
+</style>
+<script>
+  const cv = document.querySelector<HTMLCanvasElement>('#how-it-works canvas');
+  if (cv) {
+    const ctx = cv.getContext('2d')!;
+    const paint = () => {
+      ctx.globalCompositeOperation = 'source-over';
+      const g = ctx.createLinearGradient(0, 0, 280, 150); g.addColorStop(0, '#c9c6bd'); g.addColorStop(.5, '#e9e6dc'); g.addColorStop(1, '#b9b6ad');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, 280, 150);
+      ctx.fillStyle = '#77766d'; ctx.font = '600 16px "Noto Sans Georgian", sans-serif'; ctx.textAlign = 'center'; ctx.fillText('გადაფხიკე ✦', 140, 82);
+      document.getElementById('sc-p')!.textContent = 'გადაფხიკე აქ';
+    };
+    paint();
+    let down = false;
+    const at = (e: PointerEvent) => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * 280 / r.width, (e.clientY - r.top) * 150 / r.height]; };
+    const scratch = (e: PointerEvent) => {
+      const [x, y] = at(e); ctx.globalCompositeOperation = 'destination-out'; ctx.beginPath(); ctx.arc(x, y, 16, 0, Math.PI * 2); ctx.fill();
+      const d = ctx.getImageData(0, 0, 280, 150).data; let c = 0; for (let i = 3; i < d.length; i += 16) if (d[i] === 0) c++;
+      const pct = Math.min(100, Math.round(c / (d.length / 16) * 100));
+      document.getElementById('sc-p')!.textContent = pct > 60 ? 'მზადაა! 🎉' : `${pct}% გადაფხეკილია`;
+    };
+    cv.addEventListener('pointerdown', (e) => { down = true; cv.setPointerCapture(e.pointerId); scratch(e); });
+    cv.addEventListener('pointermove', (e) => down && scratch(e));
+    cv.addEventListener('pointerup', () => (down = false));
+    document.getElementById('sc-r')!.addEventListener('click', paint);
+  }
+</script>

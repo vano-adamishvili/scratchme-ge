@@ -1,0 +1,36 @@
+---
+import type { Product } from '../data/catalog';
+import { categoryById, inStock } from '../data/catalog';
+interface Props { product: Product; eager?: boolean }
+const { product: p, eager = false } = Astro.props;
+const ok = inStock(p);
+---
+<article class="pc" data-cats={p.categories.join(' ')} style={`--a:${p.accent}`}>
+  <a href={`/product/${p.slug}`} class="img" aria-label={p.title}>
+    <img src={p.images[0]?.url} alt={p.title} loading={eager ? 'eager' : 'lazy'} decoding="async" width="600" height="800" />
+    {p.images[1] && <img class="alt" src={p.images[1].url} alt="" loading="lazy" decoding="async" width="600" height="800" />}
+    {p.badge && <span class="badge">{p.badge}</span>}
+  </a>
+  <div class="body">
+    <span class="eyebrow">{p.categories.map((c) => categoryById(c)?.name).filter(Boolean).join(' · ')}</span>
+    <h3><a href={`/product/${p.slug}`}>{p.title}</a></h3>
+    <div class="row">
+      <span class="price">{p.price.toFixed(2)} ₾</span>
+      {ok ? <button class="btn sm" data-add={p.slug}>+ კალათა</button> : <span class="muted">მარაგი ამოიწურა</span>}
+    </div>
+  </div>
+</article>
+<style>
+  .pc { display: flex; flex-direction: column; background: #fff; border: 1.5px solid var(--ink); transition: transform .2s var(--ease), box-shadow .2s ease; }
+  .pc:hover { transform: translateY(-4px) rotate(-.4deg); box-shadow: 6px 7px 0 var(--a, var(--coral)); }
+  .img { position: relative; display: block; aspect-ratio: 3 / 4; background: color-mix(in srgb, var(--a) 22%, var(--paper)); overflow: hidden; border-bottom: 1.5px solid var(--ink); }
+  .img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 6%; transition: opacity .35s ease, transform .35s var(--ease); }
+  .img .alt { opacity: 0; }
+  .pc:hover .img .alt { opacity: 1; } .pc:hover .img img:first-child { opacity: 0; }
+  .img .badge { position: absolute; top: 10px; left: 10px; background: var(--a); }
+  .body { display: flex; flex-direction: column; gap: 8px; padding: 14px; flex: 1; }
+  h3 { font-size: 18px; letter-spacing: -.02em; }
+  h3 a { text-decoration: none; }
+  .row { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  @media (hover: none) { .pc:hover .img .alt { opacity: 0; } .pc:hover .img img:first-child { opacity: 1; } }
+</style>

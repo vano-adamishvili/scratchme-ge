@@ -1,0 +1,32 @@
+{
+  "slug": "top-100-cartoons",
+  "title": "ტოპ 100 მულტფილმი",
+  "titleEn": "Top 100 Cartoons",
+  "subtitle": "",
+  "categories": [
+    "watch",
+    "kids"
+  ],
+  "price": 24.9,
+  "description": "ნოსტალგიის ფერადი დოზა — შაბათის დილის მულტფილმებიდან სამუდამო ფავორიტებამდე.",
+  "features": [
+    "სქელი მქრქალი ქაღალდი",
+    "გადასაფხეკი ზედაპირი",
+    "საჩუქრად მზად"
+  ],
+  "accent": "#ff8a3d",
+  "images": [
+    {
+      "url": "https://scratchme.ge/uploads/products/1/10_f7911dae.jpg",
+      "label": ""
+    },
+    {
+      "url": "https://scratchme.ge/uploads/products/1/8_7f37f7ea.jpg",
+      "label": ""
+    }
+  ],
+  "stock": 10,
+  "badge": "",
+  "order": 12,
+  "active": true
+}

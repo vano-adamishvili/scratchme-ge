@@ -1,0 +1,129 @@
+# scratchme.ge — ადმინ პანელი (Sveltia CMS). იხსნება /admin-ზე.
+backend:
+  name: github
+  repo: vano-adamishvili/scratchme-ge
+  branch: cloudflare
+  auth_endpoint: api/auth
+  commit_messages:
+    create: 'ახალი: {{slug}}'
+    update: 'შეცვლა: {{slug}}'
+    delete: 'წაშლა: {{slug}}'
+    uploadMedia: 'ფოტო: {{path}}'
+    deleteMedia: 'ფოტოს წაშლა: {{path}}'
+
+site_url: https://scratchme.ge
+display_url: https://scratchme.ge
+media_folder: public/images/products
+public_folder: /images/products
+media_libraries:
+  default:
+    config:
+      max_file_size: 15000000
+      slugify_filename: true
+      transformations:
+        raster_image: { format: webp, quality: 85, width: 1600, height: 1600 }
+slug: { encoding: ascii, clean_accents: true }
+
+collections:
+  - name: products
+    label: პოსტერები
+    label_singular: პოსტერი
+    folder: src/data/products
+    format: json
+    extension: json
+    create: true
+    identifier_field: title
+    slug: '{{fields.slug}}'
+    summary: '{{title}} — {{price}} ₾'
+    sortable_fields: [order, title, price]
+    fields:
+      - { label: სათაური, name: title, widget: string }
+      - { label: 'ბმული (ლათინურად, მაგ. top-100-movies)', name: slug, widget: string, pattern: ['^[a-z0-9-]+$', 'მხოლოდ პატარა ლათინური ასოები, ციფრები და ტირე'] }
+      - { label: ინგლისური სათაური, name: titleEn, widget: string, required: false }
+      - { label: ქვესათაური, name: subtitle, widget: string, required: false }
+      - label: კატეგორიები
+        name: categories
+        widget: select
+        multiple: true
+        options:
+          - { label: მოგზაურობა, value: travel }
+          - { label: ფილმები და სერიალები, value: watch }
+          - { label: წიგნები, value: read }
+          - { label: ბავშვებისთვის, value: kids }
+          - { label: წყვილებისთვის, value: couples }
+          - { label: გამოწვევა, value: challenge }
+      - { label: 'ფასი (₾)', name: price, widget: number, value_type: float }
+      - { label: აღწერა, name: description, widget: text }
+      - { label: თვისებები, name: features, widget: list, field: { label: თვისება, name: feature, widget: string } }
+      - { label: ფერი, name: accent, widget: color }
+      - label: ფოტოები
+        name: images
+        widget: list
+        fields:
+          - { label: ფოტო, name: url, widget: image }
+          - { label: 'წარწერა (მაგ. გადაფხეკილი)', name: label, widget: string, required: false }
+      - { label: 'მარაგი (ცარიელი = არ ითვლება)', name: stock, widget: number, required: false }
+      - { label: ბეიჯი, name: badge, widget: string, required: false }
+      - { label: 'რიგი (პატარა = წინ)', name: order, widget: number, required: false }
+      - { label: აქტიურია, name: active, widget: boolean, default: true }
+
+  - name: blog
+    label: ბლოგი
+    label_singular: სტატია
+    folder: src/data/blog
+    create: true
+    slug: '{{fields.slug}}'
+    fields:
+      - { label: სათაური, name: title, widget: string }
+      - { label: 'ბმული (ლათინურად, მაგ. top-10-films)', name: slug, widget: string, pattern: ['^[a-z0-9-]+$', 'მხოლოდ პატარა ლათინური ასოები, ციფრები და ტირე'] }
+      - { label: მოკლე აღწერა, name: description, widget: text }
+      - { label: თარიღი, name: date, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false, format: 'YYYY-MM-DD' }
+      - { label: ფოტო, name: cover, widget: image, required: false }
+      - { label: 'დაკავშირებული პოსტერი (ბმული)', name: product, widget: relation, collection: products, value_field: slug, search_fields: [title], display_fields: [title], required: false }
+      - { label: ტექსტი, name: body, widget: markdown }
+
+  - name: settings
+    label: პარამეტრები
+    files:
+      - name: settings
+        label: მაღაზიის პარამეტრები
+        file: src/data/settings.json
+        format: json
+        fields:
+          - { label: ტელეფონი, name: phone, widget: string }
+          - { label: ელფოსტა, name: email, widget: string }
+          - { label: მისამართი, name: address, widget: string }
+          - { label: მფლობელი, name: owner, widget: string }
+          - { label: 'მიტანის ფასი (₾)', name: shippingFee, widget: number, value_type: float }
+          - { label: 'უფასო მიტანა N პოსტერიდან', name: freeShippingFrom, widget: number }
+          - label: ბანკები
+            name: banks
+            widget: list
+            fields:
+              - { label: 'id (tbc/bog)', name: id, widget: string }
+              - { label: ბანკი, name: name, widget: string }
+              - { label: IBAN, name: iban, widget: string }
+              - { label: მიმღები, name: receiver, widget: string }
+          - label: ნაკრებები
+            name: bundles
+            widget: list
+            fields:
+              - { label: 'პოსტერების რაოდენობა', name: size, widget: number }
+              - { label: 'ფასი (₾)', name: price, widget: number, value_type: float }
+              - { label: უფასო მიტანა, name: freeShipping, widget: boolean }
+              - { label: საჩუქარი, name: gift, widget: boolean }
+          - label: საჩუქრები (4-პოსტერიან ნაკრებზე)
+            name: gifts
+            widget: list
+            fields:
+              - { label: id, name: id, widget: string }
+              - { label: სახელი, name: name, widget: string }
+              - { label: მარაგი, name: stock, widget: number }
+              - { label: აქტიურია, name: active, widget: boolean }
+          - label: სოციალური ქსელები
+            name: socials
+            widget: object
+            fields:
+              - { label: Facebook, name: facebook, widget: string, required: false }
+              - { label: Instagram, name: instagram, widget: string, required: false }
+              - { label: TikTok, name: tiktok, widget: string, required: false }

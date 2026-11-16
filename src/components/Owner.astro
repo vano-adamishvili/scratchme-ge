@@ -1,0 +1,9 @@
+---
+import { SETTINGS } from '../data/catalog';
+---
+<ul>
+  <li>{SETTINGS.owner}</li>
+  <li>ელფოსტა: <a href={`mailto:${SETTINGS.email}`}>{SETTINGS.email}</a></li>
+  <li>ტელეფონი: <a href={`tel:+995${SETTINGS.phone.replace(/\s/g, '')}`}>{SETTINGS.phone}</a></li>
+  <li>მისამართი: {SETTINGS.address}</li>
+</ul>

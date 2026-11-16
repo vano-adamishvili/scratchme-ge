@@ -1,0 +1,67 @@
+{
+  "phone": "579 55 55 10",
+  "email": "scratchmege@gmail.com",
+  "address": "თბილისი, ილია ჭავჭავაძის გამზირი 37მ, აქსის თაუერსი",
+  "owner": "ინდ. მეწარმე ირაკლი გულორდავა",
+  "shippingFee": 5,
+  "freeShippingFrom": 3,
+  "banks": [
+    {
+      "id": "tbc",
+      "name": "TBC Bank",
+      "iban": "GE22TB7096036010100086",
+      "receiver": "ირაკლი გულორდავა"
+    },
+    {
+      "id": "bog",
+      "name": "საქართველოს ბანკი",
+      "iban": "GE20BG0000000547111878",
+      "receiver": "იმ ირაკლი გულორდავა"
+    }
+  ],
+  "bundles": [
+    {
+      "size": 2,
+      "price": 49,
+      "freeShipping": false,
+      "gift": false
+    },
+    {
+      "size": 3,
+      "price": 59,
+      "freeShipping": true,
+      "gift": false
+    },
+    {
+      "size": 4,
+      "price": 69,
+      "freeShipping": true,
+      "gift": true
+    }
+  ],
+  "gifts": [
+    {
+      "id": "stickers",
+      "name": "რენდომ 10 სტიკერი",
+      "stock": 100,
+      "active": true
+    },
+    {
+      "id": "magnet",
+      "name": "თემატური მისაკრობი მაგნიტი",
+      "stock": 99,
+      "active": true
+    },
+    {
+      "id": "pin",
+      "name": "თემატური დასამაგრებელი პინი",
+      "stock": 100,
+      "active": true
+    }
+  ],
+  "socials": {
+    "facebook": "",
+    "instagram": "",
+    "tiktok": ""
+  }
+}

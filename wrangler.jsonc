@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "scratchme",
+  "main": "./dist/_worker.js/index.js",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS"
+  },
+  "observability": { "enabled": true },
+  // Cloudflare-ის პანელში დამატებული ცვლადები deploy-ისას არ წაიშალოს
+  "keep_vars": true
+}

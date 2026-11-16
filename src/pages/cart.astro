@@ -1,0 +1,141 @@
+---
+import Base from '../layouts/Base.astro';
+import { SETTINGS } from '../data/catalog';
+---
+<Base title="კალათა" description="შენი კალათა და შეკვეთის გაფორმება." noindex>
+  <div class="container page-head"><span class="eyebrow">შეკვეთა</span><h1 id="h">კალათა</h1></div>
+  <div class="container">
+    <div id="empty" class="empty card" hidden>
+      <p>კალათა ცარიელია.</p>
+      <a href="/shop" class="btn">პოსტერების ნახვა</a>
+    </div>
+    <div id="full" class="layout" hidden>
+      <div>
+        <ul id="lines" class="lines"></ul>
+        <form id="form" class="form card" novalidate>
+          <h2>მიწოდების ინფორმაცია</h2>
+          <label class="field">სახელი და გვარი<input name="name" autocomplete="name" required /></label>
+          <label class="field">ტელეფონი<input name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="5XX XX XX XX" required /></label>
+          <div class="two">
+            <label class="field">ქალაქი<input name="city" value="თბილისი" autocomplete="address-level2" /></label>
+            <label class="field">მისამართი<input name="address" autocomplete="street-address" required /></label>
+          </div>
+          <label class="field">კომენტარი (არასავალდებულო)<textarea name="notes" placeholder="მაგ. როდის გხვდებათ კურიერი"></textarea></label>
+          <input name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true" />
+          <fieldset class="banks">
+            <legend>გადახდა საბანკო გადარიცხვით</legend>
+            {SETTINGS.banks.map((b, i) => <label class="chip"><input type="radio" name="bank" value={b.id} checked={i === 0} /> {b.name}</label>)}
+          </fieldset>
+          <p class="err" id="err" role="alert"></p>
+          <button class="btn coral" id="submit">შეკვეთის გაფორმება</button>
+          <p class="muted small">შეკვეთის შემდეგ გაჩვენებთ ანგარიშის ნომერს. შეკვეთა დადასტურდება გადახდის შემდეგ, ჩვენ დაგიკავშირდებით.</p>
+        </form>
+      </div>
+      <aside class="sum card">
+        <h2>ჯამი</h2>
+        <div class="r"><span>პროდუქტები</span><b id="sub"></b></div>
+        <div class="r"><span>მიტანა</span><b id="ship"></b></div>
+        <div class="r tot"><span>სულ</span><b id="tot"></b></div>
+        <p class="muted small" id="tip"></p>
+      </aside>
+    </div>
+    <div id="done" class="done card" hidden>
+      <span class="eyebrow">მადლობა! 🎉</span>
+      <h2>შეკვეთა მიღებულია — <span id="ref"></span></h2>
+      <p>გადაიხადე <b id="d-total"></b> ამ ანგარიშზე და დანიშნულებაში მიუთითე შეკვეთის ნომერი:</p>
+      <dl class="bank">
+        <dt>ბანკი</dt><dd id="d-bank"></dd>
+        <dt>მიმღები</dt><dd id="d-recv"></dd>
+        <dt>IBAN</dt><dd><code id="d-iban"></code> <button type="button" class="btn sm ghost" id="copy">კოპირება</button></dd>
+      </dl>
+      <p>გადახდის შემდეგ დაგიკავშირდებით მიტანის დროის დასაზუსტებლად. კითხვებისთვის: <a href={`tel:+995${SETTINGS.phone.replace(/\s/g, '')}`}>{SETTINGS.phone}</a></p>
+      <a href="/shop" class="btn">მაღაზიაში დაბრუნება</a>
+    </div>
+  </div>
+</Base>
+<style>
+  .layout { display: grid; grid-template-columns: 1fr 340px; gap: 28px; align-items: start; }
+  .lines { list-style: none; padding: 0; margin: 0 0 24px; display: grid; gap: 12px; }
+  .lines > :global(li) { display: grid; grid-template-columns: 74px 1fr auto; gap: 14px; align-items: center; padding: 12px; background: #fff; border: 1.5px solid var(--ink); }
+  .lines :global(li > img) { width: 74px; aspect-ratio: 3/4; object-fit: contain; background: var(--cream); }
+  .lines :global(.t) { font-weight: 700; }
+  .lines :global(.parts) { margin: 4px 0 0; padding-left: 18px; list-style: disc; font-size: 14px; color: var(--muted); }
+  .lines :global(.q) { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; }
+  .lines :global(.q button) { width: 30px; height: 30px; border: 1.5px solid var(--ink); background: var(--paper); font-weight: 700; }
+  .lines :global(.rm) { border: 0; background: none; text-decoration: underline; color: var(--muted); font-size: 13px; padding: 0; margin-top: 6px; }
+  .lines :global(.e) { color: var(--coral); font-weight: 700; font-size: 14px; }
+  .form { padding: 20px; display: grid; gap: 14px; }
+  .form h2, .sum h2 { font-size: 22px; }
+  .two { display: grid; grid-template-columns: 1fr 1.6fr; gap: 12px; }
+  .hp { position: absolute; left: -9999px; }
+  .banks { border: 0; padding: 0; margin: 0; display: flex; gap: 8px; flex-wrap: wrap; }
+  .banks legend { font-weight: 700; margin-bottom: 8px; }
+  .banks input { accent-color: var(--coral); }
+  .err { color: var(--coral); font-weight: 700; margin: 0; min-height: 1em; }
+  .sum { padding: 20px; position: sticky; top: 90px; }
+  .r { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--line); }
+  .tot { font: 700 22px var(--display); border: 0; }
+  .small { font-size: 13px; }
+  .empty, .done { padding: 28px; display: grid; gap: 12px; justify-items: start; max-width: 720px; }
+  .done h2 { font-size: clamp(24px, 4vw, 36px); }
+  .bank { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; margin: 0; padding: 14px; background: var(--lime); border: 1.5px solid var(--ink); }
+  .bank dt { font-weight: 700; } .bank dd { margin: 0; word-break: break-all; }
+  @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } .sum { position: static; order: -1; } .two { grid-template-columns: 1fr; } }
+</style>
+<script>
+  import { read, write, clear } from '../lib/cart';
+  import { computeTotals } from '../lib/pricing';
+  const $ = (id: string) => document.getElementById(id)!;
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+  function render() {
+    if (!$('done').hidden) return;
+    const lines = read();
+    const t = computeTotals(lines);
+    $('empty').hidden = lines.length > 0; $('full').hidden = !lines.length;
+    $('lines').innerHTML = t.lines.map((l, i) => `<li>
+      ${l.image ? `<img src="${esc(l.image)}" alt="">` : '<span></span>'}
+      <div><div class="t">${esc(l.title)}</div>
+        ${l.parts ? `<ul class="parts">${l.parts.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
+        ${l.type === 'product' ? `<div class="q"><button type="button" data-d="${i}" data-v="-1" aria-label="ნაკლები">−</button><b>${l.qty}</b><button type="button" data-d="${i}" data-v="1" aria-label="მეტი">+</button></div>` : ''}
+        ${l.error ? `<div class="e">${esc(l.error)}</div>` : ''}
+        <div><button type="button" class="rm" data-rm="${i}">წაშლა</button></div></div>
+      <b>${l.total.toFixed(2)} ₾</b></li>`).join('');
+    $('sub').textContent = `${t.subtotal.toFixed(2)} ₾`;
+    $('ship').textContent = t.shipping ? `${t.shipping.toFixed(2)} ₾` : 'უფასო';
+    $('tot').textContent = `${t.total.toFixed(2)} ₾`;
+    $('tip').textContent = t.shipping ? '3 ან 4 პოსტერიან ნაკრებზე მიტანა უფასოა.' : '';
+    ($('submit') as HTMLButtonElement).disabled = !t.ok;
+  }
+  $('lines').addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest('button'); if (!b) return;
+    const lines = read();
+    if (b.dataset.rm) lines.splice(+b.dataset.rm, 1);
+    else if (b.dataset.d) { const l = lines[+b.dataset.d] as any; l.qty = Math.max(1, Math.min(20, l.qty + +b.dataset.v!)); }
+    write(lines); render();
+  });
+  $('form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = new FormData(e.target as HTMLFormElement);
+    const btn = $('submit') as HTMLButtonElement; btn.disabled = true; btn.textContent = 'იგზავნება…'; $('err').textContent = '';
+    try {
+      const res = await fetch('/api/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+        lines: read(), bank: f.get('bank'), website: f.get('website'),
+        customer: { name: f.get('name'), phone: f.get('phone'), city: f.get('city'), address: f.get('address'), notes: f.get('notes') } }) });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error || 'შეკვეთა ვერ გაიგზავნა');
+      $('full').hidden = true; $('done').hidden = false;
+      clear(); $('h').textContent = 'შეკვეთა მიღებულია';
+      $('ref').textContent = d.ref; $('d-total').textContent = `${d.total.toFixed(2)} ₾`;
+      $('d-bank').textContent = d.bank.name; $('d-recv').textContent = d.bank.receiver; $('d-iban').textContent = d.bank.iban;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      $('err').textContent = (err as Error).message || 'კავშირის შეცდომა, სცადე თავიდან';
+      btn.disabled = false; btn.textContent = 'შეკვეთის გაფორმება';
+    }
+  });
+  $('copy').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText($('d-iban').textContent!); window.dispatchEvent(new CustomEvent('toast', { detail: 'IBAN დაკოპირდა ✓' })); } catch {}
+  });
+  window.addEventListener('cart', render);
+  render();
+</script>

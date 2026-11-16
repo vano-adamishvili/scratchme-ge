@@ -1,0 +1,127 @@
+---
+import { PRODUCTS, BUNDLES, GIFTS, SETTINGS, inStock } from '../data/catalog';
+const items = PRODUCTS.filter(inStock).map((p) => ({ slug: p.slug, title: p.title, img: p.images[0]?.url, price: p.price, accent: p.accent }));
+---
+<section id="bundle-builder" class="section bb">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">ნაბიჯი 1 / აირჩიე ზომა</span>
+        <h2>მეტი პოსტერი. მეტი გეგმა.<br />ნაკლები ფიქრი.</h2>
+      </div>
+      <p>აირჩიე ნაკრების ზომა, შემდეგ თავად მონიშნე ზუსტად ის პოსტერები, რომლებიც გინდა.</p>
+    </div>
+
+    <div class="sizes" role="radiogroup" aria-label="ნაკრების ზომა">
+      {BUNDLES.map((b, i) => (
+        <button type="button" class:list={['size', { on: i === 1 }]} role="radio" aria-checked={i === 1 ? 'true' : 'false'} data-size={b.size} data-price={b.price}>
+          <span class="n">{b.size}</span>
+          <span class="t">{b.size}-პოსტერიანი ნაკრები</span>
+          <span class="p">{b.price.toFixed(2)} ₾</span>
+          <span class="perks">
+            {b.freeShipping ? <em class="free">უფასო მიტანა</em> : <em>+ მიტანა {SETTINGS.shippingFee.toFixed(2)} ₾</em>}
+            {b.gift && <em class="gift">🎁 საჩუქარი</em>}
+          </span>
+        </button>
+      ))}
+    </div>
+
+    <p class="eyebrow step2">ნაბიჯი 2 / მონიშნე პოსტერები — <b id="bb-count">0</b> / <b id="bb-need">3</b></p>
+    <div class="picks" id="bb-picks">
+      {items.map((p) => (
+        <button type="button" class="pick" data-slug={p.slug} aria-pressed="false" style={`--a:${p.accent}`}>
+          <img src={p.img} alt="" loading="lazy" decoding="async" width="300" height="400" />
+          <span>{p.title}</span>
+          <i aria-hidden="true">✓</i>
+        </button>
+      ))}
+    </div>
+
+    <div class="gifts" id="bb-gifts" hidden>
+      <p class="eyebrow">ნაბიჯი 3 / აირჩიე საჩუქარი</p>
+      <div class="gl">
+        {GIFTS.map((g) => <label class="chip"><input type="radio" name="bb-gift" value={g.id} /> {g.name}</label>)}
+      </div>
+    </div>
+
+    <div class="bar card">
+      <div>
+        <strong id="bb-title">3-პოსტერიანი ნაკრები</strong>
+        <span class="muted" id="bb-hint">მონიშნე 3 პოსტერი</span>
+      </div>
+      <span class="price" id="bb-price"></span>
+      <button class="btn coral" id="bb-add" disabled>ნაკრები კალათაში</button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .bb { background: var(--cream); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .sizes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .size { position: relative; display: grid; gap: 4px; text-align: left; padding: 18px; background: #fff; border: 1.5px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); transition: transform .15s var(--ease); }
+  .size:hover { transform: translateY(-2px); }
+  .size.on { background: var(--lime); box-shadow: 6px 6px 0 var(--ink); }
+  .size .n { position: absolute; right: 14px; top: 6px; font: 700 54px/1 var(--display); opacity: .15; }
+  .size .t { font-weight: 700; font-size: 17px; }
+  .size .p { font: 700 26px var(--display); letter-spacing: -.03em; }
+  .perks { display: flex; flex-wrap: wrap; gap: 6px; }
+  .perks em { font: 600 11px var(--mono); font-style: normal; padding: 3px 7px; border: 1px solid var(--ink); background: var(--paper); }
+  .perks .free { background: var(--yellow); } .perks .gift { background: var(--coral); }
+  .step2 { margin: 30px 0 12px; } .step2 b { color: var(--ink); }
+  .picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+  .pick { position: relative; display: grid; gap: 6px; padding: 8px; background: #fff; border: 1.5px solid var(--ink); text-align: left; font-size: 13px; font-weight: 600; line-height: 1.25; }
+  .pick img { aspect-ratio: 3/4; width: 100%; object-fit: contain; background: color-mix(in srgb, var(--a) 22%, var(--paper)); }
+  .pick i { position: absolute; top: -9px; right: -9px; width: 28px; height: 28px; border-radius: 50%; background: var(--lime); border: 1.5px solid var(--ink); display: none; place-items: center; font-style: normal; font-weight: 900; }
+  .pick[aria-pressed='true'] { outline: 3px solid var(--ink); background: var(--lime); }
+  .pick[aria-pressed='true'] i { display: grid; }
+  .pick.dim { opacity: .45; }
+  .gifts { margin-top: 22px; } .gl { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .gl input { accent-color: var(--coral); }
+  .bar { position: sticky; bottom: 12px; z-index: 5; margin-top: 22px; display: flex; align-items: center; gap: 16px; justify-content: space-between; padding: 12px 14px; flex-wrap: wrap; }
+  .bar > div { display: grid; }
+  @media (max-width: 700px) { .sizes { grid-template-columns: 1fr; } .size { padding: 12px 14px; } .size .n { font-size: 40px; } }
+</style>
+
+<script>
+  import { addBundle } from '../lib/cart';
+  const $ = (id: string) => document.getElementById(id)!;
+  let size = 3, price = 0, chosen: string[] = [];
+  const sizes = document.querySelectorAll<HTMLButtonElement>('.size');
+  const picks = document.querySelectorAll<HTMLButtonElement>('.pick');
+  const gift = () => document.querySelector<HTMLInputElement>('input[name="bb-gift"]:checked')?.value;
+  const hasGift = () => [...sizes].find((s) => +s.dataset.size! === size)?.querySelector('.gift') != null;
+  function render() {
+    chosen = chosen.slice(0, size);
+    picks.forEach((p) => { const on = chosen.includes(p.dataset.slug!); p.setAttribute('aria-pressed', String(on)); p.classList.toggle('dim', !on && chosen.length >= size); });
+    $('bb-count').textContent = String(chosen.length); $('bb-need').textContent = String(size);
+    $('bb-title').textContent = `${size}-პოსტერიანი ნაკრები`;
+    $('bb-price').textContent = `${price.toFixed(2)} ₾`;
+    ($('bb-gifts') as HTMLElement).hidden = !hasGift();
+    const left = size - chosen.length;
+    const needGift = hasGift() && !gift();
+    $('bb-hint').textContent = left > 0 ? `მონიშნე კიდევ ${left} პოსტერი` : needGift ? 'აირჩიე საჩუქარი' : 'მზადაა ✓';
+    ($('bb-add') as HTMLButtonElement).disabled = left > 0 || needGift;
+  }
+  sizes.forEach((s) => s.addEventListener('click', () => {
+    sizes.forEach((x) => { x.classList.toggle('on', x === s); x.setAttribute('aria-checked', String(x === s)); });
+    size = +s.dataset.size!; price = +s.dataset.price!; render();
+  }));
+  picks.forEach((p) => p.addEventListener('click', () => {
+    const slug = p.dataset.slug!;
+    if (chosen.includes(slug)) chosen = chosen.filter((s) => s !== slug);
+    else if (chosen.length < size) chosen.push(slug);
+    else window.dispatchEvent(new CustomEvent('toast', { detail: `ნაკრებში მხოლოდ ${size} პოსტერი ეტევა` }));
+    render();
+  }));
+  document.querySelectorAll('input[name="bb-gift"]').forEach((i) => i.addEventListener('change', render));
+  $('bb-add').addEventListener('click', () => {
+    addBundle(size, chosen, hasGift() ? gift() : undefined);
+    chosen = []; render();
+    window.dispatchEvent(new CustomEvent('toast', { detail: 'ნაკრები კალათაშია ✓' }));
+  });
+  // ?bundle=slug — პროდუქტის გვერდიდან „ნაკრებში დამატება“
+  const pre = new URLSearchParams(location.search).get('add');
+  const on = [...sizes].find((s) => s.classList.contains('on'))!; size = +on.dataset.size!; price = +on.dataset.price!;
+  if (pre && [...picks].some((p) => p.dataset.slug === pre)) chosen = [pre];
+  render();
+</script>

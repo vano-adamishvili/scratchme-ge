@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /cart
+Sitemap: https://scratchme.ge/sitemap-index.xml

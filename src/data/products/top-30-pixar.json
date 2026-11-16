@@ -1,0 +1,32 @@
+{
+  "slug": "top-30-pixar",
+  "title": "ტოპ 30 პიქსარის მულტფილმი",
+  "titleEn": "Top 30 Pixar Movies",
+  "subtitle": "",
+  "categories": [
+    "watch",
+    "kids"
+  ],
+  "price": 24.9,
+  "description": "ოცდაათი იდეალური მიზეზი, რომ იცინო, იტირო და ამას „კვლევა“ დაარქვა.",
+  "features": [
+    "სქელი მქრქალი ქაღალდი",
+    "გადასაფხეკი ზედაპირი",
+    "საჩუქრად მზად"
+  ],
+  "accent": "#ffdb6e",
+  "images": [
+    {
+      "url": "https://scratchme.ge/uploads/products/1/----------03.11--2-_9355a47a.png",
+      "label": "გადაუფხეკელი პოსტერი"
+    },
+    {
+      "url": "https://scratchme.ge/uploads/products/1/----------03.11_22e592ec.png",
+      "label": "გადაფხეკილი / პროცესში"
+    }
+  ],
+  "stock": 10,
+  "badge": "KIDS PICK",
+  "order": 18,
+  "active": true
+}

@@ -1,0 +1,31 @@
+{
+  "slug": "top-100-movies",
+  "title": "ტოპ 100 ფილმი",
+  "titleEn": "Top 100 Movies",
+  "subtitle": "",
+  "categories": [
+    "watch"
+  ],
+  "price": 29.9,
+  "description": "კინომოყვარულის კედელი პატარა გამოწვევებით. გადაფხიკე, უყურე, გაიმეორე.",
+  "features": [
+    "სქელი მქრქალი ქაღალდი",
+    "გადასაფხეკი ზედაპირი",
+    "საჩუქრად მზად"
+  ],
+  "accent": "#b7a0ff",
+  "images": [
+    {
+      "url": "https://scratchme.ge/uploads/products/1/Top_100_Movies_covered_88937017.png",
+      "label": ""
+    },
+    {
+      "url": "https://scratchme.ge/uploads/products/1/Top_100_Movies_scratched_0689c24f.png",
+      "label": ""
+    }
+  ],
+  "stock": 10,
+  "badge": "Bestseller",
+  "order": 10,
+  "active": true
+}

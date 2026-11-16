@@ -1,0 +1,10 @@
+---
+interface Props { size?: number }
+const { size = 26 } = Astro.props;
+---
+<span class="logo" style={`font-size:${size}px`}>scratch<b>me</b><i>.ge</i></span>
+<style>
+  .logo { font: 700 1em/1 'Space Grotesk', sans-serif; letter-spacing: -.07em; white-space: nowrap; }
+  .logo b { color: var(--coral); font-weight: 700; }
+  .logo i { font-style: normal; font: 500 .5em 'DM Mono', monospace; letter-spacing: 0; margin-left: 2px; opacity: .7; }
+</style>

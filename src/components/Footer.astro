@@ -1,0 +1,43 @@
+---
+import Logo from './Logo.astro';
+import { SETTINGS } from '../data/catalog';
+const tel = '+995' + SETTINGS.phone.replace(/\s/g, '');
+const s = SETTINGS.socials as Record<string, string>;
+---
+<footer class="ft">
+  <div class="container grid">
+    <div>
+      <Logo size={30} />
+      <p class="tag">შენი კედელი უფრო შენსავით რომ გახდეს. გადაფხიკე, აღმოაჩინე, გაიხსენე.</p>
+      <p class="eyebrow made">დამზადებულია თბილისში</p>
+    </div>
+    <div>
+      <h3>აღმოაჩინე</h3>
+      <a href="/shop">ყველა პოსტერი</a><a href="/#bundle-builder">ააწყე ნაკრები</a><a href="/#how-it-works">როგორ მუშაობს</a><a href="/blog">ბლოგი</a>
+    </div>
+    <div>
+      <h3>დახმარება</h3>
+      <a href={`mailto:${SETTINGS.email}`}>{SETTINGS.email}</a>
+      <a href={`tel:${tel}`}>{SETTINGS.phone}</a>
+      <span>{SETTINGS.address}</span>
+      <a href="/contact">კონტაქტი</a>
+      {Object.entries(s).filter(([, v]) => v).map(([k, v]) => <a href={v} rel="noopener" target="_blank">{k[0].toUpperCase() + k.slice(1)}</a>)}
+    </div>
+  </div>
+  <div class="container bottom">
+    <span>© {new Date().getFullYear()} scratchme.ge</span>
+    <span class="legal"><a href="/privacy-policy">კონფიდენციალურობა</a><a href="/terms">წესები და პირობები</a><a href="/delivery-returns">მიწოდება და დაბრუნება</a></span>
+  </div>
+</footer>
+<style>
+  .ft { margin-top: 40px; background: var(--ink); color: var(--paper); padding: 48px 0 24px; }
+  .grid { display: grid; grid-template-columns: 1.4fr 1fr 1.2fr; gap: 32px; }
+  .tag { max-width: 340px; opacity: .8; margin: 14px 0 8px; }
+  .made { color: var(--lime); }
+  h3 { font-size: 15px; margin: 0 0 12px; color: var(--yellow); letter-spacing: 0; }
+  .grid a, .grid span { display: block; margin: 0 0 8px; opacity: .85; text-decoration: none; font-size: 15px; }
+  .grid a:hover { opacity: 1; text-decoration: underline; }
+  .bottom { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 34px; padding-top: 18px; border-top: 1px solid rgba(247,245,238,.18); font-size: 13px; opacity: .8; }
+  .legal { display: flex; gap: 16px; flex-wrap: wrap; } .legal a { text-decoration: none; }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,32 @@
+{
+  "slug": "35-books-kids-9-12",
+  "title": "წიგნები 10-13 წლამდე ბავშვებისთვის",
+  "titleEn": "Books for Kids Aged 10–13",
+  "subtitle": "",
+  "categories": [
+    "kids",
+    "read"
+  ],
+  "price": 24.9,
+  "description": "ფერადი გამოწვევა დიდი წარმოსახვისა და კიდევ უფრო დიდი აზრების მქონე ბავშვებისთვის.",
+  "features": [
+    "სქელი მქრქალი ქაღალდი",
+    "გადასაფხეკი ზედაპირი",
+    "საჩუქრად მზად"
+  ],
+  "accent": "#77cdf4",
+  "images": [
+    {
+      "url": "https://scratchme.ge/uploads/products/1/----------03.11--3-_d73ed8d4.png",
+      "label": "გადაუფხეკელი პოსტერი"
+    },
+    {
+      "url": "https://scratchme.ge/uploads/products/1/----------03.11--2-_0b659a34.png",
+      "label": "გადაფხეკილი / პროცესში"
+    }
+  ],
+  "stock": 10,
+  "badge": "Kids pick",
+  "order": 15,
+  "active": true
+}

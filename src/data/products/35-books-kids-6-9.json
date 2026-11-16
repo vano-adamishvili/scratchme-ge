@@ -1,0 +1,32 @@
+{
+  "slug": "35-books-kids-6-9",
+  "title": "წიგნები 7-10 წლამდე ბავშვებისთვის",
+  "titleEn": "Books for Kids Aged 7–10",
+  "subtitle": "",
+  "categories": [
+    "kids",
+    "read"
+  ],
+  "price": 24.9,
+  "description": "პატარა მკითხველები, დიდი სამყაროები. სახალისო საკითხავი თავგადასავალი ცნობისმოყვარე ბავშვებისთვის.",
+  "features": [
+    "სქელი მქრქალი ქაღალდი",
+    "გადასაფხეკი ზედაპირი",
+    "საჩუქრად მზად"
+  ],
+  "accent": "#b8ee4e",
+  "images": [
+    {
+      "url": "https://scratchme.ge/uploads/products/1/Kids_Books_7-10_covered_0f1a73cd.png",
+      "label": "გადაუფხეკელი პოსტერი"
+    },
+    {
+      "url": "https://scratchme.ge/uploads/products/1/Kids_Books_7-10_scratched_03611a47.png",
+      "label": "გადაფხეკილი / პროცესში"
+    }
+  ],
+  "stock": 10,
+  "badge": "Kids pick",
+  "order": 14,
+  "active": true
+}

@@ -1,0 +1,35 @@
+{
+  "slug": "top-100-books",
+  "title": "რჩეული 100 წიგნი",
+  "titleEn": "Top 100 Books",
+  "subtitle": "",
+  "categories": [
+    "read"
+  ],
+  "price": 29.9,
+  "description": "სიცოცხლის ხანგრძლივი თავგადასავალი, მოკეცილი გვერდები და კიდევ ერთი თავი.",
+  "features": [
+    "სქელი მქრქალი ქაღალდი",
+    "გადასაფხეკი ზედაპირი",
+    "საჩუქრად მზად"
+  ],
+  "accent": "#a9e6d1",
+  "images": [
+    {
+      "url": "https://scratchme.ge/uploads/products/1/poster-top-100-books-covered_2bd3f051.webp",
+      "label": "გადაუფხეკელი პოსტერი"
+    },
+    {
+      "url": "https://scratchme.ge/uploads/products/1/poster-top-100-books-scratched_1fda6c59.webp",
+      "label": "გადაფხეკილი / პროცესში"
+    },
+    {
+      "url": "https://scratchme.ge/uploads/products/1/------------_c22d7dcc.png",
+      "label": ""
+    }
+  ],
+  "stock": 10,
+  "badge": "Gift pick / განახლებული",
+  "order": 6,
+  "active": true
+}

@@ -1,0 +1,35 @@
+{
+  "slug": "top-100-places-europe",
+  "title": "ტოპ 100 ადგილი ევროპაში",
+  "titleEn": "Top 100 Places in Europe",
+  "subtitle": "",
+  "categories": [
+    "travel"
+  ],
+  "price": 29.9,
+  "description": "დამალული პლაჟებიდან ქალაქის იმ კუთხეებამდე, რომელთა გულისთვისაც მატარებლის გაშვებაც ღირს.",
+  "features": [
+    "სქელი მქრქალი ქაღალდი",
+    "გადასაფხეკი ზედაპირი",
+    "საჩუქრად მზად"
+  ],
+  "accent": "#ffcb45",
+  "images": [
+    {
+      "url": "https://scratchme.ge/uploads/products/1/poster-top-100-places-europe-covered_1c9e45ca.webp",
+      "label": "გადაუფხეკელი პოსტერი"
+    },
+    {
+      "url": "https://scratchme.ge/uploads/products/1/poster-top-100-places-europe-scratched_e7b89c56.webp",
+      "label": "გადაფხეკილი / პროცესში"
+    },
+    {
+      "url": "https://scratchme.ge/uploads/products/1/------------_42a9787c.png",
+      "label": ""
+    }
+  ],
+  "stock": 10,
+  "badge": "განახლებული",
+  "order": 2,
+  "active": true
+}

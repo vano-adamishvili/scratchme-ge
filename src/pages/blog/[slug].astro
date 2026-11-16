@@ -1,0 +1,18 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { POSTS, fmtDate, type Post } from '../../lib/blog';
+import { productBySlug } from '../../data/catalog';
+export function getStaticPaths() { return POSTS.map((p) => ({ params: { slug: p.slug }, props: { post: p } })); }
+const { post } = Astro.props as { post: Post };
+const prod = post.product ? productBySlug(post.product) : undefined;
+const ld = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title, datePublished: post.date, description: post.description, image: post.cover };
+---
+<Base title={post.title} description={post.description} image={post.cover} type="article" jsonLd={ld}>
+  <article class="container">
+    <div class="page-head"><a href="/blog" class="eyebrow">← ბლოგი</a> <span class="eyebrow">· {fmtDate(post.date)}</span><h1>{post.title}</h1></div>
+    <div class="prose"><post.Content /></div>
+    {prod && <aside class="pr"><p class="eyebrow">პოსტერი ამ თემაზე</p><div style="max-width:280px"><ProductCard product={prod} /></div></aside>}
+  </article>
+</Base>
+<style>.page-head h1 { font-size: clamp(30px, 5vw, 54px); max-width: 900px; } .pr { margin-top: 36px; }</style>

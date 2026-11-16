@@ -1,0 +1,35 @@
+{
+  "slug": "top-100-places-georgia",
+  "title": "ტოპ 100 ადგილი საქართველოში",
+  "titleEn": "Top 100 Places in Georgia",
+  "subtitle": "",
+  "categories": [
+    "travel"
+  ],
+  "price": 29.9,
+  "description": "ხელშესახები სურვილების სია ნელი გზებისთვის, ველური ხეობებისთვის და იმ ადგილებისთვის, რის გამოც საქართველო უსასრულო გეჩვენება.",
+  "features": [
+    "სქელი მქრქალი ქაღალდი",
+    "გადასაფხეკი ზედაპირი",
+    "საჩუქრად მზად"
+  ],
+  "accent": "#ff5d4f",
+  "images": [
+    {
+      "url": "https://scratchme.ge/uploads/products/1/poster-top-100-places-georgia-covered_b261bbc3.webp",
+      "label": "გადაუფხეკელი პოსტერი"
+    },
+    {
+      "url": "https://scratchme.ge/uploads/products/1/poster-top-100-places-georgia-scratched_57f63ea1.webp",
+      "label": "გადაფხეკილი / პროცესში"
+    },
+    {
+      "url": "https://scratchme.ge/uploads/products/1/3_e035db9e.png",
+      "label": ""
+    }
+  ],
+  "stock": 10,
+  "badge": "Local love / განახლებული",
+  "order": 1,
+  "active": true
+}

@@ -1,0 +1,31 @@
+{
+  "slug": "top-100-anime",
+  "title": "ტოპ 100 ანიმე",
+  "titleEn": "Top 100 Anime",
+  "subtitle": "",
+  "categories": [
+    "watch"
+  ],
+  "price": 29.9,
+  "description": "ასი სამყარო, გმირები, ბოროტმოქმედები და ღამის მარათონები.",
+  "features": [
+    "სქელი მქრქალი ქაღალდი",
+    "გადასაფხეკი ზედაპირი",
+    "საჩუქრად მზად"
+  ],
+  "accent": "#ff8dd4",
+  "images": [
+    {
+      "url": "https://scratchme.ge/uploads/products/1/----------03.11--2-_fa7390d9.png",
+      "label": ""
+    },
+    {
+      "url": "https://scratchme.ge/uploads/products/1/----------03.11_35a77d1e.png",
+      "label": ""
+    }
+  ],
+  "stock": 10,
+  "badge": "ANIME LOVER",
+  "order": 16,
+  "active": true
+}
