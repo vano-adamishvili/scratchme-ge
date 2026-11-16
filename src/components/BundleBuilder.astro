@@ -29,7 +29,7 @@ const bundles = BUNDLES.map((b) => ({ size: b.size, price: b.price, free: b.free
           <span class="each">თითო პოსტერი {b.each.toFixed(2)} ₾</span>
           <ul class="perks">
             <li class:list={{ off: !b.freeShipping }}>{b.freeShipping ? 'უფასო მიტანა' : `მიტანა ${SETTINGS.shippingFee.toFixed(2)} ₾`}</li>
-            <li>პოსტერებს შენ ირჩევ</li>
+            {b.save > 0 && <li>დანაზოგი {b.save.toFixed(2)} ₾-მდე</li>}
             {b.gift && <li class="gift">საჩუქარი 🎁</li>}
           </ul>
           <span class="go">აირჩიე {b.size} პოსტერი →</span>
@@ -105,7 +105,7 @@ const bundles = BUNDLES.map((b) => ({ size: b.size, price: b.price, free: b.free
   .tray-gift button:hover { background: var(--paper); }
   @media (max-width: 700px) {
     .sizes { grid-template-columns: 1fr; gap: 22px; } .size, .size.feat { padding: 18px 16px 16px; } .size.feat { order: -1; padding-top: 26px; }
-    .t b { font-size: 44px; } .p, .feat .p { font-size: 30px; margin-top: 2px; } .perks { margin-top: 8px; padding-top: 8px; display: flex; flex-wrap: wrap; gap: 4px 14px; } .perks li:nth-child(2) { display: none; } .go { margin-top: 10px; } .save { right: 8px; }
+    .t b { font-size: 44px; } .p, .feat .p { font-size: 30px; margin-top: 2px; } .perks { margin-top: 8px; padding-top: 8px; display: flex; flex-wrap: wrap; gap: 4px 14px; } .go { margin-top: 10px; } .save { right: 8px; }
     .tray { padding: 0 6px 6px; } .tray-in { gap: 10px; padding: 9px 10px; }
     .step, .left, .sum span { display: none; } .info strong { font-size: 14px; } .info strong b { font-size: 17px; }
     .sum b { font-size: 15px; } .x { width: 32px; height: 32px; }
