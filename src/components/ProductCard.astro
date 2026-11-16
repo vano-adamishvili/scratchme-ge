@@ -27,7 +27,8 @@ const ok = inStock(p);
   .img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 6%; transition: opacity .35s ease, transform .35s var(--ease); }
   .img .alt { opacity: 0; }
   .pc:hover .img .alt { opacity: 1; } .pc:hover .img img:first-child { opacity: 0; }
-  .img .badge { position: absolute; top: 10px; left: 10px; background: var(--a); }
+  .img .badge { position: absolute; top: 27%; left: 0; max-width: 90%; background: var(--a); border-left: 0; box-shadow: 2px 2px 0 var(--ink); }
+  @media (max-width: 520px) { .img .badge { font-size: 9px; padding: 3px 6px; } }
   .body { display: flex; flex-direction: column; gap: 8px; padding: 14px; flex: 1; }
   h3 { font-size: 18px; letter-spacing: -.02em; }
   h3 a { text-decoration: none; }
