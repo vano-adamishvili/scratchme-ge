@@ -1,6 +1,12 @@
 ---
 import { PRODUCTS, BUNDLES, GIFTS, SETTINGS, inStock } from '../data/catalog';
 const items = Object.fromEntries(PRODUCTS.filter(inStock).map((p) => [p.slug, { t: p.title, i: p.images[0]?.url }]));
+const prices = PRODUCTS.filter(inStock).map((p) => p.price).sort((a, b) => b - a);
+const FEATURED = 3;
+const offers = BUNDLES.map((b) => {
+  const full = prices.slice(0, b.size).reduce((n, x) => n + x, 0);
+  return { ...b, each: b.price / b.size, save: Math.max(0, full - b.price), featured: b.size === FEATURED };
+});
 const bundles = BUNDLES.map((b) => ({ size: b.size, price: b.price, free: b.freeShipping, gift: b.gift }));
 ---
 <section id="bundle-builder" class="section bb">
@@ -8,22 +14,25 @@ const bundles = BUNDLES.map((b) => ({ size: b.size, price: b.price, free: b.free
     <div class="section-head">
       <div>
         <span class="eyebrow">ნაკრები / აირჩიე ზომა</span>
-        <h2>მეტი პოსტერი. მეტი გეგმა.<br />ნაკლები ფიქრი.</h2>
+        <h2>მეტი პოსტერი — <span class="hl">ნაკლები ფასი.</span></h2>
       </div>
-      <p>აირჩიე ნაკრების ზომა და პოსტერები პირდაპირ კატალოგში მონიშნე — როგორც კი შეავსებ, ნაკრები კალათაში გადავა.</p>
+      <p>აირჩიე ზომა და პოსტერები პირდაპირ კატალოგში მონიშნე. როგორც კი შეავსებ, ნაკრები კალათაში გადავა.</p>
     </div>
 
     <div class="sizes">
-      {BUNDLES.map((b) => (
-        <button type="button" class="size" data-size={b.size} aria-pressed="false">
-          <span class="n">{b.size}</span>
-          <span class="t">{b.size}-პოსტერიანი ნაკრები</span>
+      {offers.map((b) => (
+        <button type="button" class:list={['size', { feat: b.featured }]} data-size={b.size} aria-pressed="false">
+          {b.featured && <span class="ribbon">★ ჩვენი რჩევა</span>}
+          {b.save > 0 && <span class="save">დაზოგე<b>{b.save.toFixed(2)} ₾</b>-მდე</span>}
+          <span class="t"><b>{b.size}</b> პოსტერი</span>
           <span class="p">{b.price.toFixed(2)} ₾</span>
-          <span class="perks">
-            {b.freeShipping ? <em class="free">უფასო მიტანა</em> : <em>+ მიტანა {SETTINGS.shippingFee.toFixed(2)} ₾</em>}
-            {b.gift && <em class="gift">🎁 საჩუქარი</em>}
-          </span>
-          <span class="go">აირჩიე პოსტერები →</span>
+          <span class="each">თითო პოსტერი {b.each.toFixed(2)} ₾</span>
+          <ul class="perks">
+            <li class:list={{ off: !b.freeShipping }}>{b.freeShipping ? 'უფასო მიტანა' : `მიტანა ${SETTINGS.shippingFee.toFixed(2)} ₾`}</li>
+            <li>პოსტერებს შენ ირჩევ</li>
+            {b.gift && <li class="gift">საჩუქარი 🎁</li>}
+          </ul>
+          <span class="go">აირჩიე {b.size} პოსტერი →</span>
         </button>
       ))}
     </div>
@@ -54,17 +63,30 @@ const bundles = BUNDLES.map((b) => ({ size: b.size, price: b.price, free: b.free
 
 <style>
   .bb { background: var(--cream); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  .sizes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-  .size { position: relative; display: grid; gap: 4px; text-align: left; padding: 18px; background: #fff; border: 1.5px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); transition: transform .15s var(--ease), box-shadow .15s ease; }
-  .size:hover { transform: translateY(-3px); box-shadow: 7px 8px 0 var(--ink); }
-  .size[aria-pressed='true'] { background: var(--lime); box-shadow: 6px 6px 0 var(--ink); }
-  .size .n { position: absolute; right: 14px; top: 6px; font: 700 54px/1 var(--display); opacity: .15; }
-  .size .t { font-weight: 700; font-size: 17px; }
-  .size .p { font: 700 26px var(--display); letter-spacing: -.03em; }
-  .perks { display: flex; flex-wrap: wrap; gap: 6px; }
-  .perks em { font: 600 11px var(--mono); font-style: normal; padding: 3px 7px; border: 1px solid var(--ink); background: var(--paper); }
-  .perks .free { background: var(--yellow); } .perks .gift { background: var(--coral); }
-  .go { margin-top: 8px; font-weight: 700; font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
+  .hl { display: inline-block; padding: 0 .12em .05em; background: var(--lime); border: 1.5px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); transform: rotate(-1.5deg); }
+  .sizes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; align-items: end; padding-top: 18px; }
+  .size { position: relative; display: flex; flex-direction: column; gap: 6px; text-align: left; padding: 22px 20px 20px; background: #fff; border: 1.5px solid var(--ink); box-shadow: 5px 6px 0 var(--ink); transition: transform .18s var(--ease), box-shadow .18s ease; }
+  .size:hover { transform: translateY(-4px); box-shadow: 8px 10px 0 var(--ink); }
+  .size.feat { background: var(--lime); padding-top: 34px; padding-bottom: 28px; box-shadow: 8px 9px 0 var(--ink); }
+  .size.feat:hover { box-shadow: 11px 13px 0 var(--ink); }
+  .size[aria-pressed='true'] { outline: 4px solid var(--coral); outline-offset: 3px; }
+  .ribbon { position: absolute; top: -15px; left: 18px; padding: 6px 12px; background: var(--ink); color: var(--lime); font: 700 12px var(--mono); text-transform: uppercase; letter-spacing: .04em; }
+  .save { position: absolute; top: -14px; right: -8px; padding: 7px 10px; background: var(--yellow); border: 1.5px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); font: 700 11px/1.15 var(--mono); text-transform: uppercase; transform: rotate(4deg); }
+  .save b { font: 700 16px var(--display); margin: 0 3px 0 5px; }
+  .feat .save { background: var(--coral); transform: rotate(5deg) scale(1.08); }
+  .t { font-weight: 700; font-size: 16px; text-transform: uppercase; letter-spacing: .02em; }
+  .t b { font: 700 64px/.9 var(--display); letter-spacing: -.05em; margin-right: 8px; }
+  .p { font: 700 34px/1.1 var(--display); letter-spacing: -.04em; margin-top: 8px; }
+  .feat .p { font-size: 42px; }
+  .each { font: 500 12px var(--mono); color: var(--muted); }
+  .feat .each { color: var(--ink); }
+  .perks { list-style: none; margin: 12px 0 0; padding: 12px 0 0; border-top: 1.5px dashed var(--ink); display: grid; gap: 5px; font-size: 14px; font-weight: 600; }
+  .perks li::before { content: '✓'; display: inline-grid; place-items: center; width: 18px; height: 18px; margin-right: 8px; background: var(--ink); color: var(--paper); font-size: 11px; }
+  .perks .off { color: var(--muted); font-weight: 500; } .perks .off::before { content: '+'; background: transparent; color: var(--muted); border: 1px solid var(--muted); }
+  .perks .gift::before { background: var(--coral); color: var(--ink); }
+  .go { margin-top: 16px; min-height: 46px; display: grid; place-items: center; padding: 0 12px; border: 1.5px solid var(--ink); background: var(--paper); font-weight: 700; font-size: 15px; transition: background .15s ease; }
+  .feat .go { background: var(--ink); color: var(--paper); }
+  .size:hover .go { background: var(--coral); color: var(--ink); }
 
   .tray { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; padding: 0 12px 12px; pointer-events: none; }
   .tray-in, .tray-gift { pointer-events: auto; width: min(1200px, 100%); margin: 0 auto; background: var(--ink); color: var(--paper); box-shadow: 6px 6px 0 var(--coral); }
@@ -82,7 +104,8 @@ const bundles = BUNDLES.map((b) => ({ size: b.size, price: b.price, free: b.free
   .tray-gift button { padding: 8px 12px; background: var(--lime); border: 1.5px solid var(--lime); color: var(--ink); font-weight: 700; font-size: 14px; }
   .tray-gift button:hover { background: var(--paper); }
   @media (max-width: 700px) {
-    .sizes { grid-template-columns: 1fr; gap: 10px; } .size { padding: 12px 14px; } .size .n { font-size: 40px; } .go { margin-top: 2px; }
+    .sizes { grid-template-columns: 1fr; gap: 22px; } .size, .size.feat { padding: 18px 16px 16px; } .size.feat { order: -1; padding-top: 26px; }
+    .t b { font-size: 44px; } .p, .feat .p { font-size: 30px; margin-top: 2px; } .perks { margin-top: 8px; padding-top: 8px; display: flex; flex-wrap: wrap; gap: 4px 14px; } .perks li:nth-child(2) { display: none; } .go { margin-top: 10px; } .save { right: 8px; }
     .tray { padding: 0 6px 6px; } .tray-in { gap: 10px; padding: 9px 10px; }
     .step, .left, .sum span { display: none; } .info strong { font-size: 14px; } .info strong b { font-size: 17px; }
     .sum b { font-size: 15px; } .x { width: 32px; height: 32px; }
