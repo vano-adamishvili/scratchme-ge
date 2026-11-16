@@ -2,7 +2,7 @@
 backend:
   name: github
   repo: vano-adamishvili/scratchme-ge
-  branch: cloudflare
+  branch: main
   auth_endpoint: api/auth
   commit_messages:
     create: 'ახალი: {{slug}}'
