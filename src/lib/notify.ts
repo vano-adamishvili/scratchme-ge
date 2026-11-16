@@ -10,13 +10,18 @@ export async function notifyTelegram(env: NotifyEnv, text: string): Promise<bool
     console.log('[scratchme] Telegram not configured. Message:\n' + text);
     return false;
   }
-  const res = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text, disable_web_page_preview: true }),
-  });
-  if (!res.ok) console.error('[scratchme] Telegram error', res.status, await res.text());
-  return res.ok;
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text, disable_web_page_preview: true }),
+    });
+    if (!res.ok) console.error('[scratchme] Telegram error', res.status, await res.text());
+    return res.ok;
+  } catch (e) {
+    console.error('[scratchme] Telegram unreachable', e);
+    return false;
+  }
 }
 
 /** ფაილების (დიზაინების) გაგზავნა Telegram-ში, ორიგინალი ხარისხით (document) */

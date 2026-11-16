@@ -41,7 +41,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
     customer.notes ? `📝 ${customer.notes}` : '',
   ].filter((x, i, a) => x !== '' || a[i - 1] !== '').join('\n');
 
-  const sent = await notifyTelegram(getEnv(locals), msg);
-  if (!sent) console.log('[order] not delivered to Telegram', ref);
-  return json({ ok: true, ref, total: t.total, bank, delivered: sent });
+  // თუ შეკვეთა Telegram-ში ვერ მივიდა (ერთი განმეორებითი ცდის შემდეგაც), მყიდველს ვეუბნებით — ჩუმად არ იკარგება
+  const env = getEnv(locals);
+  const sent = (await notifyTelegram(env, msg)) || (await new Promise((r) => setTimeout(r, 700)), await notifyTelegram(env, msg));
+  if (!sent) {
+    console.error('[order] not delivered to Telegram', ref, '\n' + msg);
+    return json({ error: `შეკვეთა ვერ გაიგზავნა. სცადე თავიდან ან დაგვირეკე: ${SETTINGS.phone}` }, 502);
+  }
+  return json({ ok: true, ref, total: t.total, bank, delivered: true });
 };
