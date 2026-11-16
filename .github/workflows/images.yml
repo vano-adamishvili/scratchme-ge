@@ -1,0 +1,28 @@
+# ფოტოების გადმოწერა და დაპატარავება (scripts/fetch-images.mjs). შედეგი რეპოში ინახება.
+name: Optimize images
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['src/data/products/**', 'scripts/fetch-images.mjs', '.github/workflows/images.yml']
+permissions:
+  contents: write
+concurrency: images
+jobs:
+  images:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node scripts/fetch-images.mjs
+      - name: Commit optimized images
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/img src/data/images.json
+          git diff --cached --quiet && { echo "No changes"; exit 0; }
+          git commit -m "Images: add optimized copies"
+          git pull --rebase origin main
+          git push origin HEAD:main

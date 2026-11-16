@@ -1,6 +1,6 @@
 ---
 import Logo from './Logo.astro';
-import { SETTINGS, BUNDLES } from '../data/catalog';
+import { SETTINGS, BUNDLES, localImage } from '../data/catalog';
 const nav = [
   { href: '/shop', label: 'პოსტერები' },
   { href: '/#bundle-builder', label: 'ნაკრები' },
@@ -9,7 +9,8 @@ const nav = [
   { href: '/contact', label: 'კონტაქტი' },
 ];
 // ლოგო ჯერ ძველი საიტიდან იტვირთება; თუ ვერ ჩაიტვირთა, ტექსტური ლოგო ჩანს
-const LOGO = 'https://scratchme.ge/logo-wordmark-dark.webp';
+const LOGO_SRC = 'https://scratchme.ge/logo-wordmark-dark.webp';
+const LOGO = localImage(LOGO_SRC)?.lg ?? LOGO_SRC;
 const b2 = BUNDLES.find((b) => b.size === 2);
 const free = BUNDLES.find((b) => b.freeShipping);
 const gift = BUNDLES.find((b) => b.gift);

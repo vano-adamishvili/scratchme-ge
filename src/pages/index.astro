@@ -24,9 +24,9 @@ const ld = { '@context': 'https://schema.org', '@type': 'Store', name: 'scratchm
         </div>
       </div>
       {demoOk && (
-        <a class="sd" id="sd" href={`/product/${demo.slug}`} aria-label={`${demo.title} — ნახე პოსტერი`} data-grid={JSON.stringify(grid)} data-cover={demo.images[0].url}>
+        <a class="sd" id="sd" href={`/product/${demo.slug}`} aria-label={`${demo.title} — ნახე პოსტერი`} data-grid={JSON.stringify(grid)} data-cover={demo.images[0].thumb}>
           <div class="sd-box">
-            <img class="sd-under" data-src={demo.images[1].url} alt="" decoding="async" />
+            <img class="sd-under" data-src={demo.images[1].thumb} alt="" decoding="async" />
             <canvas aria-hidden="true"></canvas>
             <span class="coin" aria-hidden="true">₾</span>
           </div>

@@ -7,8 +7,8 @@ const ok = inStock(p);
 ---
 <article class="pc" data-cats={p.categories.join(' ')} style={`--a:${p.accent}`}>
   <a href={`/product/${p.slug}`} class="img" aria-label={p.title}>
-    <img src={p.images[0]?.url} alt={p.title} loading={eager ? 'eager' : 'lazy'} decoding="async" width="600" height="800" />
-    {p.images[1] && <img class="alt" data-src={p.images[1].url} alt="" decoding="async" width="600" height="800" />}
+    <img src={p.images[0]?.thumb} alt={p.title} loading={eager ? 'eager' : 'lazy'} decoding="async" width="600" height="800" />
+    {p.images[1] && <img class="alt" data-src={p.images[1].thumb} alt="" decoding="async" width="600" height="800" />}
     {p.badge && <span class="badge">{p.badge}</span>}
   </a>
   <div class="body">

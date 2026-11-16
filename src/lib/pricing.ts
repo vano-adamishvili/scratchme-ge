@@ -19,7 +19,7 @@ export function priceLine(r: RawLine): PricedLine {
     const p = bySlug.get(r.slug);
     const qty = Math.max(1, Math.min(20, Math.floor(r.qty || 1)));
     if (!p) return { key: r.slug, type: 'product', title: 'პროდუქტი აღარ არსებობს', qty, unit: 0, total: 0, error: 'პროდუქტი აღარ არის საიტზე', raw: r };
-    return { key: r.slug, type: 'product', title: p.title, image: p.images[0]?.url, qty, unit: p.price, total: round(p.price * qty), error: inStock(p) ? undefined : 'მარაგი ამოიწურა', raw: { ...r, qty } };
+    return { key: r.slug, type: 'product', title: p.title, image: p.images[0]?.thumb, qty, unit: p.price, total: round(p.price * qty), error: inStock(p) ? undefined : 'მარაგი ამოიწურა', raw: { ...r, qty } };
   }
   const b = BUNDLES.find((x) => x.size === r.size);
   const items = (r.items || []).slice(0, r.size);
@@ -35,7 +35,7 @@ export function priceLine(r: RawLine): PricedLine {
   return {
     key: r.id, type: 'bundle', title: `${r.size}-პოსტერიანი ნაკრები`, qty: 1, unit, total: unit, error,
     parts: [...prods.map((p) => p?.title ?? '?'), ...(gift ? [`🎁 საჩუქარი: ${gift.name}`] : [])],
-    image: prods[0]?.images[0]?.url, raw: { ...r, items, gift: gift?.id },
+    image: prods[0]?.images[0]?.thumb, raw: { ...r, items, gift: gift?.id },
   };
 }
 

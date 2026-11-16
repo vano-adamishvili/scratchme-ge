@@ -12,7 +12,7 @@ const ok = inStock(p);
 const related = PRODUCTS.filter((x) => x.slug !== p.slug && x.categories.some((c) => p.categories.includes(c))).slice(0, 4);
 const desc = (p.subtitle ? p.subtitle + ' — ' : '') + p.description.replace(/\s+/g, ' ').slice(0, 150);
 const b2 = BUNDLES[0];
-const ld = { '@context': 'https://schema.org', '@type': 'Product', name: p.title, alternateName: p.titleEn, image: p.images.map((i) => i.url), description: p.description, brand: { '@type': 'Brand', name: 'scratchme.ge' },
+const ld = { '@context': 'https://schema.org', '@type': 'Product', name: p.title, alternateName: p.titleEn, image: p.images.map((i) => new URL(i.url, Astro.site).href), description: p.description, brand: { '@type': 'Brand', name: 'scratchme.ge' },
   offers: { '@type': 'Offer', price: p.price.toFixed(2), priceCurrency: 'GEL', availability: ok ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock', url: `https://scratchme.ge/product/${p.slug}` } };
 ---
 <Base title={p.title} description={desc} image={p.images[0]?.url} type="product" jsonLd={ld}>
@@ -25,7 +25,7 @@ const ld = { '@context': 'https://schema.org', '@type': 'Product', name: p.title
           <div class="thumbs">
             {p.images.map((im, i) => (
               <button type="button" class:list={['th', { on: i === 0 }]} data-src={im.url} aria-label={im.label || `ფოტო ${i + 1}`}>
-                <img src={im.url} alt="" loading="lazy" width="120" height="160" />
+                <img src={im.thumb} alt="" loading="lazy" width="120" height="160" />
                 {im.label && <span>{im.label}</span>}
               </button>
             ))}

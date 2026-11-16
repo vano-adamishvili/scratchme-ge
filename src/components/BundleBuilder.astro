@@ -1,6 +1,6 @@
 ---
 import { PRODUCTS, BUNDLES, GIFTS, SETTINGS, inStock } from '../data/catalog';
-const items = Object.fromEntries(PRODUCTS.filter(inStock).map((p) => [p.slug, { t: p.title, i: p.images[0]?.url }]));
+const items = Object.fromEntries(PRODUCTS.filter(inStock).map((p) => [p.slug, { t: p.title, i: p.images[0]?.thumb }]));
 const prices = PRODUCTS.filter(inStock).map((p) => p.price).sort((a, b) => b - a);
 const FEATURED = 3;
 const offers = BUNDLES.map((b) => {
