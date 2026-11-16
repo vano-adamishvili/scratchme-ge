@@ -4,23 +4,35 @@ import Catalog from '../components/Catalog.astro';
 import BundleBuilder from '../components/BundleBuilder.astro';
 import HowItWorks from '../components/HowItWorks.astro';
 import { PRODUCTS, productBySlug } from '../data/catalog';
-const side = ['top-100-places-georgia', 'top-100-movies', 'top-100-books', 'top-100-places-europe']
-  .map((x) => productBySlug(x)).filter((x) => x && x.images[0]?.url);
+// ჰეროს დემო: დაფარული პოსტერი, რომელსაც მონეტა უჯრა-უჯრა ფხეკს.
+// ბადის ზომები „ტოპ 100 ადგილი საქართველოში“ პოსტერზეა აზომილი (სიგანის წილებში).
+const demo = productBySlug('top-100-places-georgia');
+const grid = { cols: 10, rows: 10, x0: 0.014, px: 0.0988, w: 0.0784, yb0: 1.2608, py: 0.1146, h: 0.0795 };
+const demoOk = demo && demo.images.length > 1;
 const ld = { '@context': 'https://schema.org', '@type': 'Store', name: 'scratchme.ge', url: 'https://scratchme.ge', description: 'გადასაფხეკი პოსტერები — ფილმები, წიგნები, მოგზაურობა და გამოწვევები.', address: { '@type': 'PostalAddress', addressLocality: 'Tbilisi', addressCountry: 'GE' } };
 ---
 <Base title="scratchme.ge — გადასაფხეკი პოსტერები" description="გადასაფხეკი პოსტერები ფილმების, წიგნების, მოგზაურობისა და გამოწვევების მოყვარულებისთვის. გადაფხიკე, აღმოაჩინე, გაიხსენე. მიტანა მთელ საქართველოში." jsonLd={ld}>
   <section class="hero">
-    <div class="deco" aria-hidden="true">
-      {side.map((p, i) => <img class={`pz p${i + 1}`} src={p.images[0].url} alt="" width="300" height="400" decoding="async" />)}
-    </div>
-    <div class="copy">
-      <span class="eyebrow">გადაფხიკე / აღმოაჩინე · {PRODUCTS.length} თემა</span>
-      <h1>აქციე კედელი <span class="hl">შენს ისტორიად.</span></h1>
-      <p>გადაფხიკე და ფერადად აღნიშნე ნანახი ფილმები, წაკითხული წიგნები და გავლილი გზები.</p>
-      <div class="cta">
-        <a href="#catalog" class="btn coral">ნახე პოსტერები</a>
-        <a href="#bundle-builder" class="btn ghost">ააწყე ნაკრები</a>
+    <div class="hero-in">
+      <div class="copy">
+        <span class="eyebrow">გადაფხიკე / აღმოაჩინე · {PRODUCTS.length} თემა</span>
+        <h1>აქციე კედელი <span class="hl">შენს ისტორიად.</span></h1>
+        <p>გადაფხიკე და ფერადად აღნიშნე ნანახი ფილმები, წაკითხული წიგნები და გავლილი გზები.</p>
+        <div class="cta">
+          <a href="#catalog" class="btn coral">ნახე პოსტერები</a>
+          <a href="#bundle-builder" class="btn ghost">ააწყე ნაკრები</a>
+        </div>
       </div>
+      {demoOk && (
+        <a class="sd" id="sd" href={`/product/${demo.slug}`} aria-label={`${demo.title} — ნახე პოსტერი`} data-grid={JSON.stringify(grid)} data-cover={demo.images[0].url}>
+          <div class="sd-box">
+            <img class="sd-under" src={demo.images[1].url} alt="" decoding="async" />
+            <canvas aria-hidden="true"></canvas>
+            <span class="coin" aria-hidden="true">₾</span>
+          </div>
+          <span class="sd-count" aria-hidden="true">გადაფხეკილია <b id="sd-n">0</b> / {grid.cols * grid.rows}</span>
+        </a>
+      )}
     </div>
   </section>
   <Catalog heading={false} />
@@ -28,8 +40,9 @@ const ld = { '@context': 'https://schema.org', '@type': 'Store', name: 'scratchm
   <HowItWorks />
 </Base>
 <style>
-  .hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); padding: clamp(28px, 5vw, 72px) 16px clamp(26px, 4.5vw, 64px); background-image: radial-gradient(rgba(23, 23, 20, .13) 1px, transparent 1px); background-size: 18px 18px; }
-  .copy { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); padding: clamp(28px, 5vw, 64px) 16px clamp(26px, 4.5vw, 60px); background-image: radial-gradient(rgba(23, 23, 20, .13) 1px, transparent 1px); background-size: 18px 18px; }
+  .hero-in { width: min(1200px, 100%); margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: clamp(28px, 6vw, 90px); }
+  .copy { position: relative; z-index: 1; max-width: 720px; text-align: center; display: flex; flex-direction: column; align-items: center; }
   h1 { font-size: clamp(34px, 6vw, 76px); line-height: 1; letter-spacing: -.05em; margin: 12px 0 14px; }
   .hl { display: inline-block; padding: 0 .14em .06em; background: var(--lime); border: 1.5px solid var(--ink); box-shadow: 5px 5px 0 var(--ink); transform: rotate(-2deg); }
   .copy p { font-size: clamp(15px, 1.5vw, 18px); color: #57564e; max-width: 480px; margin: 6px 0 22px; }
@@ -37,15 +50,97 @@ const ld = { '@context': 'https://schema.org', '@type': 'Store', name: 'scratchm
   .cta .btn { min-height: 52px; padding: 0 26px; font-size: 16px; box-shadow: 4px 4px 0 var(--ink); background-color: var(--paper); }
   .cta .btn.coral { background-color: var(--coral); }
   .cta .btn:hover { box-shadow: 6px 7px 0 var(--ink); }
-  .deco { display: none; }
-  .pz { position: absolute; width: clamp(120px, 11vw, 170px); height: auto; aspect-ratio: 3/4; object-fit: cover; background: var(--paper); padding: 6px; border: 1.5px solid var(--ink); box-shadow: 7px 8px 0 var(--ink); animation: bob 6s ease-in-out infinite; }
-  .p1 { left: 3%; top: 10%; --r: -9deg; }
-  .p2 { left: 13%; bottom: -12%; --r: 7deg; animation-delay: -2s; }
-  .p3 { right: 13%; top: -8%; --r: 6deg; animation-delay: -3s; }
-  .p4 { right: 3%; bottom: 4%; --r: -7deg; animation-delay: -4.5s; }
-  @keyframes bob { 0%, 100% { transform: rotate(var(--r)) translateY(0); } 50% { transform: rotate(var(--r)) translateY(-10px); } }
-  @media (min-width: 1280px) { .deco { display: block; } }
+
+  /* დემო ჩანს მხოლოდ მაშინ, როცა ორივე ფოტო ჩაიტვირთა */
+  .sd { display: none; position: relative; flex: none; width: clamp(240px, 26vw, 340px); text-decoration: none; }
+  .sd.ready { display: block; }
+  .sd-box { position: relative; aspect-ratio: 5 / 7; background: var(--paper); border: 1.5px solid var(--ink); box-shadow: 10px 12px 0 var(--ink); transform: rotate(3deg); overflow: hidden; transition: transform .3s var(--ease); }
+  .sd:hover .sd-box { transform: rotate(1deg) translateY(-4px); }
+  .sd-under, .sd canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .coin { position: absolute; left: 0; top: 0; z-index: 2; width: 34px; height: 34px; margin: -17px 0 0 -17px; display: grid; place-items: center; border-radius: 50%; background: radial-gradient(circle at 32% 28%, #fff3b0, #ffcb45 45%, #d9982a); border: 1.5px solid var(--ink); box-shadow: 2px 3px 0 rgba(23, 23, 20, .55); font: 700 17px var(--display); color: #7a5410; will-change: transform; opacity: 0; transition: opacity .3s ease; }
+  .sd.run .coin { opacity: 1; }
+  .sd-count { position: absolute; z-index: 3; left: -14px; bottom: 22px; padding: 8px 12px; background: var(--lime); border: 1.5px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); font: 700 12px var(--mono); text-transform: uppercase; color: var(--ink); transform: rotate(-4deg); }
+  .sd-count b { font-size: 15px; }
+
+  @media (min-width: 900px) { .hero-in:has(.sd.ready) .copy { text-align: left; align-items: flex-start; } .hero-in:has(.sd.ready) .cta { justify-content: flex-start; } }
+  @media (max-width: 899px) { .hero-in { flex-direction: column; gap: 26px; } .sd { width: min(62vw, 250px); } .coin { width: 28px; height: 28px; margin: -14px 0 0 -14px; font-size: 14px; } }
   @media (max-width: 560px) { .cta { width: 100%; flex-wrap: nowrap; } .cta .btn { flex: 1; padding: 0 10px; font-size: 15px; } .copy p { margin-bottom: 18px; } }
-  @media (prefers-reduced-motion: reduce) { .pz { animation: none; transform: rotate(var(--r)); } }
   :global(#catalog) { padding-top: clamp(16px, 3vw, 32px); }
 </style>
+<script>
+  // მონეტა დაფარულ პოსტერს უჯრა-უჯრა ფხეკს და ქვემოდან გადაფხეკილი პოსტერი ჩნდება.
+  const sd = document.getElementById('sd');
+  if (sd) {
+    const g = JSON.parse(sd.dataset.grid!) as { cols: number; rows: number; x0: number; px: number; w: number; yb0: number; py: number; h: number };
+    const box = sd.querySelector<HTMLElement>('.sd-box')!, cv = sd.querySelector('canvas')!, ctx = cv.getContext('2d')!;
+    const under = sd.querySelector<HTMLImageElement>('.sd-under')!, coin = sd.querySelector<HTMLElement>('.coin')!, nEl = document.getElementById('sd-n')!;
+    const cover = new Image();
+    const total = g.cols * g.rows, PAD = 0.008;
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let W = 0, H = 0, dpr = 1, order: number[] = [], done = 0, visible = false, raf = 0;
+    let phase: 'move' | 'scratch' | 'rest' = 'move', t0 = 0, from = { x: .5, y: .5 }, pos = { x: .5, y: .5 };
+
+    // უჯრის მართკუთხედი ტილოს წილებში (0..1); y ქვედა კიდიდან ითვლება, რომ ფოტოს პროპორციაზე არ იყოს დამოკიდებული
+    const cell = (i: number) => {
+      const c = i % g.cols, r = Math.floor(i / g.cols), k = W / H;
+      return { x: g.x0 + c * g.px - PAD, y: 1 - (g.yb0 - r * g.py) * k - PAD * k, w: g.w + PAD * 2, h: (g.h + PAD * 2) * k };
+    };
+    const wipe = (i: number) => { const q = cell(i); ctx.clearRect(q.x * W, q.y * H, q.w * W, q.h * H); };
+    const shuffle = () => { order = Array.from({ length: total }, (_, i) => i); for (let i = total - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; } };
+    const paint = () => {
+      const r = box.getBoundingClientRect(); if (!r.width) return;
+      dpr = Math.min(2, window.devicePixelRatio || 1);
+      W = cv.width = Math.round(r.width * dpr); H = cv.height = Math.round(r.height * dpr);
+      ctx.globalCompositeOperation = 'source-over'; ctx.drawImage(cover, 0, 0, W, H);
+      for (let i = 0; i < done; i++) wipe(order[i]);
+    };
+    const place = () => { coin.style.transform = `translate(${pos.x * W / dpr}px, ${pos.y * H / dpr}px) rotate(${pos.x * 900}deg)`; };
+    const ease = (t: number) => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+
+    function frame(now: number) {
+      raf = 0;
+      if (!visible || document.hidden) return;
+      if (!t0) t0 = now;
+      const el = now - t0;
+      if (done >= total) { // ყველაფერი გადაფხეკილია: პაუზა და თავიდან
+        if (phase !== 'rest') { phase = 'rest'; t0 = now; sd!.classList.remove('run'); }
+        else if (el > 3500) { done = 0; shuffle(); paint(); nEl.textContent = '0'; phase = 'move'; t0 = now; from = { ...pos }; sd!.classList.add('run'); }
+      } else {
+        const q = cell(order[done]);
+        if (phase === 'rest') { phase = 'move'; t0 = now; }
+        if (phase === 'move') {
+          const t = Math.min(1, el / 260), e = ease(t), tx = q.x + q.w * .15, ty = q.y + q.h * .2;
+          pos = { x: from.x + (tx - from.x) * e, y: from.y + (ty - from.y) * e };
+          if (t >= 1) { phase = 'scratch'; t0 = now; }
+        } else {
+          const t = Math.min(1, el / 520);
+          // ზიგზაგი უჯრაში: სამჯერ გადის მარცხნიდან მარჯვნივ და თან ქვემოთ ჩადის
+          const zig = Math.abs(((t * 3) % 2) - 1), nx = q.x + q.w * (.15 + .7 * (1 - zig)), ny = q.y + q.h * (.2 + .6 * t);
+          ctx.save(); ctx.beginPath(); ctx.rect(q.x * W, q.y * H, q.w * W, q.h * H); ctx.clip();
+          ctx.globalCompositeOperation = 'destination-out'; ctx.lineCap = 'round'; ctx.lineWidth = q.h * H * .42;
+          ctx.beginPath(); ctx.moveTo(pos.x * W, pos.y * H); ctx.lineTo(nx * W, ny * H); ctx.stroke(); ctx.restore();
+          pos = { x: nx, y: ny };
+          if (t >= 1) { wipe(order[done]); done++; nEl.textContent = String(done); phase = 'move'; t0 = now; from = { ...pos }; }
+        }
+        place();
+      }
+      raf = requestAnimationFrame(frame);
+    }
+    const kick = () => { if (!raf && visible && !document.hidden && !still) { t0 = 0; raf = requestAnimationFrame(frame); } };
+
+    let loaded = 0;
+    const ready = () => {
+      if (++loaded < 2) return;
+      if (cover.naturalWidth) box.style.aspectRatio = `${cover.naturalWidth} / ${cover.naturalHeight}`;
+      sd.classList.add('ready'); shuffle();
+      if (still) { done = 45; paint(); nEl.textContent = String(done); return; } // ანიმაციის გარეშე: ნახევრად გადაფხეკილი
+      paint(); sd.classList.add('run');
+      new IntersectionObserver((es) => { visible = es[0].isIntersecting; kick(); }, { threshold: .1 }).observe(sd);
+      document.addEventListener('visibilitychange', kick);
+      let w0 = box.clientWidth;
+      new ResizeObserver(() => { const w = box.clientWidth; if (w && Math.abs(w - w0) > 2) { w0 = w; paint(); } }).observe(box);
+    };
+    cover.onload = ready; cover.src = sd.dataset.cover!;
+    if (under.complete && under.naturalWidth) ready(); else under.addEventListener('load', ready, { once: true });
+  }
+</script>
