@@ -5,9 +5,9 @@ import BundleBuilder from '../components/BundleBuilder.astro';
 import HowItWorks from '../components/HowItWorks.astro';
 import { PRODUCTS, productBySlug } from '../data/catalog';
 // ჰეროს დემო: დაფარული პოსტერი, რომელსაც მონეტა უჯრა-უჯრა ფხეკს.
-// ბადის ზომები „ტოპ 100 ადგილი საქართველოში“ პოსტერზეა აზომილი (სიგანის წილებში).
+// ბადის ზომები „ტოპ 100 ადგილი საქართველოში“ დაფარულ ფოტოზეა აზომილი (სიგანისა და სიმაღლის წილებში).
 const demo = productBySlug('top-100-places-georgia');
-const grid = { cols: 10, rows: 10, x0: 0.014, px: 0.0988, w: 0.0784, yb0: 1.2608, py: 0.1146, h: 0.0795 };
+const grid = { cols: 10, rows: 10, x0: 0.0175, px: 0.0984, w: 0.0795, y0: 0.1037, py: 0.0814, h: 0.0567 };
 const demoOk = demo && demo.images.length > 1;
 const ld = { '@context': 'https://schema.org', '@type': 'Store', name: 'scratchme.ge', url: 'https://scratchme.ge', description: 'გადასაფხეკი პოსტერები — ფილმები, წიგნები, მოგზაურობა და გამოწვევები.', address: { '@type': 'PostalAddress', addressLocality: 'Tbilisi', addressCountry: 'GE' } };
 ---
@@ -71,26 +71,27 @@ const ld = { '@context': 'https://schema.org', '@type': 'Store', name: 'scratchm
   // მონეტა დაფარულ პოსტერს უჯრა-უჯრა ფხეკს და ქვემოდან გადაფხეკილი პოსტერი ჩნდება.
   const sd = document.getElementById('sd');
   if (sd) {
-    const g = JSON.parse(sd.dataset.grid!) as { cols: number; rows: number; x0: number; px: number; w: number; yb0: number; py: number; h: number };
+    const g = JSON.parse(sd.dataset.grid!) as { cols: number; rows: number; x0: number; px: number; w: number; y0: number; py: number; h: number };
     const box = sd.querySelector<HTMLElement>('.sd-box')!, cv = sd.querySelector('canvas')!, ctx = cv.getContext('2d')!;
     const under = sd.querySelector<HTMLImageElement>('.sd-under')!, coin = sd.querySelector<HTMLElement>('.coin')!, nEl = document.getElementById('sd-n')!;
     const cover = new Image();
-    const total = g.cols * g.rows, PAD = 0.008;
+    const total = g.cols * g.rows, PAD = 0.005;
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
     let W = 0, H = 0, dpr = 1, order: number[] = [], done = 0, visible = false, raf = 0;
     let phase: 'move' | 'scratch' | 'rest' = 'move', t0 = 0, from = { x: .5, y: .5 }, pos = { x: .5, y: .5 };
 
-    // უჯრის მართკუთხედი ტილოს წილებში (0..1); y ქვედა კიდიდან ითვლება, რომ ფოტოს პროპორციაზე არ იყოს დამოკიდებული
+    // უჯრის მართკუთხედი ტილოს წილებში (0..1)
     const cell = (i: number) => {
-      const c = i % g.cols, r = Math.floor(i / g.cols), k = W / H;
-      return { x: g.x0 + c * g.px - PAD, y: 1 - (g.yb0 - r * g.py) * k - PAD * k, w: g.w + PAD * 2, h: (g.h + PAD * 2) * k };
+      const c = i % g.cols, r = Math.floor(i / g.cols);
+      return { x: g.x0 + c * g.px - PAD, y: g.y0 + r * g.py - PAD, w: g.w + PAD * 2, h: g.h + PAD * 2 };
     };
     const wipe = (i: number) => { const q = cell(i); ctx.clearRect(q.x * W, q.y * H, q.w * W, q.h * H); };
     const shuffle = () => { order = Array.from({ length: total }, (_, i) => i); for (let i = total - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; } };
     const paint = () => {
-      const r = box.getBoundingClientRect(); if (!r.width) return;
+      // clientWidth/Height — დახრამდე ზომა (getBoundingClientRect დახრილ ჩარჩოს უფრო დიდს აჩვენებს)
+      if (!box.clientWidth) return;
       dpr = Math.min(2, window.devicePixelRatio || 1);
-      W = cv.width = Math.round(r.width * dpr); H = cv.height = Math.round(r.height * dpr);
+      W = cv.width = Math.round(box.clientWidth * dpr); H = cv.height = Math.round(box.clientHeight * dpr);
       ctx.globalCompositeOperation = 'source-over'; ctx.drawImage(cover, 0, 0, W, H);
       for (let i = 0; i < done; i++) wipe(order[i]);
     };
