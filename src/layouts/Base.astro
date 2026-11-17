@@ -44,8 +44,15 @@ const fullTitle = title.includes('scratchme') ? title : `${title} | scratchme.ge
     <div id="toast" role="status" aria-live="polite"></div>
     <Zoom />
     {!Astro.url.pathname.startsWith('/cart') && <FloatingGiftOffers />}
+    <div id="obar" class="obar" role="status" aria-live="polite" hidden>
+      <div class="ob-t"><span class="ob-e">კალათაშია ✓ ნაკრებად უფრო იაფია</span><b id="ob-b"></b><span id="ob-s" class="ob-s"></span></div>
+      <div class="ob-a"><button type="button" class="btn sm" id="ob-apply">ნაკრებად ქცევა</button><a href="/cart" class="btn sm ghost">კალათა</a></div>
+      <button type="button" class="ob-x" id="ob-x" aria-label="დახურვა">×</button>
+    </div>
     <script>
-      import { count, addProduct } from '../lib/cart';
+      import { count, addProduct, read, write } from '../lib/cart';
+      import { bundleOffer, applyBundle } from '../lib/pricing';
+      import { SETTINGS } from '../data/catalog';
       const t = document.getElementById('toast')!;
       let timer = 0;
       window.addEventListener('toast', (e) => {
@@ -60,7 +67,28 @@ const fullTitle = title.includes('scratchme') ? title : `${title} | scratchme.ge
         e.preventDefault();
         const qtyEl = b.dataset.qty ? document.querySelector<HTMLInputElement>(b.dataset.qty) : null;
         addProduct(b.dataset.add!, qtyEl ? Number(qtyEl.value) || 1 : 1);
-        window.dispatchEvent(new CustomEvent('toast', { detail: 'კალათაშია ✓' }));
+        // ცალკე პოსტერები ნაკრებად უფრო იაფია → ვთავაზობთ გადაყვანას
+        const o = bundleOffer(read());
+        if (o) showOffer(o); else window.dispatchEvent(new CustomEvent('toast', { detail: 'კალათაშია ✓' }));
+      });
+      const bar = document.getElementById('obar')!;
+      let cur: ReturnType<typeof bundleOffer> = null, obTimer = 0;
+      const money = (n: number) => `${Number.isInteger(n) ? n : n.toFixed(2)} ₾`;
+      const hideOffer = () => { bar.classList.remove('show'); window.setTimeout(() => { if (!bar.classList.contains('show')) bar.hidden = true; }, 250); };
+      function showOffer(o: NonNullable<ReturnType<typeof bundleOffer>>) {
+        cur = o;
+        const gift = SETTINGS.gifts.find((g) => g.active && g.stock > 0);
+        document.getElementById('ob-b')!.innerHTML = `${o.size} პოსტერი ნაკრებად: <s>${money(o.before)}</s> → ${money(o.after)}`;
+        document.getElementById('ob-s')!.textContent = `დაზოგე ${money(o.save)}${o.freeShipping ? ' · მიწოდება უფასოა' : ''}${o.gift && gift ? ' · საჩუქრად ' + gift.name : ''}`;
+        bar.hidden = false; requestAnimationFrame(() => bar.classList.add('show'));
+        clearTimeout(obTimer); obTimer = window.setTimeout(hideOffer, 10000);
+      }
+      document.getElementById('ob-x')!.addEventListener('click', hideOffer);
+      document.getElementById('ob-apply')!.addEventListener('click', () => {
+        if (!cur) return;
+        const gift = cur.gift ? SETTINGS.gifts.find((g) => g.active && g.stock > 0)?.id : undefined;
+        write(applyBundle(read(), cur.size, cur.items.map((i) => i.slug), gift));
+        hideOffer(); window.dispatchEvent(new CustomEvent('toast', { detail: `ნაკრებად გადაკეთდა ✓ სულ ${money(cur.after)}` }));
       });
     </script>
   </body>

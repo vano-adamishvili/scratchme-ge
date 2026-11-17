@@ -28,7 +28,7 @@ export function bundleOffer(raw: RawLine[]) {
   const before = computeTotals(raw);
   const after = computeTotals(applyBundle(raw, b.size, items.map((p) => p.slug), b.gift ? SETTINGS.gifts.find((g) => g.active && g.stock > 0)?.id : undefined));
   const save = round(before.total - after.total);
-  return save > 0 ? { size: b.size, price: b.price, gift: b.gift, items: items.map((p) => ({ slug: p.slug, title: p.title })), save } : null;
+  return save > 0 ? { size: b.size, price: b.price, gift: b.gift, items: items.map((p) => ({ slug: p.slug, title: p.title })), save, before: before.total, after: after.total, freeShipping: b.freeShipping } : null;
 }
 /** ცალკე პოსტერებს (თითოს ერთ ცალს) ნაკრებად აქცევს */
 export function applyBundle(raw: RawLine[], size: number, items: string[], gift?: string): RawLine[] {
