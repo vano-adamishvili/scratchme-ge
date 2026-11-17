@@ -9,13 +9,13 @@ const cats = CATEGORIES.filter((c) => PRODUCTS.some((p) => p.categories.includes
   <div class="container">
     {heading && (
       <div class="section-head">
-        <div><span class="eyebrow">კატალოგი · {PRODUCTS.length} პოსტერი</span><h2>აირჩიე შენი შემდეგი თავგადასავალი</h2></div>
-        <p>მოგზაურობა, ფილმები, წიგნები თუ წყვილების გამოწვევები — თითოეული უჯრა ახალ გეგმას ელოდება.</p>
+        <div><span class="eyebrow">{PRODUCTS.length} თემა</span><h2>აირჩიე შენი შემდეგი თავგადასავალი</h2></div>
+        <p>ფილმები, წიგნები, მოგზაურობა თუ წყვილების გამოწვევები. ყველა პოსტერზე შეგიძლია ნახო, როგორ გამოიყურება გადაფხეკილი.</p>
       </div>
     )}
     <div class="filters" role="toolbar" aria-label="კატეგორიები">
-      <button type="button" class="chip on" data-f="">ყველა</button>
-      {cats.map((c) => <button type="button" class="chip" data-f={c.id}>{c.emoji} {c.name}</button>)}
+      <button type="button" class="chip on" data-f="" aria-pressed="true">ყველა</button>
+      {cats.map((c) => <button type="button" class="chip" data-f={c.id}>{c.name}</button>)}
     </div>
     <div class="grid">
       {PRODUCTS.map((p, i) => <ProductCard product={p} eager={i < 4} />)}
@@ -23,15 +23,16 @@ const cats = CATEGORIES.filter((c) => PRODUCTS.some((p) => p.categories.includes
   </div>
 </section>
 <style>
-  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 20px; }
-  @media (max-width: 520px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+  .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; } }
+  @media (max-width: 760px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } .filters { flex-wrap: nowrap; overflow-x: auto; margin: 0 -20px 20px; padding: 2px 20px; scrollbar-width: none; } .filters .chip { flex: none; } }
 </style>
 <script>
   const chips = document.querySelectorAll<HTMLButtonElement>('#catalog .chip');
   const cards = document.querySelectorAll<HTMLElement>('#catalog [data-cats]');
   const apply = (f: string, push = true) => {
-    chips.forEach((c) => c.classList.toggle('on', c.dataset.f === f));
+    chips.forEach((c) => { c.classList.toggle('on', c.dataset.f === f); c.setAttribute('aria-pressed', String(c.dataset.f === f)); });
     cards.forEach((c) => (c.style.display = !f || c.dataset.cats!.split(' ').includes(f) ? '' : 'none'));
     if (push) { const u = new URL(location.href); f ? u.searchParams.set('category', f) : u.searchParams.delete('category'); history.replaceState(null, '', u); }
   };

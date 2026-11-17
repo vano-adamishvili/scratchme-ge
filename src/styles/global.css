@@ -46,7 +46,7 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body { margin: 0; background: var(--cream-bg); color: var(--text); font-family: var(--sans); font-size: 16px; line-height: 1.6; overflow-x: hidden; }
-img { max-width: 100%; display: block; }
+img { max-width: 100%; height: auto; display: block; }
 a { color: inherit; }
 button, input, textarea, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
@@ -55,7 +55,7 @@ button { cursor: pointer; }
 [hidden] { display: none !important; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-.container { width: min(1200px, calc(100% - 32px)); margin: 0 auto; }
+.container { width: min(1200px, calc(100% - 40px)); margin: 0 auto; }
 .section { padding: clamp(56px, 8vw, 104px) 0; }
 .eyebrow { font: 600 13px/1.4 var(--sans); letter-spacing: .01em; color: var(--forest); }
 .display { font-family: var(--display); letter-spacing: -.01em; }
@@ -87,6 +87,7 @@ h1, h2, h3 { font-family: var(--display); font-weight: 600; line-height: 1.18; l
 .price { font: 600 20px var(--display); color: var(--text); }
 
 #toast { position: fixed; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom)); transform: translate(-50%, calc(100% + 60px)); background: var(--forest); color: #fff; padding: 12px 20px; border-radius: var(--r-sm); font-weight: 600; z-index: 90; transition: transform .25s var(--ease); max-width: calc(100% - 32px); text-align: center; box-shadow: var(--shadow-lg); }
+#toast:not(.show) { opacity: 0; visibility: hidden; transition: transform .25s var(--ease), opacity .2s ease, visibility 0s .25s; }
 #toast.show { transform: translate(-50%, 0); }
 
 .prose { max-width: 760px; font-size: 17px; line-height: 1.7; }

@@ -2,37 +2,40 @@
 import { PRODUCTS, BUNDLES, GIFTS, SETTINGS, inStock } from '../data/catalog';
 const items = Object.fromEntries(PRODUCTS.filter(inStock).map((p) => [p.slug, { t: p.title, i: p.images[0]?.thumb }]));
 const prices = PRODUCTS.filter(inStock).map((p) => p.price).sort((a, b) => b - a);
-const FEATURED = 3;
+const fee = SETTINGS.shippingFee;
+const REC = SETTINGS.recommendedBundle;
+// savings = most expensive posters bought one by one − bundle price (shipping kept separate)
 const offers = BUNDLES.map((b) => {
   const full = prices.slice(0, b.size).reduce((n, x) => n + x, 0);
-  return { ...b, each: b.price / b.size, save: Math.max(0, full - b.price), featured: b.size === FEATURED };
+  return { ...b, each: b.price / b.size, save: Math.max(0, full - b.price), rec: b.size === REC, total: b.price + (b.freeShipping ? 0 : fee) };
 });
+const giftNames = GIFTS.map((g) => g.name);
 const bundles = BUNDLES.map((b) => ({ size: b.size, price: b.price, free: b.freeShipping, gift: b.gift }));
+const fmt = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(2));
 ---
 <section id="bundle-builder" class="section bb">
   <div class="container">
     <div class="section-head">
       <div>
-        <span class="eyebrow">ნაკრები / აირჩიე ზომა</span>
-        <h2>მეტი პოსტერი — <span class="hl">ნაკლები ფასი.</span></h2>
+        <span class="eyebrow">ნაკრების აწყობა</span>
+        <h2>ააწყე შენი ნაკრები</h2>
       </div>
-      <p>აირჩიე ზომა და პოსტერები პირდაპირ კატალოგში მონიშნე. როგორც კი შეავსებ, ნაკრები კალათაში გადავა.</p>
+      <p>აირჩიე ზომა და კატალოგში მონიშნე პოსტერები. როგორც კი შეავსებ, ნაკრები კალათაში გადავა.</p>
     </div>
 
     <div class="sizes">
       {offers.map((b) => (
-        <button type="button" class:list={['size', { feat: b.featured }]} data-size={b.size} aria-pressed="false">
-          {b.featured && <span class="ribbon">★ ჩვენი რჩევა</span>}
-          {b.save > 0 && <span class="save">დაზოგე<b>{b.save.toFixed(2)} ₾</b>-მდე</span>}
+        <button type="button" class:list={['size', { rec: b.rec }]} data-size={b.size} aria-pressed="false">
+          {b.rec && <span class="rec-badge">რეკომენდებული</span>}
           <span class="t"><b>{b.size}</b> პოსტერი</span>
-          <span class="p">{b.price.toFixed(2)} ₾</span>
-          <span class="each">თითო პოსტერი {b.each.toFixed(2)} ₾</span>
+          <span class="p">{fmt(b.price)} ₾</span>
+          <span class="each">თითო პოსტერი {fmt(Math.round(b.each * 100) / 100)} ₾</span>
           <ul class="perks">
-            <li class:list={{ off: !b.freeShipping }}>{b.freeShipping ? 'უფასო მიტანა' : `მიტანა ${SETTINGS.shippingFee.toFixed(2)} ₾`}</li>
-            {b.save > 0 && <li>დანაზოგი {b.save.toFixed(2)} ₾-მდე</li>}
-            {b.gift && <li class="gift">საჩუქარი 🎁</li>}
+            <li class:list={{ off: !b.freeShipping }}>{b.freeShipping ? 'უფასო მიწოდება' : `მიწოდება ${fmt(fee)} ₾ · სულ ${fmt(b.total)} ₾`}</li>
+            {b.gift && giftNames.length > 0 && <li>საჩუქარი: {giftNames.length === 1 ? giftNames[0] : 'შენი არჩევანით'}</li>}
+            {b.save > 0 && <li class="save">დაზოგე {fmt(b.save)} ₾-მდე</li>}
           </ul>
-          <span class="go">აირჩიე {b.size} პოსტერი →</span>
+          <span class="go">აირჩიე {b.size} პოსტერი</span>
         </button>
       ))}
     </div>
@@ -40,102 +43,104 @@ const bundles = BUNDLES.map((b) => ({ size: b.size, price: b.price, free: b.free
 </section>
 
 <div id="bb-tray" class="tray" role="region" aria-label="ნაკრების აწყობა" hidden>
+  <div class="tray-up" id="bb-up" hidden>
+    <span id="bb-up-t"></span>
+    <button type="button" class="btn sm ghost" id="bb-up-b"></button>
+  </div>
   <div class="tray-in">
     <div class="info">
-      <span class="step">ნაკრები / შეარჩიე პოსტერები</span>
       <strong>არჩეულია <b id="bb-count">0</b> / <b id="bb-need">3</b></strong>
       <span class="left" id="bb-hint"></span>
     </div>
     <div class="slots" id="bb-slots"></div>
     <div class="sum">
-      <span id="bb-title"></span>
       <b id="bb-price"></b>
       <span id="bb-perk"></span>
     </div>
-    <button type="button" class="x" id="bb-close" aria-label="ნაკრების გაუქმება">✕</button>
+    <button type="button" class="x" id="bb-close" aria-label="ნაკრების გაუქმება">
+      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
+    </button>
   </div>
   <div class="tray-gift" id="bb-gifts" hidden>
-    <span>🎁 აირჩიე საჩუქარი:</span>
-    {GIFTS.map((g) => <button type="button" data-gift={g.id}>{g.name}</button>)}
+    <span>აირჩიე საჩუქარი:</span>
+    {GIFTS.map((g) => <button type="button" class="chip" data-gift={g.id}>{g.name}</button>)}
   </div>
 </div>
-<script type="application/json" id="bb-data" set:html={JSON.stringify({ items, bundles })} />
+<script type="application/json" id="bb-data" set:html={JSON.stringify({ items, bundles, gifts: GIFTS.map((g) => ({ id: g.id, name: g.name })), fee })} />
 
 <style>
-  .bb { background: var(--cream); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  .hl { display: inline-block; padding: 0 .12em .05em; background: var(--lime); border: 1px solid var(--border); box-shadow: var(--shadow-sm); transform: rotate(-1.5deg); }
-  .sizes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; align-items: end; padding-top: 18px; }
-  .size { position: relative; display: flex; flex-direction: column; gap: 6px; text-align: left; padding: 22px 20px 20px; background: #fff; border: 1px solid var(--border); box-shadow: var(--shadow); transition: transform .18s var(--ease), box-shadow .18s ease; }
-  .size:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
-  .size.feat { background: var(--lime); padding-top: 34px; padding-bottom: 28px; box-shadow: var(--shadow); }
-  .size.feat:hover { box-shadow: var(--shadow); }
-  .size[aria-pressed='true'] { outline: 4px solid var(--coral); outline-offset: 3px; }
-  .ribbon { position: absolute; top: -15px; left: 18px; padding: 6px 12px; background: var(--ink); color: var(--lime); font: 700 12px var(--mono); text-transform: none; letter-spacing: .04em; }
-  .save { position: absolute; top: -14px; right: -8px; padding: 7px 10px; background: var(--yellow); border: 1px solid var(--border); box-shadow: var(--shadow-sm); font: 700 11px/1.15 var(--mono); text-transform: none; transform: rotate(4deg); }
-  .save b { font: 700 16px var(--display); margin: 0 3px 0 5px; }
-  .feat .save { background: var(--coral); transform: rotate(5deg) scale(1.08); }
-  .t { font-weight: 700; font-size: 16px; text-transform: none; letter-spacing: .02em; }
-  .t b { font: 700 64px/.9 var(--display); letter-spacing: -.05em; margin-right: 8px; }
-  .p { font: 700 34px/1.1 var(--display); letter-spacing: -.04em; margin-top: 8px; }
-  .feat .p { font-size: 42px; }
-  .each { font: 500 12px var(--mono); color: var(--muted); }
-  .feat .each { color: var(--ink); }
-  .perks { list-style: none; margin: 12px 0 0; padding: 12px 0 0; border-top: 1.5px dashed var(--ink); display: grid; gap: 5px; font-size: 14px; font-weight: 600; }
-  .perks li::before { content: '✓'; display: inline-grid; place-items: center; width: 18px; height: 18px; margin-right: 8px; background: var(--ink); color: var(--paper); font-size: 11px; }
-  .perks .off { color: var(--muted); font-weight: 500; } .perks .off::before { content: '+'; background: transparent; color: var(--muted); border: 1px solid var(--muted); }
-  .perks .gift::before { background: var(--coral); color: var(--ink); }
-  .go { margin-top: 16px; min-height: 46px; display: grid; place-items: center; padding: 0 12px; border: 1px solid var(--border); background: var(--paper); font-weight: 700; font-size: 15px; transition: background .15s ease; }
-  .feat .go { background: var(--ink); color: var(--paper); }
-  .size:hover .go { background: var(--coral); color: var(--ink); }
+  .bb { background: var(--surface-2); }
+  .sizes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: stretch; }
+  .size { position: relative; display: flex; flex-direction: column; gap: 4px; text-align: left; padding: 26px 24px 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); color: var(--text); transition: box-shadow .2s ease, transform .2s var(--ease), border-color .2s ease; }
+  .size:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+  .size.rec { border: 1.5px solid var(--forest); box-shadow: var(--shadow); }
+  .size[aria-pressed='true'] { border-color: var(--forest); box-shadow: 0 0 0 3px var(--forest-tint), var(--shadow); }
+  .rec-badge { position: absolute; top: -12px; left: 22px; padding: 4px 12px; border-radius: 999px; background: var(--forest); color: #fff; font-size: 12px; font-weight: 600; }
+  .t { font-size: 15px; font-weight: 600; color: var(--muted); }
+  .t b { font: 600 40px/1 var(--display); color: var(--text); margin-right: 6px; }
+  .p { font: 600 36px/1.15 var(--display); margin-top: 10px; color: var(--forest); }
+  .each { font-size: 13px; color: var(--muted); }
+  .perks { list-style: none; margin: 16px 0 22px; padding: 16px 0 0; border-top: 1px solid var(--border); display: grid; gap: 8px; font-size: 14px; }
+  .perks li { display: flex; align-items: flex-start; gap: 8px; }
+  .perks li::before { content: ''; flex: none; width: 16px; height: 16px; margin-top: 2px; border-radius: 50%; background: var(--forest-tint) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 8.2 7 10.6l4.6-5' fill='none' stroke='%2328463D' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 16px no-repeat; }
+  .perks .off { color: var(--muted); }
+  .perks .off::before { background: var(--surface-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 4.5v7M4.5 8h7' fill='none' stroke='%23626B65' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") center / 16px no-repeat; }
+  .perks .save { color: #6B5530; }
+  .perks .save::before { background-color: var(--gold-tint); }
+  .size .go { min-height: 48px; display: grid; place-items: center; margin-top: auto; padding: 0 12px; border: 1.5px solid var(--forest); border-radius: var(--r-sm); color: var(--forest); font-weight: 600; transition: background .15s ease, color .15s ease; }
+  .size.rec .go, .size:hover .go { background: var(--forest); color: #fff; }
 
-  .tray { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; padding: 0 12px 12px; pointer-events: none; }
-  .tray-in, .tray-gift { pointer-events: auto; width: min(1200px, 100%); margin: 0 auto; background: var(--ink); color: var(--paper); box-shadow: var(--shadow); }
-  .tray-in { display: flex; align-items: center; gap: 16px; padding: 12px 14px; }
+  .tray { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; padding: 0 12px calc(12px + env(safe-area-inset-bottom)); pointer-events: none; }
+  .tray-in, .tray-gift, .tray-up { pointer-events: auto; width: min(1200px, 100%); margin: 0 auto; background: var(--surface); color: var(--text); }
+  .tray-in { display: flex; align-items: center; gap: 18px; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--r-md); box-shadow: var(--shadow-lg); }
+  .tray-up { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; padding: 10px 14px; border-radius: var(--r-md); background: var(--gold-tint); color: #5E4A28; font-size: 14px; box-shadow: var(--shadow); }
   .info { display: grid; gap: 2px; min-width: 0; }
-  .step { font: 600 11px var(--mono); text-transform: none; color: var(--lime); }
-  .info strong { font: 700 20px var(--display); letter-spacing: -.02em; white-space: nowrap; }
-  .left { font-size: 12px; opacity: .7; }
+  .info strong { font: 600 18px var(--display); white-space: nowrap; }
+  .info strong b { color: var(--forest); }
+  .left { font-size: 13px; color: var(--muted); }
   .slots { display: flex; gap: 8px; flex: 1; min-width: 0; }
-  .sum { display: grid; text-align: right; font-size: 12px; line-height: 1.35; white-space: nowrap; }
-  .sum b { font: 700 20px var(--display); color: var(--lime); }
-  .x { flex: none; width: 38px; height: 38px; background: transparent; border: 1.5px solid rgba(247, 245, 238, .5); color: var(--paper); font-size: 15px; }
-  .x:hover { background: var(--coral); color: var(--ink); }
-  .tray-gift { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 14px; border-top: 1px solid rgba(247, 245, 238, .2); font-weight: 700; }
-  .tray-gift button { padding: 8px 12px; background: var(--lime); border: 1.5px solid var(--lime); color: var(--ink); font-weight: 700; font-size: 14px; }
-  .tray-gift button:hover { background: var(--paper); }
-  @media (max-width: 700px) {
-    .sizes { grid-template-columns: 1fr; gap: 22px; } .size, .size.feat { padding: 18px 16px 16px; } .size.feat { order: -1; padding-top: 26px; }
-    .t b { font-size: 44px; } .p, .feat .p { font-size: 30px; margin-top: 2px; } .perks { margin-top: 8px; padding-top: 8px; display: flex; flex-wrap: wrap; gap: 4px 14px; } .go { margin-top: 10px; } .save { right: 8px; }
-    .tray { padding: 0 6px 6px; } .tray-in { gap: 10px; padding: 9px 10px; }
-    .step, .left, .sum span { display: none; } .info strong { font-size: 14px; } .info strong b { font-size: 17px; }
-    .sum b { font-size: 15px; } .x { width: 32px; height: 32px; }
+  .sum { display: grid; text-align: right; font-size: 13px; line-height: 1.35; white-space: nowrap; color: var(--muted); }
+  .sum b { font: 600 20px var(--display); color: var(--forest); }
+  .x { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 10px; background: var(--surface-2); color: var(--text); }
+  .x:hover { background: var(--forest-tint); color: var(--forest); }
+  .tray-gift { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; padding: 12px 14px; border-radius: var(--r-md); box-shadow: var(--shadow); font-weight: 600; }
+  @media (max-width: 860px) {
+    .sizes { grid-template-columns: 1fr; gap: 24px; } .size.rec { order: -1; }
+    .tray { padding: 0 8px calc(8px + env(safe-area-inset-bottom)); } .tray-in { gap: 10px; padding: 10px; }
+    .left, .sum span { display: none; } .info strong { font-size: 15px; }
+    .sum b { font-size: 17px; } .x { width: 34px; height: 34px; }
+    .tray-up { font-size: 13px; }
   }
 </style>
 <style is:global>
-  .bb-slot { position: relative; flex: 1; max-width: 190px; min-width: 0; height: 60px; display: flex; align-items: center; gap: 8px; padding: 5px; border: 1.5px dashed rgba(247, 245, 238, .4); font-size: 12px; font-weight: 600; line-height: 1.2; color: rgba(247, 245, 238, .6); }
-  .bb-slot.full { border-style: solid; border-color: var(--lime); background: rgba(247, 245, 238, .1); color: var(--paper); cursor: pointer; }
-  .bb-slot img { height: 100%; width: auto; aspect-ratio: 3/4; object-fit: cover; flex: none; background: var(--paper); }
+  .bb-slot { position: relative; flex: 1; max-width: 200px; min-width: 0; height: 60px; display: flex; align-items: center; gap: 8px; padding: 5px; border: 1.5px dashed #CDD2CC; border-radius: 10px; background: var(--cream-bg); font-size: 12px; font-weight: 500; line-height: 1.25; color: var(--muted); }
+  .bb-slot.full { border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
+  .bb-slot.full:hover { border-color: var(--error); }
+  .bb-slot img { height: 100%; width: auto; aspect-ratio: 640 / 900; object-fit: cover; flex: none; border-radius: 3px; }
   .bb-slot span { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-  .bb-slot .num { flex: none; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid currentColor; display: grid; place-items: center; }
-  .bb-slot .rm { position: absolute; top: -8px; right: -8px; width: 22px; height: 22px; display: grid; place-items: center; background: var(--coral); color: var(--ink); border: 1px solid var(--border); font-size: 11px; font-weight: 900; }
+  .bb-slot .num { flex: none; width: 26px; height: 26px; border-radius: 50%; border: 1px solid currentColor; display: grid; place-items: center; }
+  .bb-slot .rm { position: absolute; top: -7px; right: -7px; width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; background: var(--text); color: #fff; font-size: 10px; }
   #catalog { scroll-margin-top: 84px; }
-  body.bb-on { padding-bottom: 110px; }
-  body.bb-on #toast { bottom: 110px; }
+  body.bb-on { padding-bottom: 120px; }
+  body.bb-on #toast { bottom: 120px; }
   body.bb-on #catalog .pc { cursor: pointer; }
-  body.bb-on #catalog .pc.bb-picked { outline: 4px solid var(--lime); box-shadow: var(--shadow); }
-  body.bb-on #catalog .pc.bb-picked [data-add] { background: var(--lime); color: var(--ink); }
-  body.bb-on #catalog .pc.bb-dim { opacity: .5; }
-  @media (max-width: 700px) {
-    .bb-slot { height: 48px; padding: 3px; max-width: 44px; justify-content: center; }
+  body.bb-on #catalog .pc.bb-picked { border-color: var(--forest); box-shadow: 0 0 0 2px var(--forest), var(--shadow); }
+  body.bb-on #catalog .pc.bb-picked [data-add] { background: var(--forest); color: #fff; }
+  body.bb-on #catalog .pc.bb-dim { opacity: .45; }
+  @media (max-width: 860px) {
+    .bb-slot { height: 46px; padding: 3px; max-width: 40px; justify-content: center; }
     .bb-slot span:not(.num) { display: none; } .bb-slot .num { width: 22px; height: 22px; font-size: 11px; }
-    body.bb-on { padding-bottom: 80px; } body.bb-on #toast { bottom: 84px; }
+    body.bb-on { padding-bottom: 96px; } body.bb-on #toast { bottom: 96px; }
   }
 </style>
 
 <script>
   import { addBundle } from '../lib/cart';
   type B = { size: number; price: number; free: boolean; gift: boolean };
-  const { items, bundles } = JSON.parse(document.getElementById('bb-data')!.textContent!) as { items: Record<string, { t: string; i?: string }>; bundles: B[] };
+  const { items, bundles, gifts: giftList, fee } = JSON.parse(document.getElementById('bb-data')!.textContent!) as { items: Record<string, { t: string; i?: string }>; bundles: B[]; gifts: { id: string; name: string }[]; fee: number };
+  const fmt = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(2));
+  // only one gift on offer → no question, it is added automatically
+  const autoGift = giftList.length === 1 ? giftList[0] : null;
   const $ = (id: string) => document.getElementById(id)!;
   const KEY = 'scratchme-bundle-v1';
   const toast = (m: string) => window.dispatchEvent(new CustomEvent('toast', { detail: m }));
@@ -158,17 +163,21 @@ const bundles = BUNDLES.map((b) => ({ size: b.size, price: b.price, free: b.free
       const card = btn.closest('.pc');
       card?.classList.toggle('bb-picked', picked);
       card?.classList.toggle('bb-dim', on && !picked && chosen.length >= size);
-      btn.textContent = !on ? '+ კალათა' : picked ? '✓ არჩეულია' : 'არჩევა';
+      btn.textContent = !on ? 'კალათაში' : picked ? '✓ არჩეულია' : 'არჩევა';
     });
     save();
     if (!b) return;
     const full = chosen.length >= size;
     $('bb-count').textContent = String(chosen.length); $('bb-need').textContent = String(size);
-    $('bb-hint').textContent = full ? (b.gift ? 'აირჩიე საჩუქარი' : 'მზადაა ✓') : `დარჩა ასარჩევი: ${size - chosen.length}`;
-    $('bb-title').textContent = `${size}-პოსტერიანი ნაკრები`;
-    $('bb-price').textContent = `${b.price.toFixed(2)} ₾`;
-    $('bb-perk').textContent = (b.free ? 'უფასო მიტანა' : '') + (b.gift ? ' + საჩუქარი' : '');
-    gifts.hidden = !(full && b.gift);
+    $('bb-hint').textContent = full ? (b.gift && !autoGift ? 'აირჩიე საჩუქარი' : 'მზადაა ✓') : `დარჩა ასარჩევი: ${size - chosen.length} · ბარათზე დაჭერით ამოიღებ`;
+    $('bb-price').textContent = `${fmt(b.price)} ₾`;
+    $('bb-perk').textContent = (b.free ? 'უფასო მიწოდება' : `+ მიწოდება ${fmt(fee)} ₾`) + (b.gift ? (autoGift ? ` + ${autoGift.name}` : ' + საჩუქარი') : '');
+    gifts.hidden = !(full && b.gift && !autoGift);
+    // 2 → 3: show how little the third poster adds when 3 ships free and 2 does not
+    const next = bundles.find((x) => x.size === size + 1);
+    const diff = next && next.free && !b.free ? next.price - (b.price + fee) : 0;
+    $('bb-up').hidden = !(diff > 0);
+    if (diff > 0) { $('bb-up-t').textContent = `კიდევ ${fmt(diff)} ₾ და მიიღებ მე-${next!.size} პოსტერს უფასო მიწოდებით.`; $('bb-up-b').textContent = `${next!.size} პოსტერზე გადასვლა`; }
     slots.replaceChildren(...Array.from({ length: size }, (_, n) => {
       const slug = chosen[n], it = slug ? items[slug] : undefined;
       const el = document.createElement(it ? 'button' : 'div');
@@ -202,15 +211,31 @@ const bundles = BUNDLES.map((b) => ({ size: b.size, price: b.price, free: b.free
     else if (chosen.length < size) chosen.push(slug);
     else return toast(`ნაკრებში მხოლოდ ${size} პოსტერი ეტევა`);
     render();
-    if (chosen.length === size && !bundle()!.gift) finish();
+    if (chosen.length === size) complete();
+  }
+  // full bundle: finish now unless a gift still has to be picked
+  function complete() {
+    const b = bundle()!;
+    if (!b.gift) return finish();
+    if (autoGift) return finish(autoGift.id);
+    if (!giftList.length) toast('საჩუქარი ამჟამად ამოწურულია — დაგვიკავშირდი');
   }
 
   sizeBtns.forEach((s) => s.addEventListener('click', () => {
     size = +s.dataset.size!; chosen = chosen.filter((c) => items[c]).slice(0, size);
     render();
     document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    if (chosen.length === size && !bundle()!.gift) finish();
+    if (chosen.length === size) complete();
   }));
+  const setSize = (n: number) => { size = n; chosen = chosen.filter((c) => items[c]).slice(0, size); render(); if (chosen.length === size) complete(); };
+  $('bb-up-b').addEventListener('click', () => setSize(size + 1));
+  // the gift finder (or any other part of the page) can hand over a ready selection
+  window.addEventListener('bb:set', (e) => {
+    const d = (e as CustomEvent).detail as { size: number; chosen: string[] };
+    if (!bundles.some((b) => b.size === d.size)) return;
+    chosen = d.chosen.filter((c) => items[c]); setSize(d.size);
+    document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
   $('bb-close').addEventListener('click', () => { size = 0; chosen = []; render(); });
   slots.addEventListener('click', (e) => { const r = (e.target as HTMLElement).closest<HTMLElement>('[data-rm]'); if (r) toggle(r.dataset.rm!); });
   gifts.addEventListener('click', (e) => { const g = (e.target as HTMLElement).closest<HTMLElement>('[data-gift]'); if (g && chosen.length === size) finish(g.dataset.gift); });

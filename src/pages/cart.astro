@@ -116,11 +116,11 @@ import { SETTINGS } from '../data/catalog';
     box.hidden = !o;
     if (o) {
       const gifts = SETTINGS.gifts.filter((g) => g.active && g.stock > 0);
-      box.innerHTML = `<div><span class="eyebrow">💡 იაფად გამოგივა</span>
+      box.innerHTML = `<div><span class="eyebrow">ნაკრებად უფრო ხელსაყრელია</span>
         <b>აქციე ${o.size} პოსტერი ნაკრებად — დაზოგე ${o.save.toFixed(2)} ₾</b>
-        <span class="muted small">${o.items.map((i) => esc(i.title)).join(' · ')}${o.gift ? ' + საჩუქარი 🎁' : ''}</span></div>
-        <div class="ob">${o.gift ? `<span class="small">აირჩიე საჩუქარი:</span>${gifts.map((g) => `<button type="button" class="btn sm coral" data-ob="${esc(g.id)}">${esc(g.name)}</button>`).join('')}`
-          : `<button type="button" class="btn coral" data-ob="">ნაკრებად ქცევა</button>`}</div>`;
+        <span class="muted small">${o.items.map((i) => esc(i.title)).join(' · ')}${o.gift ? (gifts.length === 1 ? ` + ${esc(gifts[0].name)}` : ' + საჩუქარი') : ''}</span></div>
+        <div class="ob">${o.gift && gifts.length > 1 ? `<span class="small">აირჩიე საჩუქარი:</span>${gifts.map((g) => `<button type="button" class="btn sm" data-ob="${esc(g.id)}">${esc(g.name)}</button>`).join('')}`
+          : `<button type="button" class="btn" data-ob="${o.gift && gifts[0] ? esc(gifts[0].id) : ''}">ნაკრებად ქცევა</button>`}</div>`;
       box.dataset.size = String(o.size); box.dataset.items = o.items.map((i) => i.slug).join(',');
     }
     ($('submit') as HTMLButtonElement).disabled = !t.ok;

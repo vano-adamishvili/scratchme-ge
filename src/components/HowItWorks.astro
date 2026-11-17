@@ -31,7 +31,7 @@ const perks = [
           {demo ? <img class="under" src={demo.images[1].thumb} alt={`${demo.title} — გადაფხეკილი`} loading="lazy" decoding="async" /> : <div class="under txt"><span>🎬</span><b>ნანახია!</b></div>}
           <canvas data-cover={demo?.images[0].thumb} aria-label="გადაფხიკე აქ — სცადე თითით ან მაუსით"></canvas>
         </div>
-        <div class="dm-row"><span class="eyebrow" id="sc-p">გადაფხიკე თითით ან მაუსით</span><button type="button" class="btn sm ghost" id="sc-r">თავიდან</button></div>
+        <div class="dm-row"><span class="eyebrow" id="sc-p">გადაფხიკე თითით ან მაუსით</span><span class="dm-b"><button type="button" class="btn sm ghost" id="sc-all">სრულად გახსნა</button><button type="button" class="btn sm ghost" id="sc-r">თავიდან</button></span></div>
       </div>
 
       <ol class="steps">
@@ -74,7 +74,8 @@ const perks = [
   .under.txt { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 34px; }
   .under.txt b { font: 700 22px var(--display); }
   canvas { touch-action: none; cursor: crosshair; }
-  .dm-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; }
+  .dm-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .dm-b { display: flex; gap: 6px; }
 
   .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
   .step { display: flex; align-items: flex-start; gap: 16px; padding: 16px 18px; background: #fff; border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: transform .2s var(--ease), background .2s ease; }
@@ -149,5 +150,7 @@ const perks = [
     cv.addEventListener('pointerup', () => (down = false));
     cv.addEventListener('pointercancel', () => (down = false));
     document.getElementById('sc-r')!.addEventListener('click', paint);
+    // button alternative to dragging (keyboard / accessibility)
+    document.getElementById('sc-all')!.addEventListener('click', () => { ctx.clearRect(0, 0, W, H); label.textContent = 'ასე ივსება შენი პოსტერი 🎉'; });
   }
 </script>

@@ -4,44 +4,81 @@ import { categoryById, inStock } from '../data/catalog';
 interface Props { product: Product; eager?: boolean }
 const { product: p, eager = false } = Astro.props;
 const ok = inStock(p);
+const cat = p.categories.map((c) => categoryById(c)?.name).filter(Boolean)[0];
+const alt = p.images[1];
 ---
-<article class="pc" data-cats={p.categories.join(' ')} style={`--a:${p.accent}`}>
-  <a href={`/product/${p.slug}`} class="img" aria-label={p.title}>
-    <img src={p.images[0]?.thumb} alt={p.title} loading={eager ? 'eager' : 'lazy'} decoding="async" width="600" height="800" />
-    {p.images[1] && <img class="alt" data-src={p.images[1].thumb} alt="" decoding="async" width="600" height="800" />}
+<article class="pc" data-cats={p.categories.join(' ')} data-price={p.price}>
+  <div class="media">
+    <a href={`/product/${p.slug}`} class="img" aria-label={p.title}>
+      <img class="main" src={p.images[0]?.thumb} alt={p.title} loading={eager ? 'eager' : 'lazy'} decoding="async" width="640" height="900" />
+      {alt && <img class="alt" data-src={alt.thumb} alt="" decoding="async" width="640" height="900" />}
+    </a>
     {p.badge && <span class="badge">{p.badge}</span>}
-  </a>
+    {alt && (
+      <button type="button" class="flip" aria-pressed="false" aria-label={`${p.title} — გადაფხეკილის ნახვა`} title="გადაფხეკილის ნახვა">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 9M20 4v5h-5M20 12a8 8 0 0 1-13.7 5.6L4 15M4 20v-5h5" /></svg>
+      </button>
+    )}
+  </div>
   <div class="body">
-    <span class="eyebrow">{p.categories.map((c) => categoryById(c)?.name).filter(Boolean).join(' · ')}</span>
+    {cat && <span class="cat">{cat}</span>}
     <h3><a href={`/product/${p.slug}`}>{p.title}</a></h3>
     <div class="row">
-      <span class="price">{p.price.toFixed(2)} ₾</span>
-      {ok ? <button class="btn sm" data-add={p.slug}>+ კალათა</button> : <span class="muted">მარაგი ამოიწურა</span>}
+      <span class="price">{p.price} ₾</span>
+      {ok ? <button class="btn sm ghost add" data-add={p.slug}>კალათაში</button> : <span class="muted small">მარაგი ამოიწურა</span>}
     </div>
   </div>
 </article>
 <style>
-  .pc { min-width: 0; display: flex; flex-direction: column; background: #fff; border: 1px solid var(--border); transition: transform .2s var(--ease), box-shadow .2s ease; }
-  .pc:hover { transform: translateY(-4px) rotate(-.4deg); box-shadow: 6px 7px 0 var(--a, var(--coral)); }
-  .img { position: relative; display: block; aspect-ratio: 3 / 4; background: color-mix(in srgb, var(--a) 22%, var(--paper)); overflow: hidden; border-bottom: 1px solid var(--border); }
-  .img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 6%; transition: opacity .35s ease, transform .35s var(--ease); }
+  .pc { min-width: 0; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; transition: box-shadow .22s ease, transform .22s var(--ease), border-color .22s ease; }
+  .pc:hover { box-shadow: var(--shadow); transform: translateY(-3px); border-color: transparent; }
+  .media { position: relative; padding: 16px 16px 0; background: var(--surface); }
+  .img { position: relative; display: block; aspect-ratio: 640 / 900; border-radius: 6px; overflow: hidden; background: var(--surface-2); box-shadow: 0 1px 2px rgba(37, 42, 39, .08), 0 8px 18px -8px rgba(37, 42, 39, .25); }
+  .img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .4s ease; }
   .img .alt { opacity: 0; }
-  .pc:hover .img .alt.on { opacity: 1; } .pc:hover .img:has(.alt.on) img:first-child { opacity: 0; }
-  .img .badge { position: absolute; top: 19%; left: 0; max-width: 90%; background: var(--a); border-left: 0; box-shadow: var(--shadow-sm); }
-  @media (max-width: 520px) { .img .badge { font-size: 9px; padding: 3px 6px; } }
-  .body { display: flex; flex-direction: column; gap: 8px; padding: 14px; flex: 1; }
-  h3 { font-size: 18px; letter-spacing: -.02em; }
+  .pc.show-alt .img .alt.on { opacity: 1; }
+  .badge { position: absolute; top: 26px; left: 26px; z-index: 1; }
+  .flip { position: absolute; right: 24px; bottom: 8px; z-index: 1; display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .94); color: var(--forest); box-shadow: var(--shadow-sm); opacity: 0; transition: opacity .2s ease, background .15s ease; }
+  .pc:hover .flip, .flip:focus-visible, .flip[aria-pressed='true'] { opacity: 1; }
+  .flip[aria-pressed='true'] { background: var(--forest); color: #fff; }
+  @media (hover: none) { .flip { opacity: 1; } }
+  .body { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px 16px; flex: 1; }
+  .cat { font-size: 13px; color: var(--muted); }
+  h3 { font-size: 17px; line-height: 1.3; }
   h3 a { text-decoration: none; }
-  .row { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  @media (hover: none) { .pc:hover .img .alt { opacity: 0; } .pc:hover .img img:first-child { opacity: 1; } }
+  h3 a:hover { color: var(--forest); }
+  .row { margin-top: auto; padding-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .price { font-size: 18px; }
+  .small { font-size: 13px; }
+  @media (max-width: 520px) {
+    .media { padding: 10px 10px 0; } .badge { top: 18px; left: 18px; font-size: 11px; padding: 3px 8px; }
+    .flip { right: 16px; width: 32px; height: 32px; }
+    .body { padding: 10px 12px 12px; } h3 { font-size: 15px; } .price { font-size: 16px; }
+    .row { flex-wrap: wrap; } .add { width: 100%; }
+  }
 </style>
 <script>
-  // მეორე (გადაფხეკილი) ფოტო მხოლოდ მაუსის მიტანისას იტვირთება — ტელეფონზე საერთოდ არა
-  document.addEventListener('pointerover', (e) => {
-    if ((e as PointerEvent).pointerType !== 'mouse') return;
-    const alt = (e.target as HTMLElement).closest?.('.pc')?.querySelector<HTMLImageElement>('img.alt[data-src]');
+  // Scratched photo: loaded only on demand (mouse hover or the flip button), never on page load.
+  const load = (card: Element) => {
+    const alt = card.querySelector<HTMLImageElement>('img.alt[data-src]');
     if (!alt) return;
     alt.addEventListener('load', () => alt.classList.add('on'), { once: true });
     alt.src = alt.dataset.src!; alt.removeAttribute('data-src');
+  };
+  document.addEventListener('pointerover', (e) => {
+    if ((e as PointerEvent).pointerType !== 'mouse') return;
+    const card = (e.target as HTMLElement).closest?.('.pc');
+    if (card) { load(card); card.classList.add('show-alt'); }
+  });
+  document.addEventListener('pointerout', (e) => {
+    if ((e as PointerEvent).pointerType !== 'mouse') return;
+    const card = (e.target as HTMLElement).closest?.('.pc');
+    if (card && !card.contains(e.relatedTarget as Node) && card.querySelector('.flip')?.getAttribute('aria-pressed') !== 'true') card.classList.remove('show-alt');
+  });
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.pc .flip');
+    if (!btn) return;
+    const card = btn.closest('.pc')!, on = btn.getAttribute('aria-pressed') !== 'true';
+    load(card); btn.setAttribute('aria-pressed', String(on)); card.classList.toggle('show-alt', on);
   });
 </script>
