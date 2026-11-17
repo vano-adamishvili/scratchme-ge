@@ -20,11 +20,26 @@ const ld = { '@context': 'https://schema.org', '@type': 'Product', name: p.title
     <nav class="crumbs eyebrow" aria-label="ნავიგაცია"><a href="/">მთავარი</a> / <a href="/shop">პოსტერები</a> / <span>{p.title}</span></nav>
     <div class="grid">
       <div class="gallery">
-        <div class="main card"><img id="pimg" src={p.images[0]?.url} alt={p.title} width="800" height="1066" data-zoom={p.images[0]?.url} /></div>
+        <div class="main card">
+          <div class="track" id="track" tabindex="0" aria-label={`${p.title} — ფოტოები`} aria-roledescription="კარუსელი">
+            {p.images.map((im, i) => (
+              <div class="slide" aria-label={`${i + 1} / ${p.images.length}`}>
+                <img src={im.url} alt={im.label ? `${p.title} — ${im.label}` : p.title} width="800" height="1125" data-zoom={im.url} loading={i ? 'lazy' : 'eager'} decoding="async" />
+              </div>
+            ))}
+          </div>
+          {p.images.length > 1 && (
+            <>
+              <button type="button" class="nav prev" id="g-prev" aria-label="წინა ფოტო" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg></button>
+              <button type="button" class="nav next" id="g-next" aria-label="შემდეგი ფოტო"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg></button>
+              <div class="dots" aria-hidden="true">{p.images.map((_, i) => <span class:list={[{ on: i === 0 }]} />)}</div>
+            </>
+          )}
+        </div>
         {p.images.length > 1 && (
           <div class="thumbs">
             {p.images.map((im, i) => (
-              <button type="button" class:list={['th', { on: i === 0 }]} data-src={im.url} aria-label={im.label || `ფოტო ${i + 1}`}>
+              <button type="button" class:list={['th', { on: i === 0 }]} data-i={i} aria-label={im.label || `ფოტო ${i + 1}`} aria-current={i === 0 ? 'true' : undefined}>
                 <img src={im.thumb} alt="" loading="lazy" width="120" height="160" />
                 {im.label && <span>{im.label}</span>}
               </button>
@@ -71,9 +86,24 @@ const ld = { '@context': 'https://schema.org', '@type': 'Product', name: p.title
   .crumbs { margin-bottom: 20px; font-size: 14px; color: var(--muted); } .crumbs a { text-decoration: none; color: inherit; } .crumbs a:hover { color: var(--forest); }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 5vw, 72px); align-items: start; }
   .main { padding: clamp(16px, 3vw, 36px); background: var(--surface-2); border: 0; box-shadow: none; border-radius: var(--r-lg); }
-  .main img { display: block; width: 100%; height: auto; border-radius: 4px; box-shadow: var(--shadow); }
+  .main { position: relative; }
+  .track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; overscroll-behavior-x: contain; border-radius: 4px; }
+  .track::-webkit-scrollbar { display: none; }
+  .track:focus-visible { outline: 2px solid var(--forest); outline-offset: 4px; }
+  .slide { flex: 0 0 100%; scroll-snap-align: center; scroll-snap-stop: always; }
+  .slide img { display: block; width: 100%; height: auto; border-radius: 4px; }
+  .main { box-shadow: none; }
+  .nav { position: absolute; top: 50%; translate: 0 -50%; display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; background: rgba(255,255,255,.95); color: var(--forest); box-shadow: var(--shadow); cursor: pointer; transition: opacity .2s ease, background .15s ease; }
+  .nav:hover { background: #fff; }
+  .nav:disabled { opacity: 0; pointer-events: none; }
+  .nav svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .prev { left: 6px; } .next { right: 6px; }
+  .dots { position: absolute; left: 0; right: 0; bottom: 6px; display: flex; justify-content: center; gap: 6px; }
+  .dots span { width: 7px; height: 7px; border-radius: 50%; background: rgba(37,42,39,.25); transition: background .2s ease, width .2s ease; }
+  .dots span.on { width: 18px; border-radius: 4px; background: var(--forest); }
+  @media (prefers-reduced-motion: reduce) { .track { scroll-behavior: auto; } }
   .thumbs { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
-  .th { display: grid; gap: 4px; width: 84px; padding: 6px; border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--surface); font-size: 11px; line-height: 1.2; text-align: center; cursor: pointer; transition: border-color .15s ease; }
+  .th { display: grid; gap: 4px; width: 110px; overflow-wrap: anywhere; padding: 6px; border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--surface); font-size: 11px; line-height: 1.2; text-align: center; cursor: pointer; transition: border-color .15s ease; }
   .th:hover { border-color: #C8CFC9; }
   .th.on { border-color: var(--forest); box-shadow: 0 0 0 1px var(--forest); }
   .th img { aspect-ratio: 3/4; object-fit: contain; width: 100%; }
@@ -99,9 +129,30 @@ const ld = { '@context': 'https://schema.org', '@type': 'Product', name: p.title
   @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } .info { position: static; } .rel { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } .spec > div { grid-template-columns: 90px 1fr; } }
 </style>
 <script>
-  const img = document.getElementById('pimg') as HTMLImageElement | null;
-  document.querySelectorAll<HTMLButtonElement>('.th').forEach((b) => b.addEventListener('click', () => {
-    if (!img) return; img.src = b.dataset.src!; img.dataset.zoom = b.dataset.src!;
-    document.querySelectorAll('.th').forEach((x) => x.classList.toggle('on', x === b));
-  }));
+  // გალერეა: ისრები, ტელეფონზე გადასქროლვა (scroll-snap), მინიატურები, კლავიატურის ისრები
+  const track = document.getElementById('track');
+  if (track) {
+    const n = track.children.length;
+    const thumbs = [...document.querySelectorAll<HTMLButtonElement>('.th')];
+    const dots = [...document.querySelectorAll<HTMLElement>('.dots span')];
+    const prev = document.getElementById('g-prev') as HTMLButtonElement | null;
+    const next = document.getElementById('g-next') as HTMLButtonElement | null;
+    let cur = 0;
+    const go = (i: number) => { i = Math.max(0, Math.min(n - 1, i)); track.scrollTo({ left: i * track.clientWidth }); };
+    const sync = () => {
+      const i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+      if (i === cur && prev?.disabled === (i === 0)) return;
+      cur = i;
+      thumbs.forEach((b, k) => { b.classList.toggle('on', k === i); b.toggleAttribute('aria-current', k === i); });
+      dots.forEach((d, k) => d.classList.toggle('on', k === i));
+      if (prev) prev.disabled = i === 0; if (next) next.disabled = i === n - 1;
+    };
+    let raf = 0; track.addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(sync); }, { passive: true });
+    prev?.addEventListener('click', () => go(cur - 1));
+    next?.addEventListener('click', () => go(cur + 1));
+    thumbs.forEach((b) => b.addEventListener('click', () => go(+b.dataset.i!)));
+    track.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') { e.preventDefault(); go(cur + 1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); go(cur - 1); } });
+    window.addEventListener('resize', () => track.scrollTo({ left: cur * track.clientWidth, behavior: 'instant' as ScrollBehavior }));
+    sync();
+  }
 </script>
