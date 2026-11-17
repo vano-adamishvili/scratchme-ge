@@ -15,10 +15,10 @@ export function pushLayer(id: string, close: () => void) {
   history.pushState({ ...(history.state || {}), layer: id }, '');
 }
 
-/** ფანჯარა ღილაკით დაიხურა: მისი history-ჩანაწერიც ვაშოროთ. href — შემდეგ სად გადავიდეთ */
-export function popLayer(id: string, href?: string) {
+/** ფანჯარა ღილაკით დაიხურა: მისი history-ჩანაწერიც ვაშოროთ. then — შემდეგ სად გადავიდეთ (ბმული) ან რა გავაკეთოთ */
+export function popLayer(id: string, then?: string | (() => void)) {
   const i = stack.findIndex((l) => l.id === id);
-  const go = href ? () => { location.href = href; } : null;
+  const go = typeof then === 'string' ? () => { location.href = then; } : then ?? null;
   if (i < 0) { go?.(); return; }
   stack.splice(i, 1);
   if (history.state?.layer === id) { skip++; after = go; history.back(); }
@@ -31,7 +31,9 @@ window.addEventListener('popstate', () => {
     // გადასვლის წინ გვერდი იმ ადგილას დავაბრუნოთ, სადაც ფანჯრის გახსნამდე იყო
     const y = history.state?.y;
     if (f && typeof y === 'number') window.scrollTo({ top: y, behavior: 'instant' as ScrollBehavior });
-    f?.(); return;
+    // ბრაუზერი popstate-ის შემდეგ სქროლს აღადგენს — ჩვენი მოქმედება ამის შემდეგ შევასრულოთ
+    if (f) setTimeout(f, 60);
+    return;
   }
   const l = stack.pop();
   if (!l) return;

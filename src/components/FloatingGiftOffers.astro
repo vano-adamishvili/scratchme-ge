@@ -35,17 +35,17 @@ const offers = [...BUNDLES].sort((a, b) => a.size - b.size).map((b) => ({
       <span class="fgo-grab" aria-hidden="true"></span>
       <h2 id="fgo-h">{cfg.heading}</h2>
       <p class="fgo-txt">{cfg.text}</p>
-      <ul class="fgo-list">
+      <div class="fgo-list" role="radiogroup" aria-label="აირჩიე ნაკრები">
         {offers.map((o) => (
-          <li class:list={['fgo-offer', { rec: o.recommended }]}>
+          <button type="button" role="radio" aria-checked={String(o.recommended)} data-size={o.size} class:list={['fgo-offer', { rec: o.recommended }]}>
             {o.recommended && <span class="fgo-badge">რეკომენდებული</span>}
-            <div class="fgo-row"><b>{o.size} პოსტერი</b><b class="fgo-price">{o.price} ₾</b></div>
-            <div class="fgo-row muted"><span>{o.terms}</span><span>სულ {o.total} ₾</span></div>
-          </li>
+            <span class="fgo-row"><b>{o.size} პოსტერი</b><b class="fgo-price">{o.price} ₾</b></span>
+            <span class="fgo-row muted"><span>{o.terms}</span><span>სულ {o.total} ₾</span></span>
+          </button>
         ))}
-      </ul>
+      </div>
       {upgrade !== null && upgrade > 0 && <p class="fgo-up">მესამე პოსტერი სულ რაღაც {upgrade} ₾-ით მეტი ჯდება და მიწოდებაც უფასოა.</p>}
-      <a href={cfg.ctaHref} class="btn fgo-cta">{cfg.cta}</a>
+      <a href={`/?bundle=${rec}#catalog`} class="btn fgo-cta" data-size={rec}>{cfg.cta}</a>
     </div>
   </div>
 )}
@@ -70,11 +70,17 @@ const offers = [...BUNDLES].sort((a, b) => a.size - b.size).map((b) => ({
   .fgo-grab { display: none; }
   .fgo-panel h2 { font-size: 26px; margin: 4px 48px 8px 0; }
   .fgo-txt { margin: 0 0 20px; color: var(--muted); }
-  .fgo-list { list-style: none; margin: 0 0 20px; padding: 0; display: grid; gap: 10px; }
-  .fgo-offer { position: relative; padding: 16px; border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface); }
-  .fgo-offer.rec { border: 1.5px solid var(--forest); background: var(--forest-tint); }
+  .fgo-list { margin: 0 0 20px; display: grid; gap: 10px; }
+  .fgo-offer { position: relative; display: block; width: 100%; padding: 16px 16px 16px 46px; border: 1.5px solid var(--border); border-radius: var(--r-md); background: var(--surface); color: var(--text); text-align: left; font: inherit; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+  .fgo-offer:hover { border-color: #B9C4BD; }
+  /* არჩევის წრე */
+  .fgo-offer::before { content: ''; position: absolute; left: 16px; top: 18px; width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #AEB7B1; background: #fff; transition: border-color .15s ease, box-shadow .15s ease; }
+  .fgo-offer[aria-checked='true'] { border-color: var(--forest); background: var(--forest-tint); }
+  .fgo-offer[aria-checked='true']::before { border-color: var(--forest); box-shadow: inset 0 0 0 4px #fff; background: var(--forest); }
+  .fgo-offer:focus-visible { outline: 2px solid var(--forest); outline-offset: 2px; }
   .fgo-badge { position: absolute; top: -10px; left: 14px; padding: 2px 10px; border-radius: 999px; background: var(--forest); color: #fff; font-size: 12px; font-weight: 600; }
   .fgo-row { display: flex; justify-content: space-between; gap: 12px; }
+  .fgo-row.muted { color: var(--muted); }
   .fgo-row b { font: 600 18px var(--display); }
   .fgo-row.muted { margin-top: 4px; font-size: 14px; }
   .fgo-cta { width: 100%; }
@@ -107,7 +113,7 @@ const offers = [...BUNDLES].sort((a, b) => a.size - b.size).map((b) => ({
       pushLayer('offers', () => close(true));
       setTimeout(() => focusables()[0]?.focus(), 50);
     }
-    function close(fromBack = false, href?: string) {
+    function close(fromBack = false, href?: string | (() => void)) {
       if (panel.hidden) return;
       if (!fromBack) popLayer('offers', href);
       root!.classList.remove('open');
@@ -120,7 +126,28 @@ const offers = [...BUNDLES].sort((a, b) => a.size - b.size).map((b) => ({
     btn.addEventListener('click', open);
     back.addEventListener('click', () => close());
     root.querySelector('.fgo-x')!.addEventListener('click', () => close());
-    panel.querySelector<HTMLAnchorElement>('.fgo-cta')?.addEventListener('click', (e) => { e.preventDefault(); close(false, (e.currentTarget as HTMLAnchorElement).href); });
+    // ნაკრების არჩევა: ღილაკი „ააწყვე ნაკრები“ არჩეულ ზომაზე გადაგიყვანს
+    const cta = panel.querySelector<HTMLAnchorElement>('.fgo-cta')!;
+    const opts = [...panel.querySelectorAll<HTMLButtonElement>('.fgo-offer')];
+    const pick = (b: HTMLButtonElement) => {
+      opts.forEach((o) => { o.setAttribute('aria-checked', String(o === b)); o.tabIndex = o === b ? 0 : -1; });
+      cta.dataset.size = b.dataset.size; cta.href = `/?bundle=${b.dataset.size}#catalog`;
+    };
+    opts.forEach((o, i) => {
+      o.tabIndex = o.getAttribute('aria-checked') === 'true' ? 0 : -1;
+      o.addEventListener('click', () => pick(o));
+      o.addEventListener('keydown', (e) => {
+        const d = e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 : e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 0;
+        if (!d) return; e.preventDefault(); const n = opts[(i + d + opts.length) % opts.length]; pick(n); n.focus();
+      });
+    });
+    cta.addEventListener('click', (e) => {
+      e.preventDefault();
+      const size = +cta.dataset.size!;
+      // მთავარ გვერდზე ნაკრების აწყობა აქვეა — პირდაპირ ვრთავთ; სხვა გვერდიდან მთავარზე გადავდივართ
+      if (document.getElementById('bundle-builder')) close(false, () => window.dispatchEvent(new CustomEvent('bb:set', { detail: { size } })));
+      else close(false, cta.href);
+    });
     document.addEventListener('keydown', (e) => {
       if (panel.hidden) return;
       if (e.key === 'Escape') { e.preventDefault(); close(); }
