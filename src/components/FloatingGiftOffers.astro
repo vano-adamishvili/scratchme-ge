@@ -111,6 +111,8 @@ const offers = [...BUNDLES].sort((a, b) => a.size - b.size).map((b) => ({
       btn.setAttribute('aria-expanded', 'true');
       document.documentElement.style.overflow = 'hidden';
       pushLayer('offers', () => close(true));
+      // ყოველ გახსნაზე არჩეულია რეკომენდებული ნაკრები (წინა არჩევანი არ ინახება)
+      const r = opts.find((o) => o.classList.contains('rec')) ?? opts[0]; if (r) pick(r);
       setTimeout(() => focusables()[0]?.focus(), 50);
     }
     function close(fromBack = false, href?: string | (() => void)) {
