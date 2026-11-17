@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['src/data/products/**', 'scripts/fetch-images.mjs', '.github/workflows/images.yml']
+    paths: ['src/data/products/**', 'public/images/**', 'scripts/fetch-images.mjs', '.github/workflows/images.yml']
 permissions:
   contents: write
 concurrency: images

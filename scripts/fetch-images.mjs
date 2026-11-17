@@ -1,4 +1,4 @@
-// პროდუქტების ფოტოებს (და ლოგოს) ძველი მისამართებიდან გადმოწერს, აპატარავებს და
+// პროდუქტების ფოტოებს (და ლოგოს) ძველი მისამართებიდან გადმოწერს (ადმინით ატვირთულს — public/-დან იღებს), აპატარავებს და
 // public/img/-ში ინახავს. შედეგს წერს src/data/images.json-ში: { ორიგინალი URL: { sm, lg, w, h } }.
 // უკვე დამუშავებულ ფოტოებს თავიდან არ ეხება. გაშვება: node scripts/fetch-images.mjs
 import { createHash } from 'node:crypto';
@@ -14,7 +14,7 @@ const manifest = existsSync(MANIFEST) ? JSON.parse(readFileSync(MANIFEST, 'utf8'
 const jobs = [{ url: LOGO, name: 'logo', logo: true }];
 for (const f of readdirSync(DIR).filter((x) => x.endsWith('.json'))) {
   const p = JSON.parse(readFileSync(`${DIR}/${f}`, 'utf8'));
-  for (const im of p.images ?? []) if (/^https?:\/\//.test(im.url)) jobs.push({ url: im.url, name: p.slug });
+  for (const im of p.images ?? []) if (/^https?:\/\//.test(im.url) || (im.url?.startsWith('/') && existsSync(`public${im.url}`))) jobs.push({ url: im.url, name: p.slug });
 }
 
 let made = 0, failed = 0;
@@ -22,9 +22,13 @@ for (const j of jobs) {
   const done = manifest[j.url];
   if (done && existsSync(`public${done.sm}`) && existsSync(`public${done.lg}`)) continue;
   try {
-    const res = await fetch(j.url, { headers: { 'user-agent': 'Mozilla/5.0 (scratchme image optimizer)' } });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const buf = Buffer.from(await res.arrayBuffer());
+    let buf;
+    if (j.url.startsWith('/')) buf = readFileSync(`public${j.url}`); // ადმინ პანელით ატვირთული ფოტო
+    else {
+      const res = await fetch(j.url, { headers: { 'user-agent': 'Mozilla/5.0 (scratchme image optimizer)' } });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      buf = Buffer.from(await res.arrayBuffer());
+    }
     const meta = await sharp(buf).metadata();
     const base = `${j.name}-${createHash('sha1').update(j.url).digest('hex').slice(0, 8)}`;
     if (j.logo) {
