@@ -12,8 +12,8 @@ const alt = p.images[1];
     <a href={`/product/${p.slug}`} class="img" aria-label={p.title}>
       <img class="main" src={p.images[0]?.thumb} alt={p.title} loading={eager ? 'eager' : 'lazy'} decoding="async" width="640" height="900" />
       {alt && <img class="alt" data-src={alt.thumb} alt="" decoding="async" width="640" height="900" />}
+      {p.badge && <span class="badge">{p.badge}</span>}
     </a>
-    {p.badge && <span class="badge">{p.badge}</span>}
     {alt && (
       <button type="button" class="flip" aria-pressed="false" aria-label={`${p.title} — გადაფხეკილის ნახვა`} title="გადაფხეკილის ნახვა">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 9M20 4v5h-5M20 12a8 8 0 0 1-13.7 5.6L4 15M4 20v-5h5" /></svg>
@@ -37,7 +37,8 @@ const alt = p.images[1];
   .img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .4s ease; }
   .img .alt { opacity: 0; }
   .pc.show-alt .img .alt.on { opacity: 1; }
-  .badge { position: absolute; top: 26px; left: 26px; z-index: 1; }
+  /* ბეჯი პოსტერის სათაურის ქვემოთ, პირველ რიგზე — სათაური არ იფარება */
+  .badge { position: absolute; top: 12.5%; left: 8px; z-index: 1; }
   .flip { position: absolute; right: 24px; bottom: 8px; z-index: 1; display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .94); color: var(--forest); box-shadow: var(--shadow-sm); opacity: 0; transition: opacity .2s ease, background .15s ease; }
   .pc:hover .flip, .flip:focus-visible, .flip[aria-pressed='true'] { opacity: 1; }
   .flip[aria-pressed='true'] { background: var(--forest); color: #fff; }
@@ -51,7 +52,7 @@ const alt = p.images[1];
   .price { font-size: 18px; }
   .small { font-size: 13px; }
   @media (max-width: 520px) {
-    .media { padding: 10px 10px 0; } .badge { top: 18px; left: 18px; font-size: 11px; padding: 3px 8px; }
+    .media { padding: 10px 10px 0; } .badge { left: 6px; font-size: 11px; padding: 3px 8px; }
     .flip { right: 16px; width: 32px; height: 32px; }
     .body { padding: 10px 12px 12px; } h3 { font-size: 15px; } .price { font-size: 16px; }
     .row { flex-wrap: wrap; } .add { width: 100%; }
