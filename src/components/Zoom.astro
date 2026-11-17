@@ -23,6 +23,7 @@
 </style>
 
 <script>
+  import { pushLayer, popLayer } from '../lib/backstack';
   const dlg = document.getElementById('zoom-dlg') as HTMLDialogElement;
   const img = document.getElementById('zm-img') as HTMLImageElement;
   const stage = document.getElementById('zm-stage')!;
@@ -40,7 +41,7 @@
     if (s <= 1.01) { s = 1; x = 0; y = 0; }
     apply();
   };
-  const open = (src: string) => { img.src = src; reset(); dlg.showModal(); };
+  const open = (src: string) => { img.src = src; reset(); dlg.showModal(); pushLayer('zoom', () => dlg.open && dlg.close()); };
   const close = () => dlg.close();
 
   // data-zoom ელემენტზე დაწკაპება (capture — რომ ღილაკის სხვა მოქმედება არ შესრულდეს)
@@ -52,7 +53,7 @@
   }, true);
 
   document.getElementById('zm-x')!.addEventListener('click', close);
-  dlg.addEventListener('close', reset);
+  dlg.addEventListener('close', () => { reset(); popLayer('zoom'); });
 
   // შეხება / მაუსი
   const pts = new Map<number, { x: number; y: number }>();

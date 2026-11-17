@@ -135,6 +135,7 @@ const fmt = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(2));
 </style>
 
 <script>
+  import { pushLayer, popLayer } from '../lib/backstack';
   import { addBundle } from '../lib/cart';
   type B = { size: number; price: number; free: boolean; gift: boolean };
   const { items, bundles, gifts: giftList, fee } = JSON.parse(document.getElementById('bb-data')!.textContent!) as { items: Record<string, { t: string; i?: string }>; bundles: B[]; gifts: { id: string; name: string }[]; fee: number };
@@ -155,6 +156,9 @@ const fmt = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(2));
   function render() {
     const b = bundle();
     const on = !!b;
+    // ნაკრების რეჟიმი ფენაა: „უკან“ რეჟიმიდან გამოდის და იქ გაბრუნებს, სადაც რეჟიმი ჩართე
+    if (on && tray.hidden) pushLayer('bundle', () => { size = 0; render(); save(); });
+    else if (!on && !tray.hidden) popLayer('bundle');
     tray.hidden = !on;
     document.body.classList.toggle('bb-on', on);
     sizeBtns.forEach((s) => s.setAttribute('aria-pressed', String(on && +s.dataset.size! === size)));
@@ -202,7 +206,7 @@ const fmt = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(2));
     addBundle(size, chosen, gift);
     size = 0; chosen = []; save();
     toast('ნაკრები კალათაშია ✓');
-    setTimeout(() => { location.href = '/cart'; }, 450);
+    setTimeout(() => popLayer('bundle', '/cart'), 450);
   }
 
   function toggle(slug: string) {
@@ -235,6 +239,13 @@ const fmt = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(2));
     if (!bundles.some((b) => b.size === d.size)) return;
     chosen = d.chosen.filter((c) => items[c]); setSize(d.size);
     document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  // ბრაუზერის „უკან“ გვერდს მეხსიერებიდან (bfcache) აბრუნებს — ნაკრების მდგომარეობა sessionStorage-დან აღვადგინოთ
+  window.addEventListener('pageshow', (e) => {
+    if (!(e as PageTransitionEvent).persisted) return;
+    busy = false;
+    try { const s = JSON.parse(sessionStorage.getItem(KEY) || 'null'); size = s?.size ?? 0; chosen = s?.chosen ?? []; } catch { size = 0; chosen = []; }
+    tray.hidden = true; render();
   });
   $('bb-close').addEventListener('click', () => { size = 0; chosen = []; render(); });
   slots.addEventListener('click', (e) => { const r = (e.target as HTMLElement).closest<HTMLElement>('[data-rm]'); if (r) toggle(r.dataset.rm!); });
