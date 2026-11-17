@@ -1,80 +1,99 @@
 ---
 import Logo from './Logo.astro';
-import { SETTINGS, BUNDLES, localImage } from '../data/catalog';
+import { SETTINGS, CATEGORIES, PRODUCTS, localImage } from '../data/catalog';
 const nav = [
   { href: '/shop', label: 'პოსტერები' },
-  { href: '/#bundle-builder', label: 'ნაკრები' },
+  { href: '/#bundle-builder', label: 'ნაკრების აწყობა' },
   { href: '/#how-it-works', label: 'როგორ მუშაობს' },
-  { href: '/blog', label: 'ბლოგი' },
-  { href: '/contact', label: 'კონტაქტი' },
 ];
-// ლოგო ჯერ ძველი საიტიდან იტვირთება; თუ ვერ ჩაიტვირთა, ტექსტური ლოგო ჩანს
+// only categories that have at least one active poster
+const cats = CATEGORIES.filter((c) => PRODUCTS.some((p) => p.categories.includes(c.id)));
 const LOGO_SRC = 'https://scratchme.ge/logo-wordmark-dark.webp';
 const LOGO = localImage(LOGO_SRC)?.lg ?? LOGO_SRC;
-const b2 = BUNDLES.find((b) => b.size === 2);
-const free = Number(SETTINGS.freeShippingFrom) || BUNDLES.find((b) => b.freeShipping)?.size;
-const gift = BUNDLES.find((b) => b.gift);
 ---
-<div class="announce">
-  <span class="offer o1">{b2?.size} პოსტერი — {b2?.price} ₾</span>
-  {free && <span class="offer o2">{free}+ პოსტერზე უფასო მიტანა</span>}
-  {gift && <span class="offer o3">{gift.size} პოსტერზე საჩუქარი 🎁</span>}
-</div>
-<header class="nav">
+<header class="nav" id="site-header">
   <div class="container in">
     <a href="/" class="brand" aria-label="scratchme.ge — მთავარი">
-      <img class="lg" src={LOGO} alt="scratchme.ge" height="46" decoding="async" onerror="this.hidden=true;this.nextElementSibling.hidden=false" />
+      <img class="lg" src={LOGO} alt="scratchme.ge" width="676" height="150" decoding="async" onerror="this.hidden=true;this.nextElementSibling.hidden=false" />
       <span hidden><Logo /></span>
     </a>
     <nav class="links" aria-label="მთავარი მენიუ">
-      {nav.map((n) => <a href={n.href}>{n.label}</a>)}
+      <a href={nav[0].href}>{nav[0].label}</a>
+      <div class="dd">
+        <button type="button" class="dd-btn" aria-expanded="false" aria-controls="cat-menu">კატეგორიები
+          <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="dd-menu" id="cat-menu" hidden>
+          {cats.map((c) => <a href={`/shop?category=${c.id}`}>{c.name}</a>)}
+          <a href="/shop" class="all">ყველა პოსტერი →</a>
+        </div>
+      </div>
+      {nav.slice(1).map((n) => <a href={n.href}>{n.label}</a>)}
     </nav>
     <div class="right">
       <a href="/cart" class="cart" aria-label="კალათა">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6 5 2H2"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
         <span class="n" data-cart-count hidden>0</span>
       </a>
-      <button class="burger" aria-label="მენიუ" aria-expanded="false" aria-controls="mnav">☰</button>
+      <button class="burger" aria-label="მენიუ" aria-expanded="false" aria-controls="mnav">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
     </div>
   </div>
-  <nav id="mnav" class="mnav" hidden>
+  <nav id="mnav" class="mnav" hidden aria-label="მობილური მენიუ">
     {nav.map((n) => <a href={n.href}>{n.label}</a>)}
-    <a href={`tel:+995${SETTINGS.phone.replace(/\s/g, '')}`}>📞 {SETTINGS.phone}</a>
+    <span class="mnav-h">კატეგორიები</span>
+    <div class="mnav-cats">{cats.map((c) => <a href={`/shop?category=${c.id}`} class="chip">{c.name}</a>)}</div>
+    <a href={`tel:+995${SETTINGS.phone.replace(/\s/g, '')}`} class="tel">{SETTINGS.phone}</a>
   </nav>
 </header>
 <style>
-  .announce { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 7px 12px; background: var(--ink); border-bottom: 2px solid var(--coral); font: 600 11px/1.2 var(--mono); }
-  .offer { padding: 5px 9px; border: 1px solid var(--ink); color: var(--ink); box-shadow: 3px 3px 0 rgba(247,245,238,.25); white-space: nowrap; }
-  .o1 { background: var(--lime); } .o2 { background: var(--yellow); } .o3 { background: var(--coral); }
-  .nav { position: sticky; top: 0; z-index: 40; background: rgba(247,245,238,.94); backdrop-filter: blur(12px); border-bottom: 1.5px solid var(--ink); }
-  .nav::after { content: ''; position: absolute; left: 0; right: 0; bottom: -5px; height: 4px; background: linear-gradient(90deg, var(--lime) 0 25%, var(--yellow) 25% 50%, var(--coral) 50% 75%, var(--lilac) 75% 100%); pointer-events: none; }
-  .in { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
-  .brand { text-decoration: none; display: flex; align-items: center; transition: transform .2s var(--ease); }
-  .brand:hover { transform: rotate(-2deg) scale(1.04); }
-  .lg { height: 46px; width: auto; max-width: 190px; object-fit: contain; }
-  .links { display: flex; gap: 6px; }
-  .links a { --h: var(--lime); padding: 7px 11px; border: 1.5px solid transparent; text-decoration: none; font-weight: 700; font-size: 15px; transition: background .15s ease, transform .15s var(--ease), box-shadow .15s ease, border-color .15s ease; }
-  .links a:nth-child(2) { --h: var(--yellow); background: var(--yellow); border-color: var(--ink); box-shadow: 2px 2px 0 var(--ink); }
-  .links a:nth-child(3) { --h: var(--mint); } .links a:nth-child(4) { --h: var(--lilac); } .links a:nth-child(5) { --h: var(--blue); }
-  .links a:hover { background: var(--h); border-color: var(--ink); box-shadow: 3px 3px 0 var(--ink); transform: translateY(-2px) rotate(-1.5deg); }
+  .nav { position: sticky; top: 0; z-index: 40; background: rgba(248, 246, 241, .92); backdrop-filter: saturate(1.4) blur(14px); border-bottom: 1px solid transparent; transition: border-color .2s ease, box-shadow .2s ease; }
+  .nav.scrolled { border-bottom-color: var(--border); box-shadow: 0 1px 12px rgba(37, 42, 39, .05); }
+  .in { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  .brand { display: flex; align-items: center; text-decoration: none; }
+  .lg { height: 40px; width: auto; max-width: 180px; object-fit: contain; border-radius: 6px; }
+  .links { display: flex; align-items: center; gap: 4px; }
+  .links > a, .dd-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border: 0; border-radius: 10px; background: none; color: var(--text); text-decoration: none; font-weight: 500; font-size: 15px; transition: background .15s ease, color .15s ease; }
+  .links > a:hover, .dd-btn:hover, .dd-btn[aria-expanded='true'] { background: var(--surface-2); color: var(--forest); }
+  .dd { position: relative; }
+  .dd-btn svg { transition: transform .2s ease; }
+  .dd-btn[aria-expanded='true'] svg { transform: rotate(180deg); }
+  .dd-menu { position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); min-width: 240px; display: grid; padding: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); box-shadow: var(--shadow-lg); }
+  .dd-menu a { padding: 10px 12px; border-radius: 10px; text-decoration: none; font-size: 15px; }
+  .dd-menu a:hover { background: var(--forest-tint); color: var(--forest); }
+  .dd-menu .all { margin-top: 4px; border-top: 1px solid var(--border); border-radius: 0 0 10px 10px; color: var(--forest); font-weight: 600; }
   .right { display: flex; align-items: center; gap: 8px; }
-  .cart { position: relative; display: grid; place-items: center; width: 46px; height: 46px; border: 1.5px solid var(--ink); background: var(--coral); box-shadow: 3px 3px 0 var(--ink); transition: transform .15s var(--ease), box-shadow .15s ease, background .15s ease; }
-  .cart:hover { transform: translate(-1px, -2px) rotate(-3deg); box-shadow: 5px 5px 0 var(--ink); background: var(--lime); }
-  .cart .n { position: absolute; top: -9px; right: -9px; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 11px; background: var(--lime); border: 1.5px solid var(--ink); font: 700 12px/19px var(--mono); text-align: center; }
-  .cart:hover .n { background: var(--coral); }
-  .cart.pop { animation: pop .45s var(--ease); }
-  @keyframes pop { 30% { transform: scale(1.22) rotate(-8deg); } 60% { transform: scale(.94) rotate(4deg); } }
-  .burger { display: none; width: 46px; height: 46px; border: 1.5px solid var(--ink); background: var(--lime); font-size: 20px; box-shadow: 3px 3px 0 var(--ink); }
-  .mnav { display: grid; border-top: 1px solid var(--line); background: var(--paper); }
+  .cart, .burger { position: relative; display: grid; place-items: center; width: 46px; height: 46px; border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--surface); color: var(--forest); transition: border-color .15s ease, background .15s ease; }
+  .cart:hover, .burger:hover { border-color: var(--forest); background: var(--forest-tint); }
+  .cart .n { position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; background: var(--forest); color: #fff; font: 600 11px/20px var(--sans); text-align: center; }
+  .cart.pop { animation: pop .4s var(--ease); }
+  @keyframes pop { 40% { transform: scale(1.1); } }
+  .burger { display: none; }
+  .mnav { display: grid; gap: 2px; padding: 8px 20px 20px; border-top: 1px solid var(--border); background: var(--cream-bg); }
   .mnav[hidden] { display: none; }
-  .mnav a { padding: 14px 16px; border-bottom: 1px solid var(--line); text-decoration: none; font-weight: 700; }
-  @media (max-width: 860px) { .links { display: none; } .burger { display: block; } .offer.o3 { display: none; } .lg { height: 40px; max-width: 160px; } }
-  @media (prefers-reduced-motion: reduce) { .cart.pop { animation: none; } }
+  .mnav > a { padding: 14px 0; border-bottom: 1px solid var(--border); text-decoration: none; font-weight: 600; font-size: 17px; }
+  .mnav-h { margin: 16px 0 8px; font-size: 13px; font-weight: 600; color: var(--muted); }
+  .mnav-cats { display: flex; flex-wrap: wrap; gap: 8px; }
+  .mnav .tel { margin-top: 14px; border: 0; color: var(--forest); }
+  @media (max-width: 900px) { .links { display: none; } .burger { display: grid; } .in { min-height: 64px; } .lg { height: 34px; max-width: 150px; } }
 </style>
 <script>
-  const cartEl = document.querySelector<HTMLElement>('.nav .cart');
+  const header = document.getElementById('site-header')!;
+  const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 8);
+  onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+
+  const cartEl = header.querySelector<HTMLElement>('.cart');
   window.addEventListener('cart', () => { if (!cartEl) return; cartEl.classList.remove('pop'); void cartEl.offsetWidth; cartEl.classList.add('pop'); });
-  const b = document.querySelector<HTMLButtonElement>('.burger')!, m = document.getElementById('mnav')!;
+
+  // categories dropdown: click to open, Escape / outside click to close
+  const ddBtn = header.querySelector<HTMLButtonElement>('.dd-btn')!, dd = document.getElementById('cat-menu')!;
+  const setDd = (open: boolean) => { dd.hidden = !open; ddBtn.setAttribute('aria-expanded', String(open)); };
+  ddBtn.addEventListener('click', () => setDd(dd.hidden));
+  document.addEventListener('click', (e) => { if (!dd.hidden && !(e.target as HTMLElement).closest('.dd')) setDd(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !dd.hidden) { setDd(false); ddBtn.focus(); } });
+
+  const b = header.querySelector<HTMLButtonElement>('.burger')!, m = document.getElementById('mnav')!;
   b.addEventListener('click', () => { const o = m.hidden; m.hidden = !o; b.setAttribute('aria-expanded', String(o)); });
   m.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('a')) { m.hidden = true; b.setAttribute('aria-expanded', 'false'); } });
 </script>

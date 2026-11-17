@@ -13,6 +13,7 @@ export const CATEGORIES = [
   { id: 'travel', name: 'მოგზაურობა', emoji: '🧭' },
   { id: 'watch', name: 'ფილმები და სერიალები', emoji: '🎬' },
   { id: 'read', name: 'წიგნები', emoji: '📚' },
+  { id: 'anime', name: 'ანიმე და ანიმაცია', emoji: '✨' },
   { id: 'kids', name: 'ბავშვებისთვის', emoji: '🧸' },
   { id: 'couples', name: 'წყვილებისთვის', emoji: '💞' },
   { id: 'challenge', name: 'გამოწვევა', emoji: '🔥' },

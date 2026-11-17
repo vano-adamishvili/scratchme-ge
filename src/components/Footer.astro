@@ -71,16 +71,16 @@ const year = new Date().getFullYear();
   .ft { margin-top: 40px; background: var(--ink); color: var(--paper); padding: 0 0 24px; position: relative; }
   .ft::before { content: ''; display: block; height: 6px; background: linear-gradient(90deg, var(--lime) 0 25%, var(--yellow) 25% 50%, var(--coral) 50% 75%, var(--lilac) 75% 100%); }
 
-  .cta { display: flex; align-items: center; justify-content: space-between; gap: 18px 28px; flex-wrap: wrap; margin: 40px 0 44px; padding: 22px 24px; background: var(--paper); color: var(--ink); border: 1.5px solid var(--paper); box-shadow: 6px 6px 0 var(--coral); }
+  .cta { display: flex; align-items: center; justify-content: space-between; gap: 18px 28px; flex-wrap: wrap; margin: 40px 0 44px; padding: 22px 24px; background: var(--paper); color: var(--ink); border: 1.5px solid var(--paper); box-shadow: var(--shadow); }
   .cta .eyebrow { color: #57564e; }
   .cta p { margin: 6px 0 0; font: 700 clamp(20px, 2.6vw, 30px)/1.1 var(--display); letter-spacing: -.03em; }
   .cta-b { display: flex; gap: 10px; flex-wrap: wrap; }
-  .cta-b .btn { box-shadow: 3px 3px 0 var(--ink); background-color: var(--paper); }
+  .cta-b .btn { box-shadow: var(--shadow-sm); background-color: var(--paper); }
   .cta-b .btn.coral { background-color: var(--coral); }
 
   .grid { display: grid; grid-template-columns: 1.3fr .9fr 1.3fr 1fr; gap: 32px; }
-  .sticker { display: inline-block; line-height: 0; background: var(--paper); border: 1.5px solid var(--paper); box-shadow: 5px 5px 0 var(--lime); transform: rotate(-2.5deg); transition: transform .2s var(--ease), box-shadow .2s ease; }
-  .sticker:hover { transform: rotate(0) translateY(-2px); box-shadow: 7px 7px 0 var(--coral); }
+  .sticker { display: inline-block; line-height: 0; background: var(--paper); border: 1.5px solid var(--paper); box-shadow: var(--shadow-sm); transform: rotate(-2.5deg); transition: transform .2s var(--ease), box-shadow .2s ease; }
+  .sticker:hover { transform: rotate(0) translateY(-2px); box-shadow: var(--shadow); }
   .sticker img { display: block; height: 58px; width: auto; }
   .tag { max-width: 320px; opacity: .8; margin: 18px 0 8px; }
   .made { color: var(--lime); }
@@ -91,9 +91,9 @@ const year = new Date().getFullYear();
   .ic > span { flex: none; width: 18px; text-align: center; }
 
   .soc { display: flex; gap: 10px; flex-wrap: wrap; }
-  .soc a { display: grid; place-items: center; width: 46px; height: 46px; background: var(--bg); color: var(--ink); border: 1.5px solid var(--paper); box-shadow: 3px 3px 0 var(--paper); transition: transform .15s var(--ease), box-shadow .15s ease; }
+  .soc a { display: grid; place-items: center; width: 46px; height: 46px; background: var(--bg); color: var(--ink); border: 1.5px solid var(--paper); box-shadow: var(--shadow-sm); transition: transform .15s var(--ease), box-shadow .15s ease; }
   .soc a:nth-child(odd) { transform: rotate(-3deg); } .soc a:nth-child(even) { transform: rotate(3deg); }
-  .soc a:hover { transform: translate(-2px, -3px) rotate(0); box-shadow: 5px 6px 0 var(--paper); }
+  .soc a:hover { transform: translate(-2px, -3px) rotate(0); box-shadow: var(--shadow); }
   .soc svg { width: 22px; height: 22px; fill: currentColor; }
   .soc-note { font-size: 13px; opacity: .65; margin: 14px 0 0; max-width: 220px; }
 

@@ -49,6 +49,7 @@ collections:
           - { label: მოგზაურობა, value: travel }
           - { label: ფილმები და სერიალები, value: watch }
           - { label: წიგნები, value: read }
+          - { label: 'ანიმე და ანიმაცია', value: anime }
           - { label: ბავშვებისთვის, value: kids }
           - { label: წყვილებისთვის, value: couples }
           - { label: გამოწვევა, value: challenge }
@@ -96,6 +97,22 @@ collections:
           - { label: მფლობელი, name: owner, widget: string }
           - { label: 'მიტანის ფასი (₾)', name: shippingFee, widget: number, value_type: float }
           - { label: 'უფასო მიტანა N პოსტერიდან', name: freeShippingFrom, widget: number }
+          - { label: 'რეკომენდებული ნაკრები (პოსტერების რაოდენობა)', name: recommendedBundle, widget: number }
+          - label: 'სეზონური წარწერა (ჰეროს თავში)'
+            name: season
+            widget: object
+            fields:
+              - { label: 'ჩართული', name: active, widget: boolean, default: true }
+              - { label: 'ტექსტი', name: text, widget: string }
+          - label: 'შეთავაზებების პანელი (საჩუქრის ღილაკი)'
+            name: offersDrawer
+            widget: object
+            fields:
+              - { label: 'ჩართული', name: active, widget: boolean, default: true }
+              - { label: 'სათაური', name: heading, widget: string }
+              - { label: 'ტექსტი', name: text, widget: text }
+              - { label: 'ღილაკის ტექსტი', name: cta, widget: string }
+              - { label: 'ღილაკის ბმული', name: ctaHref, widget: string }
           - label: ბანკები
             name: banks
             widget: list

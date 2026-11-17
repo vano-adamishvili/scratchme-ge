@@ -3,10 +3,7 @@
   "slug": "top-100-cartoons",
   "titleEn": "Top 100 Cartoons",
   "subtitle": "",
-  "categories": [
-    "watch",
-    "kids"
-  ],
+  "categories": ["watch", "kids", "anime"],
   "price": 30,
   "description": "ნოსტალგიის ფერადი დოზა — შაბათის დილის მულტფილმებიდან სამუდამო ფავორიტებამდე.",
   "features": [

@@ -56,17 +56,17 @@ import { SETTINGS } from '../data/catalog';
 </Base>
 <style>
   .layout { display: grid; grid-template-columns: 1fr 340px; gap: 28px; align-items: start; }
-  .offer { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin: 0 0 24px; padding: 14px 16px; background: var(--lime); border: 1.5px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); }
+  .offer { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin: 0 0 24px; padding: 14px 16px; background: var(--lime); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
   .offer :global(> div:first-child) { display: grid; gap: 3px; min-width: 0; }
   .offer :global(b) { font: 700 18px/1.2 var(--display); }
   .offer :global(.ob) { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
   .lines { list-style: none; padding: 0; margin: 0 0 24px; display: grid; gap: 12px; }
-  .lines > :global(li) { display: grid; grid-template-columns: 74px 1fr auto; gap: 14px; align-items: center; padding: 12px; background: #fff; border: 1.5px solid var(--ink); }
+  .lines > :global(li) { display: grid; grid-template-columns: 74px 1fr auto; gap: 14px; align-items: center; padding: 12px; background: #fff; border: 1px solid var(--border); }
   .lines :global(li > img) { width: 74px; aspect-ratio: 3/4; object-fit: contain; background: var(--cream); }
   .lines :global(.t) { font-weight: 700; }
   .lines :global(.parts) { margin: 4px 0 0; padding-left: 18px; list-style: disc; font-size: 14px; color: var(--muted); }
   .lines :global(.q) { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; }
-  .lines :global(.q button) { width: 30px; height: 30px; border: 1.5px solid var(--ink); background: var(--paper); font-weight: 700; }
+  .lines :global(.q button) { width: 30px; height: 30px; border: 1px solid var(--border); background: var(--paper); font-weight: 700; }
   .lines :global(.rm) { border: 0; background: none; text-decoration: underline; color: var(--muted); font-size: 13px; padding: 0; margin-top: 6px; }
   .lines :global(.e) { color: var(--coral); font-weight: 700; font-size: 14px; }
   .form { padding: 20px; display: grid; gap: 14px; }
@@ -83,7 +83,7 @@ import { SETTINGS } from '../data/catalog';
   .small { font-size: 13px; }
   .empty, .done { padding: 28px; display: grid; gap: 12px; justify-items: start; max-width: 720px; }
   .done h2 { font-size: clamp(24px, 4vw, 36px); }
-  .bank { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; margin: 0; padding: 14px; background: var(--lime); border: 1.5px solid var(--ink); }
+  .bank { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; margin: 0; padding: 14px; background: var(--lime); border: 1px solid var(--border); }
   .bank dt { font-weight: 700; } .bank dd { margin: 0; word-break: break-all; }
   @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } .sum { position: static; order: -1; } .two { grid-template-columns: 1fr; } }
 </style>

@@ -64,5 +64,17 @@
     "instagram": "https://www.instagram.com/scratchme.ge/",
     "tiktok": "https://www.tiktok.com/@scratchmii",
     "messenger": "https://m.me/100069933595746"
-  }
+  },
+  "season": {
+    "active": true,
+    "text": "სეკრეტ სანტა · საახალწლო საჩუქრები"
+  },
+  "offersDrawer": {
+    "active": true,
+    "heading": "შეთავაზებები შენთვის",
+    "text": "შეარჩიე რამდენიმე პოსტერი და ისარგებლე ნაკრების განსაკუთრებული პირობებით.",
+    "cta": "ააწყე ნაკრები",
+    "ctaHref": "/#bundle-builder"
+  },
+  "recommendedBundle": 3
 }

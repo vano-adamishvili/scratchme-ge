@@ -3,9 +3,7 @@
   "title": "ტოპ 100 ანიმე",
   "titleEn": "Top 100 Anime",
   "subtitle": "",
-  "categories": [
-    "watch"
-  ],
+  "categories": ["watch", "anime"],
   "price": 30,
   "description": "ასი სამყარო, გმირები, ბოროტმოქმედები და ღამის მარათონები.",
   "features": [

@@ -63,12 +63,12 @@ const perks = [
   </div>
 </section>
 <style>
-  .hl { display: inline-block; padding: 0 .12em .05em; background: var(--lime); border: 1.5px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); transform: rotate(-1.5deg); }
+  .hl { display: inline-block; padding: 0 .12em .05em; background: var(--lime); border: 1px solid var(--border); box-shadow: var(--shadow-sm); transform: rotate(-1.5deg); }
   .how { display: grid; grid-template-columns: minmax(0, 340px) 1fr; gap: clamp(24px, 5vw, 64px); align-items: center; }
   .demo { position: relative; width: 100%; max-width: 340px; margin: 0 auto; }
-  .try { position: absolute; z-index: 2; top: -16px; right: -14px; padding: 8px 12px; background: var(--coral); border: 1.5px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); font: 700 12px var(--mono); text-transform: uppercase; transform: rotate(5deg); animation: nudge 2.4s ease-in-out infinite; }
+  .try { position: absolute; z-index: 2; top: -16px; right: -14px; padding: 8px 12px; background: var(--coral); border: 1px solid var(--border); box-shadow: var(--shadow-sm); font: 700 12px var(--mono); text-transform: none; transform: rotate(5deg); animation: nudge 2.4s ease-in-out infinite; }
   @keyframes nudge { 0%, 100% { transform: rotate(5deg); } 50% { transform: rotate(5deg) translateY(-6px); } }
-  .box { position: relative; aspect-ratio: 280 / 150; background: #fff; border: 1.5px solid var(--ink); box-shadow: 8px 9px 0 var(--ink); transform: rotate(-2deg); overflow: hidden; }
+  .box { position: relative; aspect-ratio: 280 / 150; background: #fff; border: 1px solid var(--border); box-shadow: var(--shadow); transform: rotate(-2deg); overflow: hidden; }
   .under, canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
   img.under { object-fit: cover; }
   .under.txt { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 34px; }
@@ -77,7 +77,7 @@ const perks = [
   .dm-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; }
 
   .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
-  .step { display: flex; align-items: flex-start; gap: 16px; padding: 16px 18px; background: #fff; border: 1.5px solid var(--ink); box-shadow: 4px 5px 0 var(--ink); transition: transform .2s var(--ease), background .2s ease; }
+  .step { display: flex; align-items: flex-start; gap: 16px; padding: 16px 18px; background: #fff; border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: transform .2s var(--ease), background .2s ease; }
   .step:hover { transform: translateX(6px); background: var(--lime); }
   .n { flex: none; width: 48px; height: 48px; display: grid; place-items: center; background: var(--ink); color: var(--lime); font: 700 26px var(--display); }
   .step h3 { font-size: 22px; margin: 2px 0 4px; }
@@ -87,8 +87,8 @@ const perks = [
   .why { font-size: clamp(24px, 3vw, 34px); margin: clamp(40px, 6vw, 64px) 0 18px; }
   .perks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
   .perk { padding: 18px; background: var(--c); transition: transform .2s var(--ease), box-shadow .2s ease; }
-  .perk:hover { transform: translateY(-5px) rotate(-1deg); box-shadow: 8px 10px 0 var(--ink); }
-  .e { display: inline-grid; place-items: center; width: 46px; height: 46px; background: #fff; border: 1.5px solid var(--ink); font-size: 24px; }
+  .perk:hover { transform: translateY(-5px) rotate(-1deg); box-shadow: var(--shadow); }
+  .e { display: inline-grid; place-items: center; width: 46px; height: 46px; background: #fff; border: 1px solid var(--border); font-size: 24px; }
   .perk h4 { font: 700 19px/1.1 var(--display); letter-spacing: -.02em; margin: 12px 0 6px; }
   .perk p { margin: 0; font-size: 14.5px; }
   .cta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 28px; }

@@ -1,0 +1,180 @@
+---
+// Home hero: copy on the left, a calm Scandinavian interior on the right, drawn in CSS/SVG
+// (no stock photo), with the real poster artwork leaning on a picture ledge. A coin scratches
+// a handful of cells on the front poster once, then stops.
+import { SETTINGS, productBySlug } from '../data/catalog';
+
+// Cell grid measured on the covered photo (fractions of width / height).
+const FRONT = { slug: 'top-100-places-georgia', cells: 12, grid: { cols: 10, rows: 10, x0: 0.0175, px: 0.0984, w: 0.0795, y0: 0.1037, py: 0.0814, h: 0.0567 } };
+const BACK = 'top-100-movies';
+const front = productBySlug(FRONT.slug);
+const back = productBySlug(BACK);
+const ok = !!(front && front.images.length > 1);
+const demo = ok ? { cover: front!.images[0].thumb, under: front!.images[1].thumb, cells: FRONT.cells, grid: FRONT.grid } : null;
+const season = SETTINGS.season;
+---
+<section class="hero" aria-labelledby="hero-h">
+  <div class="container hero-in">
+    <div class="copy">
+      {season?.active && season.text && <span class="eyebrow season">{season.text}</span>}
+      <h1 id="hero-h"><span>შენი თავგადასავლები.</span> <span>შენი ისტორია.</span> <span>შენი პოსტერი.</span></h1>
+      <p class="lead">ფილმები, წიგნები, მოგზაურობა და ახალი გამოცდილებები — გადაფხიკე შესრულებული გამოწვევები და შექმენი შენი უნიკალური ისტორია.</p>
+      <div class="cta">
+        <a href="#bundle-builder" class="btn">ააწყე ნაკრები</a>
+        <a href="#gift-finder" class="btn ghost">იპოვე საჩუქარი</a>
+      </div>
+      <ul class="facts">
+        <li>2 პოსტერი — {SETTINGS.bundles.find((b) => b.size === 2)?.price} ₾</li>
+        <li>{SETTINGS.freeShippingFrom}+ პოსტერზე უფასო მიწოდება</li>
+        <li>32 × 45 სმ</li>
+      </ul>
+    </div>
+
+    <div class="scene">
+      <div class="wall"></div>
+      <div class="light"></div>
+      <svg class="lights" viewBox="0 0 400 60" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 8 Q100 46 200 22 T400 14" fill="none" stroke="#8E8A80" stroke-width="1" opacity=".5" />
+        {[18, 52, 88, 126, 166, 206, 248, 290, 332, 372].map((x, i) => <circle cx={x} cy={[14, 24, 33, 36, 31, 23, 19, 18, 17, 15][i]} r="3.2" fill="#F1D9A4" opacity=".9" />)}
+      </svg>
+      <div class="ledge"></div>
+      {back && <img class="poster p-back" src={back.images[1]?.thumb ?? back.images[0].thumb} alt={`${back.title} — გადაფხეკილი`} width="640" height="900" decoding="async" />}
+      {demo && (
+        <a class="poster p-front" id="hero-demo" href={`/product/${front!.slug}`} aria-label={`${front!.title} — ნახე პოსტერი`} data-demo={JSON.stringify(demo)}>
+          <img class="under" src={demo.cover} data-under={demo.under} alt="" width="640" height="900" decoding="async" fetchpriority="high" />
+          <canvas aria-hidden="true"></canvas>
+          <span class="coin" aria-hidden="true"></span>
+        </a>
+      )}
+      <div class="board">
+        <svg class="books" viewBox="0 0 120 70" aria-hidden="true">
+          <rect x="8" y="44" width="96" height="12" rx="2" fill="#A9B8AE" /><rect x="14" y="32" width="84" height="12" rx="2" fill="#D9C7A8" /><rect x="10" y="20" width="90" height="12" rx="2" fill="#C98F78" />
+          <rect x="52" y="0" width="16" height="20" rx="3" fill="#F3EEE4" /><path d="M60 -2v4" stroke="#C6A56B" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        <svg class="plant" viewBox="0 0 120 160" aria-hidden="true">
+          <path d="M60 104C58 70 40 52 20 44c8 20 18 38 40 60zM60 104c2-38 22-58 42-66-8 24-20 44-42 66zM60 104c-4-44 4-74 18-94 4 30-4 62-18 94z" fill="#5E7F6B" />
+          <path d="M60 104C50 80 34 66 24 62M60 104c8-24 22-40 34-48M60 104c-2-30 4-56 14-80" stroke="#3E5C4C" stroke-width="1.4" fill="none" />
+          <path d="M34 100h52l-6 52H40z" fill="#E9E3D7" /><path d="M34 100h52v8H34z" fill="#DDD5C6" />
+        </svg>
+      </div>
+      <span class="chip-done" id="hero-done" hidden></span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero { padding: clamp(28px, 5vw, 72px) 0 clamp(48px, 6vw, 88px); }
+  .hero-in { display: grid; grid-template-columns: 45fr 55fr; gap: clamp(28px, 4vw, 64px); align-items: center; }
+  .copy { max-width: 580px; }
+  .season { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; background: var(--gold-tint); color: #6B5530; font-size: 13px; }
+  .season::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+  h1 { font-size: clamp(27px, 3.1vw, 44px); line-height: 1.16; margin: 18px 0 18px; }
+  h1 span { display: block; }
+  h1 span:last-child { color: var(--forest); }
+  .lead { font-size: clamp(16px, 1.3vw, 18px); line-height: 1.65; color: var(--muted); margin: 0 0 30px; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px 22px; list-style: none; margin: 28px 0 0; padding: 0; font-size: 14px; color: var(--muted); }
+  .facts li { display: flex; align-items: center; gap: 8px; }
+  .facts li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--forest); opacity: .5; }
+
+  /* ---- interior ---- */
+  .scene { position: relative; aspect-ratio: 1.08; border-radius: var(--r-lg); overflow: hidden; isolation: isolate; box-shadow: var(--shadow); }
+  .wall { position: absolute; inset: 0; background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .38 0 0 0 0 .34 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"),
+      linear-gradient(180deg, #F1ECE3 0%, #EAE4D9 72%, #E3DCCF 100%); }
+  .light { position: absolute; inset: 0; background: linear-gradient(118deg, transparent 8%, rgba(255, 252, 244, .55) 16%, transparent 30%), linear-gradient(118deg, transparent 30%, rgba(255, 252, 244, .4) 37%, transparent 50%); pointer-events: none; z-index: 1; }
+  .lights { position: absolute; top: 0; left: 4%; width: 92%; height: 9%; z-index: 1; }
+  .ledge { position: absolute; left: 7%; right: 7%; top: 75%; height: 2.4%; background: linear-gradient(180deg, #C9A57E, #B48B62); border-radius: 3px; box-shadow: 0 6px 12px rgba(80, 60, 30, .18); z-index: 3; }
+  .poster { position: absolute; bottom: 25%; aspect-ratio: 640 / 900; border-radius: 3px; background: #fff; box-shadow: 0 2px 4px rgba(40, 35, 25, .12), 0 18px 30px -10px rgba(40, 35, 25, .35); z-index: 2; }
+  .p-back { left: 13%; height: 54%; width: auto; transform: rotate(-2deg); transform-origin: bottom center; filter: saturate(.92); }
+  .p-front { right: 15%; height: 64%; display: block; overflow: hidden; z-index: 2; transition: transform .3s var(--ease); }
+  .p-front:hover { transform: translateY(-4px); }
+  .p-front img, .p-front canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .coin { position: absolute; left: 0; top: 0; z-index: 3; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: radial-gradient(circle at 34% 30%, #FFF6D8, #D9B66E 55%, #A9843F); box-shadow: 0 2px 4px rgba(60, 45, 15, .35); opacity: 0; transition: opacity .4s ease; pointer-events: none; }
+  .p-front.run .coin { opacity: 1; }
+  .board { position: absolute; left: 0; right: 0; bottom: 0; height: 22.6%; z-index: 4; background: linear-gradient(180deg, #D8BC97 0, #CFB088 6%, #C4A27A 100%); box-shadow: 0 -1px 0 rgba(255, 255, 255, .4) inset; }
+  .books { position: absolute; left: 9%; bottom: 62%; width: 17%; }
+  .plant { position: absolute; right: 5%; bottom: 52%; width: 15%; }
+  .chip-done { position: absolute; right: 15%; bottom: 7%; z-index: 5; padding: 6px 12px; border-radius: 999px; background: rgba(255, 255, 255, .92); color: var(--forest); font-size: 13px; font-weight: 600; box-shadow: var(--shadow-sm); }
+
+  @media (max-width: 960px) {
+    .hero-in { grid-template-columns: 1fr; }
+    .copy { max-width: 640px; }
+    h1 { font-size: clamp(27px, 5vw, 40px); }
+    .scene { aspect-ratio: 1.35; max-height: 440px; }
+  }
+  @media (max-width: 560px) {
+    .cta .btn { flex: 1 1 100%; }
+    .scene { aspect-ratio: 1.12; }
+    .lights, .books { display: none; }
+    .p-back { left: 8%; } .p-front { right: 10%; }
+  }
+</style>
+
+<script>
+  type Grid = { cols: number; rows: number; x0: number; px: number; w: number; y0: number; py: number; h: number };
+  const el = document.getElementById('hero-demo') as HTMLAnchorElement | null;
+  if (el) {
+    const d = JSON.parse(el.dataset.demo!) as { cover: string; under: string; cells: number; grid: Grid };
+    const cv = el.querySelector('canvas')!, ctx = cv.getContext('2d')!, coin = el.querySelector<HTMLElement>('.coin')!;
+    const done = document.getElementById('hero-done')!;
+    const g = d.grid, total = g.cols * g.rows, PAD = 0.005;
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let W = 0, H = 0, dpr = 1, cover: HTMLImageElement | null = null, order: number[] = [], n = 0;
+    const cell = (i: number) => { const c = i % g.cols, r = Math.floor(i / g.cols); return { x: g.x0 + c * g.px - PAD, y: g.y0 + r * g.py - PAD, w: g.w + PAD * 2, h: g.h + PAD * 2 }; };
+    const wipe = (i: number) => { const q = cell(i); ctx.clearRect(q.x * W, q.y * H, q.w * W, q.h * H); };
+    const paint = () => {
+      if (!cover || !el.clientWidth) return;
+      dpr = Math.min(2, window.devicePixelRatio || 1);
+      W = cv.width = Math.round(el.clientWidth * dpr); H = cv.height = Math.round(el.clientHeight * dpr);
+      ctx.globalCompositeOperation = 'source-over'; ctx.drawImage(cover, 0, 0, W, H);
+      for (let i = 0; i < n; i++) wipe(order[i]);
+    };
+    const finish = () => { el.classList.remove('run'); done.textContent = `${n} / ${total} გადაფხეკილი`; done.hidden = false; };
+    // Spread the chosen cells across the poster so the reveal reads at a glance.
+    for (let i = 0; i < total; i++) order.push(i);
+    order.sort(() => Math.random() - 0.5);
+
+    function animate() {
+      let k = 0, t0 = 0, from = { x: 0.5, y: 0.5 }, pos = from, phase: 'move' | 'scratch' = 'move';
+      el!.classList.add('run');
+      const step = (now: number) => {
+        if (k >= d.cells) { n = k; return finish(); }
+        if (!t0) t0 = now;
+        const q = cell(order[k]), el2 = now - t0;
+        if (phase === 'move') {
+          const t = Math.min(1, el2 / 280), e = t < .5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
+          pos = { x: from.x + (q.x + q.w * .15 - from.x) * e, y: from.y + (q.y + q.h * .2 - from.y) * e };
+          if (t >= 1) { phase = 'scratch'; t0 = now; }
+        } else {
+          const t = Math.min(1, el2 / 480), zig = Math.abs(((t * 3) % 2) - 1);
+          const nx = q.x + q.w * (.15 + .7 * (1 - zig)), ny = q.y + q.h * (.2 + .6 * t);
+          ctx.save(); ctx.beginPath(); ctx.rect(q.x * W, q.y * H, q.w * W, q.h * H); ctx.clip();
+          ctx.globalCompositeOperation = 'destination-out'; ctx.lineCap = 'round'; ctx.lineWidth = q.h * H * .45;
+          ctx.beginPath(); ctx.moveTo(pos.x * W, pos.y * H); ctx.lineTo(nx * W, ny * H); ctx.stroke(); ctx.restore();
+          pos = { x: nx, y: ny };
+          if (t >= 1) { wipe(order[k]); k++; n = k; from = pos; phase = 'move'; t0 = now; }
+        }
+        coin.style.transform = `translate(${pos.x * W / dpr}px, ${pos.y * H / dpr}px)`;
+        requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+
+    const start = () => {
+      const img = new Image();
+      img.onload = () => {
+        cover = img; paint();
+        // canvas now shows the covered poster; the image underneath switches to the scratched one
+        const under = el.querySelector<HTMLImageElement>('img.under')!; under.src = under.dataset.under!;
+        if (still) { n = d.cells; paint(); finish(); return; } // no motion: show it already partly scratched
+        // start once the poster is on screen; it runs one time and stops
+        new IntersectionObserver((es, io) => { if (es[0].isIntersecting) { io.disconnect(); setTimeout(animate, 500); } }, { threshold: .4 }).observe(el);
+      };
+      img.src = d.cover;
+    };
+    if (document.readyState === 'complete') start(); else window.addEventListener('load', start, { once: true });
+    let w0 = el.clientWidth;
+    new ResizeObserver(() => { const w = el.clientWidth; if (w && Math.abs(w - w0) > 2) { w0 = w; paint(); } }).observe(el);
+  }
+</script>

@@ -63,18 +63,18 @@ const bundles = BUNDLES.map((b) => ({ size: b.size, price: b.price, free: b.free
 
 <style>
   .bb { background: var(--cream); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  .hl { display: inline-block; padding: 0 .12em .05em; background: var(--lime); border: 1.5px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); transform: rotate(-1.5deg); }
+  .hl { display: inline-block; padding: 0 .12em .05em; background: var(--lime); border: 1px solid var(--border); box-shadow: var(--shadow-sm); transform: rotate(-1.5deg); }
   .sizes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; align-items: end; padding-top: 18px; }
-  .size { position: relative; display: flex; flex-direction: column; gap: 6px; text-align: left; padding: 22px 20px 20px; background: #fff; border: 1.5px solid var(--ink); box-shadow: 5px 6px 0 var(--ink); transition: transform .18s var(--ease), box-shadow .18s ease; }
-  .size:hover { transform: translateY(-4px); box-shadow: 8px 10px 0 var(--ink); }
-  .size.feat { background: var(--lime); padding-top: 34px; padding-bottom: 28px; box-shadow: 8px 9px 0 var(--ink); }
-  .size.feat:hover { box-shadow: 11px 13px 0 var(--ink); }
+  .size { position: relative; display: flex; flex-direction: column; gap: 6px; text-align: left; padding: 22px 20px 20px; background: #fff; border: 1px solid var(--border); box-shadow: var(--shadow); transition: transform .18s var(--ease), box-shadow .18s ease; }
+  .size:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+  .size.feat { background: var(--lime); padding-top: 34px; padding-bottom: 28px; box-shadow: var(--shadow); }
+  .size.feat:hover { box-shadow: var(--shadow); }
   .size[aria-pressed='true'] { outline: 4px solid var(--coral); outline-offset: 3px; }
-  .ribbon { position: absolute; top: -15px; left: 18px; padding: 6px 12px; background: var(--ink); color: var(--lime); font: 700 12px var(--mono); text-transform: uppercase; letter-spacing: .04em; }
-  .save { position: absolute; top: -14px; right: -8px; padding: 7px 10px; background: var(--yellow); border: 1.5px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); font: 700 11px/1.15 var(--mono); text-transform: uppercase; transform: rotate(4deg); }
+  .ribbon { position: absolute; top: -15px; left: 18px; padding: 6px 12px; background: var(--ink); color: var(--lime); font: 700 12px var(--mono); text-transform: none; letter-spacing: .04em; }
+  .save { position: absolute; top: -14px; right: -8px; padding: 7px 10px; background: var(--yellow); border: 1px solid var(--border); box-shadow: var(--shadow-sm); font: 700 11px/1.15 var(--mono); text-transform: none; transform: rotate(4deg); }
   .save b { font: 700 16px var(--display); margin: 0 3px 0 5px; }
   .feat .save { background: var(--coral); transform: rotate(5deg) scale(1.08); }
-  .t { font-weight: 700; font-size: 16px; text-transform: uppercase; letter-spacing: .02em; }
+  .t { font-weight: 700; font-size: 16px; text-transform: none; letter-spacing: .02em; }
   .t b { font: 700 64px/.9 var(--display); letter-spacing: -.05em; margin-right: 8px; }
   .p { font: 700 34px/1.1 var(--display); letter-spacing: -.04em; margin-top: 8px; }
   .feat .p { font-size: 42px; }
@@ -84,15 +84,15 @@ const bundles = BUNDLES.map((b) => ({ size: b.size, price: b.price, free: b.free
   .perks li::before { content: '✓'; display: inline-grid; place-items: center; width: 18px; height: 18px; margin-right: 8px; background: var(--ink); color: var(--paper); font-size: 11px; }
   .perks .off { color: var(--muted); font-weight: 500; } .perks .off::before { content: '+'; background: transparent; color: var(--muted); border: 1px solid var(--muted); }
   .perks .gift::before { background: var(--coral); color: var(--ink); }
-  .go { margin-top: 16px; min-height: 46px; display: grid; place-items: center; padding: 0 12px; border: 1.5px solid var(--ink); background: var(--paper); font-weight: 700; font-size: 15px; transition: background .15s ease; }
+  .go { margin-top: 16px; min-height: 46px; display: grid; place-items: center; padding: 0 12px; border: 1px solid var(--border); background: var(--paper); font-weight: 700; font-size: 15px; transition: background .15s ease; }
   .feat .go { background: var(--ink); color: var(--paper); }
   .size:hover .go { background: var(--coral); color: var(--ink); }
 
   .tray { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; padding: 0 12px 12px; pointer-events: none; }
-  .tray-in, .tray-gift { pointer-events: auto; width: min(1200px, 100%); margin: 0 auto; background: var(--ink); color: var(--paper); box-shadow: 6px 6px 0 var(--coral); }
+  .tray-in, .tray-gift { pointer-events: auto; width: min(1200px, 100%); margin: 0 auto; background: var(--ink); color: var(--paper); box-shadow: var(--shadow); }
   .tray-in { display: flex; align-items: center; gap: 16px; padding: 12px 14px; }
   .info { display: grid; gap: 2px; min-width: 0; }
-  .step { font: 600 11px var(--mono); text-transform: uppercase; color: var(--lime); }
+  .step { font: 600 11px var(--mono); text-transform: none; color: var(--lime); }
   .info strong { font: 700 20px var(--display); letter-spacing: -.02em; white-space: nowrap; }
   .left { font-size: 12px; opacity: .7; }
   .slots { display: flex; gap: 8px; flex: 1; min-width: 0; }
@@ -117,12 +117,12 @@ const bundles = BUNDLES.map((b) => ({ size: b.size, price: b.price, free: b.free
   .bb-slot img { height: 100%; width: auto; aspect-ratio: 3/4; object-fit: cover; flex: none; background: var(--paper); }
   .bb-slot span { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
   .bb-slot .num { flex: none; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid currentColor; display: grid; place-items: center; }
-  .bb-slot .rm { position: absolute; top: -8px; right: -8px; width: 22px; height: 22px; display: grid; place-items: center; background: var(--coral); color: var(--ink); border: 1.5px solid var(--ink); font-size: 11px; font-weight: 900; }
+  .bb-slot .rm { position: absolute; top: -8px; right: -8px; width: 22px; height: 22px; display: grid; place-items: center; background: var(--coral); color: var(--ink); border: 1px solid var(--border); font-size: 11px; font-weight: 900; }
   #catalog { scroll-margin-top: 84px; }
   body.bb-on { padding-bottom: 110px; }
   body.bb-on #toast { bottom: 110px; }
   body.bb-on #catalog .pc { cursor: pointer; }
-  body.bb-on #catalog .pc.bb-picked { outline: 4px solid var(--lime); box-shadow: 6px 7px 0 var(--ink); }
+  body.bb-on #catalog .pc.bb-picked { outline: 4px solid var(--lime); box-shadow: var(--shadow); }
   body.bb-on #catalog .pc.bb-picked [data-add] { background: var(--lime); color: var(--ink); }
   body.bb-on #catalog .pc.bb-dim { opacity: .5; }
   @media (max-width: 700px) {
