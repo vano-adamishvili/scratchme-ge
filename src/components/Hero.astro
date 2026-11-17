@@ -57,7 +57,6 @@ const season = SETTINGS.season;
           <path d="M34 100h52l-6 52H40z" fill="#E9E3D7" /><path d="M34 100h52v8H34z" fill="#DDD5C6" />
         </svg>
       </div>
-      <span class="chip-done" id="hero-done" hidden></span>
     </div>
   </div>
 </section>
@@ -95,7 +94,6 @@ const season = SETTINGS.season;
   .board { position: absolute; left: 0; right: 0; bottom: 0; height: 22.6%; z-index: 4; background: linear-gradient(180deg, #D8BC97 0, #CFB088 6%, #C4A27A 100%); box-shadow: 0 -1px 0 rgba(255, 255, 255, .4) inset; }
   .books { position: absolute; left: 9%; bottom: 62%; width: 17%; }
   .plant { position: absolute; right: 5%; bottom: 52%; width: 15%; }
-  .chip-done { position: absolute; right: 15%; bottom: 7%; z-index: 5; padding: 6px 12px; border-radius: 999px; background: rgba(255, 255, 255, .92); color: var(--forest); font-size: 13px; font-weight: 600; box-shadow: var(--shadow-sm); }
 
   @media (max-width: 960px) {
     .hero-in { grid-template-columns: 1fr; }
@@ -117,7 +115,6 @@ const season = SETTINGS.season;
   if (el) {
     const d = JSON.parse(el.dataset.demo!) as { cover: string; under: string; cells: number; grid: Grid };
     const cv = el.querySelector('canvas')!, ctx = cv.getContext('2d')!, coin = el.querySelector<HTMLElement>('.coin')!;
-    const done = document.getElementById('hero-done')!;
     const g = d.grid, total = g.cols * g.rows, PAD = 0.005;
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
     let W = 0, H = 0, dpr = 1, cover: HTMLImageElement | null = null, order: number[] = [], n = 0;
@@ -130,7 +127,7 @@ const season = SETTINGS.season;
       ctx.globalCompositeOperation = 'source-over'; ctx.drawImage(cover, 0, 0, W, H);
       for (let i = 0; i < n; i++) wipe(order[i]);
     };
-    const finish = () => { el.classList.remove('run'); done.textContent = `${n} / ${total} გადაფხეკილი`; done.hidden = false; };
+    const finish = () => el.classList.remove('run');
     // Spread the chosen cells across the poster so the reveal reads at a glance.
     for (let i = 0; i < total; i++) order.push(i);
     order.sort(() => Math.random() - 0.5);
