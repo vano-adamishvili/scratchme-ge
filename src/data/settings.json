@@ -76,5 +76,15 @@
     "cta": "ააწყე ნაკრები",
     "ctaHref": "/#bundle-builder"
   },
-  "recommendedBundle": 3
+  "recommendedBundle": 3,
+  "product": {
+    "size": "32 × 45 სმ",
+    "packaging": "პოსტერები იგზავნება ბრტყლად, თეთრ გაუმჭვირვალე პაკეტში.",
+    "frame": "ჩარჩო არ შედის."
+  },
+  "socialProof": {
+    "active": false,
+    "heading": "ასე ცოცხლობს scratchme სახლებში",
+    "items": []
+  }
 }

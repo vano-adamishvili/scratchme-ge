@@ -1,0 +1,62 @@
+---
+import { PRODUCTS, SETTINGS, productBySlug } from '../data/catalog';
+// „პროდუქტი ახლოდან“: მხოლოდ დადასტურებული ფაქტები (ზომა, შეფუთვა, ჩარჩო, მიწოდება) — ადმინიდან
+const s = SETTINGS.product;
+const p = productBySlug('top-100-places-georgia') ?? PRODUCTS[0];
+const prices = PRODUCTS.filter((x) => x.active !== false).map((x) => x.price);
+const lo = Math.min(...prices), hi = Math.max(...prices);
+const [w, h] = (s.size.match(/\d+/g) ?? ['32', '45']).map(Number);
+const facts = [
+  { t: 'ზომა', d: `${s.size} — საკმარისად დიდი კედლისთვის, საკმარისად კომპაქტური ნებისმიერი ოთახისთვის.` },
+  { t: 'შეფუთვა', d: `${s.packaging} შიგთავსი გარედან არ ჩანს, ასე რომ სიურპრიზი სიურპრიზად რჩება.` },
+  { t: 'ჩარჩო', d: `${s.frame} პოსტერი მზადაა კედელზე დასაკიდად ან შენთვის სასურველ ჩარჩოში ჩასასმელად.` },
+  { t: 'მიწოდება', d: `თბილისში 2 სამუშაო დღე, რეგიონებში 3+ სამუშაო დღე (დამოკიდებულია საკურიერო კომპანიაზე). ${SETTINGS.shippingFee} ₾, ${SETTINGS.freeShippingFrom}+ პოსტერზე — უფასოდ.` },
+  { t: 'ფასი', d: lo === hi ? `${lo} ₾ ერთი პოსტერი; ნაკრებად კიდევ უფრო ხელსაყრელია.` : `${lo}–${hi} ₾ ერთი პოსტერი; ნაკრებად კიდევ უფრო ხელსაყრელია.` },
+];
+---
+<section id="product-details" class="section pd-sec">
+  <div class="container pd">
+    <figure class="fig">
+      <div class="dim w" aria-hidden="true"><span>{w} სმ</span></div>
+      <div class="frame-wrap">
+        <div class="dim h" aria-hidden="true"><span>{h} სმ</span></div>
+        {p && <img src={p.images[0]?.url} alt={`${p.title} — პოსტერი ${s.size}`} loading="lazy" decoding="async" width="640" height="900" />}
+      </div>
+      <figcaption>{p?.title} · <span class="nw">{s.size}</span></figcaption>
+    </figure>
+    <div class="txt">
+      <span class="eyebrow">პროდუქტი ახლოდან</span>
+      <h2>რა მოგივა სახლში</h2>
+      <dl class="facts">
+        {facts.map((f) => (<div><dt>{f.t}</dt><dd>{f.d}</dd></div>))}
+      </dl>
+      <a href="/shop" class="btn ghost">ყველა პოსტერი</a>
+    </div>
+  </div>
+</section>
+<style>
+  .pd-sec { background: var(--surface-2); }
+  .pd { display: grid; grid-template-columns: minmax(0, 420px) 1fr; gap: clamp(32px, 6vw, 88px); align-items: center; }
+  .fig { margin: 0; display: grid; gap: 10px; max-width: 420px; width: 100%; justify-self: center; }
+  .frame-wrap { position: relative; padding-left: 34px; }
+  .frame-wrap img { width: 100%; aspect-ratio: 32 / 45; object-fit: cover; border-radius: 4px; background: var(--surface); box-shadow: var(--shadow-lg, var(--shadow)); }
+  .dim { color: var(--muted); font-size: 13px; }
+  .dim.w { margin-left: 34px; display: flex; align-items: center; gap: 8px; }
+  .dim.w::before, .dim.w::after { content: ''; flex: 1; height: 1px; background: currentColor; opacity: .5; }
+  .dim.h { position: absolute; left: 0; top: 0; bottom: 0; width: 22px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .dim.h::before, .dim.h::after { content: ''; flex: 1; width: 1px; background: currentColor; opacity: .5; }
+  .dim.h span { writing-mode: vertical-rl; transform: rotate(180deg); }
+  .nw { white-space: nowrap; }
+  figcaption { margin-left: 34px; font-size: 13px; color: var(--muted); }
+  .txt h2 { margin: 6px 0 22px; }
+  .facts { margin: 0 0 26px; display: grid; }
+  .facts > div { display: grid; grid-template-columns: 120px 1fr; gap: 16px; padding: 14px 0; border-top: 1px solid var(--border); }
+  .facts > div:last-child { border-bottom: 1px solid var(--border); }
+  dt { font-weight: 600; color: var(--forest); }
+  dd { margin: 0; color: var(--text); }
+  @media (max-width: 860px) {
+    .pd { grid-template-columns: 1fr; }
+    .fig { max-width: 300px; }
+    .facts > div { grid-template-columns: 1fr; gap: 4px; padding: 12px 0; }
+  }
+</style>

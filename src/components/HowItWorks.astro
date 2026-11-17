@@ -3,35 +3,41 @@ import { PRODUCTS, productBySlug } from '../data/catalog';
 // დემოსთვის გვჭირდება პოსტერი ორი ფოტოთი: გადაუფხეკელი და გადაფხეკილი
 const demo = [productBySlug('top-100-movies'), ...PRODUCTS].find((p) => p && p.images.length > 1);
 const steps = [
-  { n: '1', t: 'აირჩიე თემა', d: 'ფილმები, წიგნები, მოგზაურობა, წყვილების იდეები — რაც შენ გიყვარს.' },
-  { n: '2', t: 'გამოსცადე', d: 'უყურე ფილმს, წაიკითხე წიგნი, ეწვიე ადგილს ან შეასრულე გამოწვევა.' },
-  { n: '3', t: 'გადაფხიკე', d: 'მონეტით გადაფხიკე შესაბამისი უჯრა და ნახე, რა იმალება ქვემოთ.' },
+  { n: '1', t: 'აირჩიე', d: 'თემა, რომელიც შენ ან შენს ახლობელს უყვარს: ფილმები, მოგზაურობა, წიგნები, წყვილის იდეები.' },
+  { n: '2', t: 'გადაფხიკე', d: 'უყურე, წაიკითხე, ეწვიე ან შეასრულე, და მონეტით გადაფხიკე შესაბამისი უჯრა.' },
+  { n: '3', t: 'შექმენი შენი ისტორია', d: 'ყოველი გახსნილი უჯრა ერთი მოგონებაა. პოსტერი თანდათან შენს ისტორიად იქცევა.' },
 ];
+// line icons (24×24, stroke)
+const I = {
+  wall: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+  spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/>',
+  leaf: '<path d="M5 19c0-8 6-14 14-14 0 8-6 14-14 14Z"/><path d="M5 19 13 11"/>',
+  gift: '<rect x="3" y="9" width="18" height="12" rx="1.5"/><path d="M3 13h18M12 9v12M12 9c-2-4-6-4-6-1.5S9 9 12 9Zm0 0c2-4 6-4 6-1.5S15 9 12 9Z"/>',
+};
 const perks = [
-  { e: '📖', t: 'შენი ისტორია კედელზე', d: 'ყოველი გადაფხეკილი უჯრა ერთი ნანახი ფილმი, წაკითხული წიგნი ან გავლილი გზაა. პოსტერი შენთან ერთად ივსება.', c: 'var(--yellow)' },
-  { e: '🚀', t: 'მიზეზი ახალი რამისთვის', d: 'ცარიელი უჯრა გელოდება: „დღეს რას ვუყუროთ?“ და „სად წავიდეთ?“ კითხვებს პოსტერი თვითონ პასუხობს.', c: 'var(--lilac)' },
-  { e: '🎨', t: 'ლამაზი დიზაინი', d: 'მაღალი ხარისხის ბეჭდვა და ცოცხალი ფერები. პოსტერი ლამაზია დაფარულიც, ნახევრად გადაფხეკილიც და ბოლომდე შევსებულიც.', c: 'var(--mint)' },
-  { e: '🎁', t: 'საჩუქარი, რომელიც ახსოვთ', d: 'კინომოყვარულს, მკითხველს, მოგზაურს თუ წყვილს — საჩუქარი, რომელსაც თვეობით იყენებენ.', c: 'var(--blue)' },
+  { i: I.wall, t: 'შენი ისტორია კედელზე', d: 'ყოველი გადაფხეკილი უჯრა ერთი ნანახი ფილმი, წაკითხული წიგნი ან გავლილი გზაა.' },
+  { i: I.spark, t: 'მიზეზი ახალი რამისთვის', d: '„დღეს რას ვუყუროთ?“ ან „სად წავიდეთ?“ — პასუხი უკვე კედელზე გელოდება.' },
+  { i: I.leaf, t: 'ლამაზია ყოველ ეტაპზე', d: 'დაფარულიც, ნახევრად გადაფხეკილიც და ბოლომდე შევსებულიც.' },
+  { i: I.gift, t: 'საჩუქარი, რომელიც ახსოვთ', d: 'კინომოყვარულს, მკითხველს, მოგზაურს თუ წყვილს — თვეობით გამოსაყენებელი.' },
 ];
 ---
 <section id="how-it-works" class="section">
   <div class="container">
     <div class="section-head">
       <div>
-        <span class="eyebrow">რა არის scratchme?</span>
-        <h2>პოსტერი, რომელსაც <span class="hl">შენ ავსებ.</span></h2>
+        <span class="eyebrow">როგორ მუშაობს</span>
+        <h2>ერთი პოსტერი. უამრავი ახალი იდეა.</h2>
       </div>
-      <p>გადასაფხეკი პოსტერი ფილმების, წიგნების ან ადგილების სიაა. ყველა უჯრა ვერცხლისფერი ფენითაა დაფარული — რაც გამოსცადე, იმას გადაფხეკ.</p>
+      <p>ყველა უჯრა ვერცხლისფერი ფენითაა დაფარული. რასაც გამოსცდი, იმას გადაფხეკ — და პოსტერი შენთან ერთად ივსება.</p>
     </div>
 
     <div class="how">
       <div class="demo">
-        <span class="try">სცადე აქვე 👆</span>
         <div class="box" style={demo ? `aspect-ratio:3/4` : ''}>
-          {demo ? <img class="under" src={demo.images[1].thumb} alt={`${demo.title} — გადაფხეკილი`} loading="lazy" decoding="async" /> : <div class="under txt"><span>🎬</span><b>ნანახია!</b></div>}
+          {demo ? <img class="under" src={demo.images[1].thumb} alt={`${demo.title} — გადაფხეკილი`} loading="lazy" decoding="async" /> : <div class="under txt"><b>ნანახია!</b></div>}
           <canvas data-cover={demo?.images[0].thumb} aria-label="გადაფხიკე აქ — სცადე თითით ან მაუსით"></canvas>
         </div>
-        <div class="dm-row"><span class="eyebrow" id="sc-p">გადაფხიკე თითით ან მაუსით</span><span class="dm-b"><button type="button" class="btn sm ghost" id="sc-all">სრულად გახსნა</button><button type="button" class="btn sm ghost" id="sc-r">თავიდან</button></span></div>
+        <div class="dm-row"><span class="hint" id="sc-p">გადაფხიკე თითით ან მაუსით</span><span class="dm-b"><button type="button" class="btn sm ghost" id="sc-all">სრულად გახსნა</button><button type="button" class="btn sm ghost" id="sc-r">თავიდან</button></span></div>
       </div>
 
       <ol class="steps">
@@ -41,69 +47,63 @@ const perks = [
             <div><h3>{s.t}</h3><p>{s.d}</p></div>
           </li>
         ))}
-        <li class="note rv">ეს უბრალოდ სია არ არის — ეს შენი აღმოჩენებისა და მიღწევების თვალსაჩინო ისტორიაა.</li>
       </ol>
     </div>
 
-    <h3 class="why">რატომ მოგეწონება</h3>
     <div class="perks">
       {perks.map((p, i) => (
-        <article class="perk card rv" style={`--c:${p.c};--d:${i * 70}ms`}>
-          <span class="e" aria-hidden="true">{p.e}</span>
-          <h4>{p.t}</h4>
+        <article class="perk rv" style={`--d:${i * 70}ms`}>
+          <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" set:html={p.i} />
+          <h3>{p.t}</h3>
           <p>{p.d}</p>
         </article>
       ))}
     </div>
 
     <div class="cta">
-      <a href="#catalog" class="btn coral">ნახე პოსტერები</a>
+      <a href="#catalog" class="btn">ნახე პოსტერები</a>
       <a href="#bundle-builder" class="btn ghost">ააწყე ნაკრები</a>
     </div>
   </div>
 </section>
 <style>
-  .hl { display: inline-block; padding: 0 .12em .05em; background: var(--lime); border: 1px solid var(--border); box-shadow: var(--shadow-sm); transform: rotate(-1.5deg); }
-  .how { display: grid; grid-template-columns: minmax(0, 340px) 1fr; gap: clamp(24px, 5vw, 64px); align-items: center; }
-  .demo { position: relative; width: 100%; max-width: 340px; margin: 0 auto; }
-  .try { position: absolute; z-index: 2; top: -16px; right: -14px; padding: 8px 12px; background: var(--coral); border: 1px solid var(--border); box-shadow: var(--shadow-sm); font: 700 12px var(--mono); text-transform: none; transform: rotate(5deg); animation: nudge 2.4s ease-in-out infinite; }
-  @keyframes nudge { 0%, 100% { transform: rotate(5deg); } 50% { transform: rotate(5deg) translateY(-6px); } }
-  .box { position: relative; aspect-ratio: 280 / 150; background: #fff; border: 1px solid var(--border); box-shadow: var(--shadow); transform: rotate(-2deg); overflow: hidden; }
+  .how { display: grid; grid-template-columns: minmax(0, 360px) 1fr; gap: clamp(28px, 6vw, 80px); align-items: center; }
+  .demo { width: 100%; max-width: 360px; margin: 0 auto; }
+  .box { position: relative; background: var(--surface); border-radius: var(--r-sm, 12px); box-shadow: var(--shadow); overflow: hidden; }
   .under, canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
   img.under { object-fit: cover; }
-  .under.txt { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 34px; }
-  .under.txt b { font: 700 22px var(--display); }
+  .under.txt { display: flex; align-items: center; justify-content: center; }
   canvas { touch-action: none; cursor: crosshair; }
-  .dm-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .dm-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+  .hint { font-size: 14px; color: var(--muted); }
   .dm-b { display: flex; gap: 6px; }
 
-  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
-  .step { display: flex; align-items: flex-start; gap: 16px; padding: 16px 18px; background: #fff; border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: transform .2s var(--ease), background .2s ease; }
-  .step:hover { transform: translateX(6px); background: var(--lime); }
-  .n { flex: none; width: 48px; height: 48px; display: grid; place-items: center; background: var(--ink); color: var(--lime); font: 700 26px var(--display); }
-  .step h3 { font-size: 22px; margin: 2px 0 4px; }
-  .step p { margin: 0; color: #57564e; }
-  .note { font: 600 18px/1.3 var(--display); padding: 6px 2px 0; }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; counter-reset: s; }
+  .step { display: flex; align-items: flex-start; gap: 18px; padding: 22px 0; border-bottom: 1px solid var(--border); }
+  .step:first-child { padding-top: 0; }
+  .step:last-child { border-bottom: 0; }
+  .n { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--forest-tint); color: var(--forest); font: 600 18px var(--display); }
+  .step h3 { margin: 6px 0 6px; font-size: 22px; }
+  .step p { margin: 0; color: var(--muted); max-width: 46ch; }
 
-  .why { font-size: clamp(24px, 3vw, 34px); margin: clamp(40px, 6vw, 64px) 0 18px; }
-  .perks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-  .perk { padding: 18px; background: var(--c); transition: transform .2s var(--ease), box-shadow .2s ease; }
-  .perk:hover { transform: translateY(-5px) rotate(-1deg); box-shadow: var(--shadow); }
-  .e { display: inline-grid; place-items: center; width: 46px; height: 46px; background: #fff; border: 1px solid var(--border); font-size: 24px; }
-  .perk h4 { font: 700 19px/1.1 var(--display); letter-spacing: -.02em; margin: 12px 0 6px; }
-  .perk p { margin: 0; font-size: 14.5px; }
+  .perks { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: clamp(40px, 6vw, 64px); }
+  .perk { padding: 22px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md, 18px); }
+  .ic { width: 28px; height: 28px; fill: none; stroke: var(--forest); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .perk h3 { margin: 14px 0 6px; font-size: 17px; }
+  .perk p { margin: 0; font-size: 14.5px; color: var(--muted); }
   .cta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 28px; }
 
-  .js-rv .rv { opacity: 0; translate: 0 18px; transition: opacity .5s ease var(--d, 0ms), translate .5s var(--ease) var(--d, 0ms), transform .2s var(--ease), background .2s ease, box-shadow .2s ease; }
+  .js-rv .rv { opacity: 0; translate: 0 14px; transition: opacity .5s ease var(--d, 0ms), translate .5s var(--ease) var(--d, 0ms); }
   .js-rv .rv.in { opacity: 1; translate: 0 0; }
   @media (max-width: 980px) { .perks { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 760px) {
-    .how { grid-template-columns: 1fr; } .demo { max-width: 250px; } .try { right: -24px; }
-    .step { padding: 12px 14px; gap: 12px; } .n { width: 40px; height: 40px; font-size: 22px; } .step h3 { font-size: 19px; }
-    .perks { gap: 10px; } .perk { padding: 14px; } .perk h4 { font-size: 16px; } .perk p { font-size: 13.5px; }
+    .how { grid-template-columns: 1fr; } .demo { max-width: 270px; }
+    .step { padding: 16px 0; gap: 14px; } .n { width: 38px; height: 38px; font-size: 16px; } .step h3 { font-size: 19px; margin-top: 4px; }
+    .perks { gap: 10px; } .perk { padding: 16px; } .perk h3 { font-size: 15.5px; } .perk p { font-size: 13.5px; }
     .cta .btn { flex: 1; padding: 0 8px; white-space: nowrap; }
   }
-  @media (prefers-reduced-motion: reduce) { .js-rv .rv { opacity: 1; translate: none; transition: none; } .try { animation: none; } }
+  @media (max-width: 380px) { .perks { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { .js-rv .rv { opacity: 1; translate: none; transition: none; } }
 </style>
 <script>
   // გამოჩენის ანიმაცია
@@ -129,7 +129,7 @@ const perks = [
       else {
         const g = ctx.createLinearGradient(0, 0, W, H); g.addColorStop(0, '#c9c6bd'); g.addColorStop(.5, '#e9e6dc'); g.addColorStop(1, '#b9b6ad');
         ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-        ctx.fillStyle = '#77766d'; ctx.font = `600 ${Math.round(W / 16)}px "Noto Sans Georgian", sans-serif`; ctx.textAlign = 'center'; ctx.fillText('გადაფხიკე ✦', W / 2, H / 2);
+        ctx.fillStyle = '#77766d'; ctx.font = `600 ${Math.round(W / 16)}px "Noto Sans Georgian", sans-serif`; ctx.textAlign = 'center'; ctx.fillText('გადაფხიკე', W / 2, H / 2);
       }
       cells = new Set(); label.textContent = 'გადაფხიკე თითით ან მაუსით';
     };
@@ -143,7 +143,7 @@ const perks = [
       ctx.globalCompositeOperation = 'destination-out'; ctx.beginPath(); ctx.arc(x * W, y * H, W * .075, 0, Math.PI * 2); ctx.fill();
       if (x >= 0 && x < 1 && y >= 0 && y < 1) cells.add(Math.floor(y * G) * G + Math.floor(x * G));
       const pct = Math.min(100, Math.round(cells.size / (G * G) * 130));
-      label.textContent = pct >= 70 ? 'ასე ივსება შენი პოსტერი 🎉' : `${pct}% გადაფხეკილია`;
+      label.textContent = pct >= 70 ? 'ასე ივსება შენი პოსტერი' : `${pct}% გადაფხეკილია`;
     };
     cv.addEventListener('pointerdown', (e) => { down = true; cv.setPointerCapture(e.pointerId); scratch(e); });
     cv.addEventListener('pointermove', (e) => down && scratch(e));
@@ -151,6 +151,6 @@ const perks = [
     cv.addEventListener('pointercancel', () => (down = false));
     document.getElementById('sc-r')!.addEventListener('click', paint);
     // button alternative to dragging (keyboard / accessibility)
-    document.getElementById('sc-all')!.addEventListener('click', () => { ctx.clearRect(0, 0, W, H); label.textContent = 'ასე ივსება შენი პოსტერი 🎉'; });
+    document.getElementById('sc-all')!.addEventListener('click', () => { ctx.clearRect(0, 0, W, H); label.textContent = 'ასე ივსება შენი პოსტერი'; });
   }
 </script>

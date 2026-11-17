@@ -5,4 +5,4 @@ export const POSTS: Post[] = Object.entries(files).map(([path, m]) => ({
   ...m.frontmatter, date: String(m.frontmatter.date instanceof Date ? m.frontmatter.date.toISOString().slice(0, 10) : m.frontmatter.date),
   Content: m.Content,
 })).filter((p) => !p.draft).sort((a, b) => b.date.localeCompare(a.date));
-export const fmtDate = (d: string) => d.split('-').reverse().join('.');
+export const fmtDate = (d: string | Date) => (d instanceof Date ? d.toISOString() : String(d)).slice(0, 10).split('-').reverse().join('.');

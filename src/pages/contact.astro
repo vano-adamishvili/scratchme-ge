@@ -7,10 +7,10 @@ const tel = '+995' + SETTINGS.phone.replace(/\s/g, '');
   <div class="container page-head"><span class="eyebrow">კონტაქტი</span><h1>მოგვწერე ან დაგვირეკე</h1></div>
   <div class="container grid">
     <div class="info card">
-      <a href={`tel:${tel}`}>📞 {SETTINGS.phone}</a>
-      {SETTINGS.socials.messenger && <a href={SETTINGS.socials.messenger} target="_blank" rel="noopener">💬 მოგვწერე Messenger-ში</a>}
-      <a href={`mailto:${SETTINGS.email}`}>✉️ {SETTINGS.email}</a>
-      <span>📍 {SETTINGS.address}</span>
+      <a href={`tel:${tel}`}>{SETTINGS.phone}</a>
+      {SETTINGS.socials.messenger && <a href={SETTINGS.socials.messenger} target="_blank" rel="noopener">მოგვწერე Messenger-ში</a>}
+      <a href={`mailto:${SETTINGS.email}`}>{SETTINGS.email}</a>
+      <span>{SETTINGS.address}</span>
       <p class="muted">კორპორატიული შეკვეთის, საჩუქრის ან ინდივიდუალური პოსტერის იდეა გაქვს? მოგვწერე — ერთად მოვიფიქრებთ.</p>
     </div>
     <form id="cf" class="card form">
@@ -19,7 +19,7 @@ const tel = '+995' + SETTINGS.phone.replace(/\s/g, '');
       <label class="field">შეტყობინება<textarea name="message" required></textarea></label>
       <input name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true" />
       <p id="cm" role="status" class="msg"></p>
-      <button class="btn coral">გაგზავნა</button>
+      <button class="btn">გაგზავნა</button>
     </form>
   </div>
 </Base>

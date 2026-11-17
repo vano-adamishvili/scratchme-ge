@@ -113,6 +113,26 @@ collections:
               - { label: 'ტექსტი', name: text, widget: text }
               - { label: 'ღილაკის ტექსტი', name: cta, widget: string }
               - { label: 'ღილაკის ბმული', name: ctaHref, widget: string }
+          - label: 'პროდუქტის დეტალები („პროდუქტი ახლოდან“)'
+            name: product
+            widget: object
+            fields:
+              - { label: 'ზომა', name: size, widget: string }
+              - { label: 'შეფუთვა', name: packaging, widget: string }
+              - { label: 'ჩარჩო', name: frame, widget: string }
+          - label: 'მომხმარებლების ფოტოები (ჩართე, როცა რეალური ფოტოები გექნება)'
+            name: socialProof
+            widget: object
+            fields:
+              - { label: 'ჩართული', name: active, widget: boolean, default: false }
+              - { label: 'სათაური', name: heading, widget: string }
+              - label: ფოტოები
+                name: items
+                widget: list
+                required: false
+                fields:
+                  - { label: ფოტო, name: image, widget: image }
+                  - { label: 'წარწერა (მაგ. სახელი, ქალაქი)', name: caption, widget: string, required: false }
           - label: ბანკები
             name: banks
             widget: list

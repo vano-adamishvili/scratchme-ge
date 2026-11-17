@@ -1,0 +1,56 @@
+---
+import { SETTINGS, BUNDLES, GIFTS } from '../data/catalog';
+// ხშირი კითხვები — მხოლოდ დადასტურებული ფაქტები; ფასები და პირობები ადმინიდან მოდის
+const s = SETTINGS.product;
+const gift = GIFTS[0]?.name;
+const bundleTxt = BUNDLES.map((b) => `${b.size} პოსტერი — ${b.price} ₾${b.freeShipping ? ', უფასო მიწოდებით' : ''}${b.gift && gift ? ` და საჩუქრად ${gift.toLowerCase()}` : ''}`).join('; ');
+const banks = SETTINGS.banks.map((b) => b.name).join(' ან ');
+const faqs: { q: string; a: string; link?: { href: string; t: string } }[] = [
+  { q: 'რა ზომისაა პოსტერი?', a: `${s.size}. ${s.frame}` },
+  { q: 'როგორ მუშაობს გადაფხეკა?', a: 'ყველა უჯრა ვერცხლისფერი ფენითაა დაფარული. როცა ფილმს ნახავ, ადგილს ეწვევი ან გამოწვევას შეასრულებ, მონეტით გადაფხეკ შესაბამის უჯრას და ქვემოთ დამალულ სურათს აღმოაჩენ.' },
+  { q: 'რამდენ ხანში მომივა შეკვეთა?', a: 'შეკვეთის დადასტურებიდან და გადახდიდან თბილისში 2 სამუშაო დღეში, რეგიონებში 3 და მეტ სამუშაო დღეში — დამოკიდებულია საკურიერო კომპანიაზე.' },
+  { q: 'რა ღირს მიწოდება?', a: `${SETTINGS.shippingFee} ₾. ${SETTINGS.freeShippingFrom} ან მეტი პოსტერის შეკვეთისას (ცალკე თუ ნაკრებით) მიწოდება უფასოა.` },
+  { q: 'როგორ მუშაობს ნაკრები?', a: `პოსტერებს თავად ირჩევ: ${bundleTxt}.`, link: { href: '/#bundle-builder', t: 'ააწყე ნაკრები' } },
+  { q: 'როგორ შევფუთავთ?', a: s.packaging + ' შიგთავსი გარედან არ ჩანს.' },
+  { q: 'როგორ გადავიხადო?', a: `საბანკო გადარიცხვით (${banks}). შეკვეთის გაფორმების შემდეგ გაჩვენებთ ანგარიშის ნომერს; შეკვეთა დადასტურდება გადახდის შემდეგ და დაგიკავშირდებით.` },
+  { q: 'საახალწლოდ როდემდე უნდა შევუკვეთო?', a: 'შეკვეთა ნებისმიერ დროს შეგიძლია. უბრალოდ გაითვალისწინე მიწოდების ვადა: თბილისში 2, რეგიონებში 3+ სამუშაო დღე.' },
+  { q: 'შემიძლია დაბრუნება ან გაცვლა?', a: 'კი, მიღებიდან 7 სამუშაო დღის განმავლობაში, თუ პოსტერი პირვანდელ მდგომარეობაშია: დაუზიანებელი, გადაუფხეკელი და გამოუყენებელი.', link: { href: '/delivery-returns', t: 'მიწოდება და დაბრუნება' } },
+];
+const ld = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) };
+---
+<section id="faq" class="section">
+  <div class="container faq">
+    <div class="head">
+      <span class="eyebrow">კითხვები</span>
+      <h2>ხშირად დასმული კითხვები</h2>
+      <p class="muted">ვერ იპოვე პასუხი? დაგვირეკე <a class="nw" href={`tel:+995${SETTINGS.phone.replace(/\s/g, '')}`}>{SETTINGS.phone}</a>{SETTINGS.socials.messenger && <> ან <a href={SETTINGS.socials.messenger} target="_blank" rel="noopener">მოგვწერე Messenger-ში</a></>}.</p>
+    </div>
+    <div class="list">
+      {faqs.map((f) => (
+        <details>
+          <summary><span>{f.q}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg></summary>
+          <div class="a"><p>{f.a}</p>{f.link && <a href={f.link.href}>{f.link.t} →</a>}</div>
+        </details>
+      ))}
+    </div>
+  </div>
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+</section>
+<style>
+  .faq { display: grid; grid-template-columns: minmax(0, 340px) 1fr; gap: clamp(28px, 6vw, 80px); align-items: start; }
+  .head h2 { margin: 6px 0 14px; }
+  .head p { margin: 0; }
+  .nw { white-space: nowrap; }
+  .list { border-top: 1px solid var(--border); }
+  details { border-bottom: 1px solid var(--border); }
+  summary { list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 2px; cursor: pointer; font-weight: 600; font-size: 17px; }
+  summary::-webkit-details-marker { display: none; }
+  summary:hover { color: var(--forest); }
+  summary svg { flex: none; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform .2s var(--ease); }
+  details[open] summary svg { transform: rotate(180deg); }
+  .a { padding: 0 2px 18px; color: var(--muted); max-width: 64ch; }
+  .a p { margin: 0 0 8px; }
+  .a a { color: var(--forest); font-weight: 600; }
+  @media (max-width: 860px) { .faq { grid-template-columns: 1fr; } summary { font-size: 16px; padding: 16px 0; } }
+  @media (prefers-reduced-motion: reduce) { summary svg { transition: none; } }
+</style>

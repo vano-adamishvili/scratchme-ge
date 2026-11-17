@@ -8,6 +8,7 @@ import { SETTINGS } from '../data/catalog';
     <div id="empty" class="empty card" hidden>
       <p>კალათა ცარიელია.</p>
       <a href="/shop" class="btn">პოსტერების ნახვა</a>
+      <a href="/#bundle-builder" class="link">ან ააწყე ნაკრები →</a>
     </div>
     <div id="full" class="layout" hidden>
       <div>
@@ -28,7 +29,7 @@ import { SETTINGS } from '../data/catalog';
             {SETTINGS.banks.map((b, i) => <label class="chip"><input type="radio" name="bank" value={b.id} checked={i === 0} /> {b.name}</label>)}
           </fieldset>
           <p class="err" id="err" role="alert"></p>
-          <button class="btn coral" id="submit">შეკვეთის გაფორმება</button>
+          <button class="btn" id="submit">შეკვეთის გაფორმება</button>
           <p class="muted small">შეკვეთის შემდეგ გაჩვენებთ ანგარიშის ნომერს. შეკვეთა დადასტურდება გადახდის შემდეგ, ჩვენ დაგიკავშირდებით.</p>
         </form>
       </div>
@@ -37,11 +38,16 @@ import { SETTINGS } from '../data/catalog';
         <div class="r"><span>პროდუქტები</span><b id="sub"></b></div>
         <div class="r"><span>მიტანა</span><b id="ship"></b></div>
         <div class="r tot"><span>სულ</span><b id="tot"></b></div>
+        <div class="prog" id="prog" hidden>
+          <p class="pm" id="pm"></p>
+          <div class="bar" aria-hidden="true"><span id="pbar"></span><i style="left:75%"></i></div>
+          <div class="ms"><span id="m3">{SETTINGS.freeShippingFrom} — უფასო მიწოდება</span><span id="m4">4 — საჩუქარი</span></div>
+        </div>
         <p class="muted small" id="tip"></p>
       </aside>
     </div>
     <div id="done" class="done card" hidden>
-      <span class="eyebrow">მადლობა! 🎉</span>
+      <span class="eyebrow">მადლობა!</span>
       <h2>შეკვეთა მიღებულია — <span id="ref"></span></h2>
       <p>გადაიხადე <b id="d-total"></b> ამ ანგარიშზე და დანიშნულებაში მიუთითე შეკვეთის ნომერი:</p>
       <dl class="bank">
@@ -55,43 +61,55 @@ import { SETTINGS } from '../data/catalog';
   </div>
 </Base>
 <style>
-  .layout { display: grid; grid-template-columns: 1fr 340px; gap: 28px; align-items: start; }
-  .offer { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin: 0 0 24px; padding: 14px 16px; background: var(--lime); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
-  .offer :global(> div:first-child) { display: grid; gap: 3px; min-width: 0; }
-  .offer :global(b) { font: 700 18px/1.2 var(--display); }
+  .layout { display: grid; grid-template-columns: 1fr 360px; gap: 28px; align-items: start; }
+  .offer { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin: 0 0 24px; padding: 18px 20px; background: var(--forest-tint); border-radius: var(--r-md); }
+  .offer :global(> div:first-child) { display: grid; gap: 4px; min-width: 0; }
+  .offer :global(b) { font: 600 18px/1.25 var(--display); }
   .offer :global(.ob) { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
   .lines { list-style: none; padding: 0; margin: 0 0 24px; display: grid; gap: 12px; }
-  .lines > :global(li) { display: grid; grid-template-columns: 74px 1fr auto; gap: 14px; align-items: center; padding: 12px; background: #fff; border: 1px solid var(--border); }
-  .lines :global(li > img) { width: 74px; aspect-ratio: 3/4; object-fit: contain; background: var(--cream); }
-  .lines :global(.t) { font-weight: 700; }
+  .lines > :global(li) { display: grid; grid-template-columns: 76px 1fr auto; gap: 16px; align-items: center; padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); }
+  .lines :global(li > img) { width: 76px; aspect-ratio: 3/4; object-fit: contain; background: var(--surface-2); border-radius: 8px; }
+  .lines :global(.t) { font-weight: 600; }
   .lines :global(.parts) { margin: 4px 0 0; padding-left: 18px; list-style: disc; font-size: 14px; color: var(--muted); }
-  .lines :global(.q) { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; }
-  .lines :global(.q button) { width: 30px; height: 30px; border: 1px solid var(--border); background: var(--paper); font-weight: 700; }
-  .lines :global(.rm) { border: 0; background: none; text-decoration: underline; color: var(--muted); font-size: 13px; padding: 0; margin-top: 6px; }
-  .lines :global(.e) { color: var(--coral); font-weight: 700; font-size: 14px; }
-  .form { padding: 20px; display: grid; gap: 14px; }
+  .lines :global(.q) { display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .lines :global(.q button) { width: 32px; height: 32px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); font-weight: 600; cursor: pointer; }
+  .lines :global(.q button:hover) { border-color: var(--forest); color: var(--forest); }
+  .lines :global(.rm) { border: 0; background: none; text-decoration: underline; color: var(--muted); font-size: 13px; padding: 0; margin-top: 8px; cursor: pointer; }
+  .lines :global(.e) { color: var(--terracotta); font-weight: 600; font-size: 14px; }
+  .form { padding: 24px; display: grid; gap: 14px; }
   .form h2, .sum h2 { font-size: 22px; }
   .two { display: grid; grid-template-columns: 1fr 1.6fr; gap: 12px; }
   .hp { position: absolute; left: -9999px; }
   .banks { border: 0; padding: 0; margin: 0; display: flex; gap: 8px; flex-wrap: wrap; }
-  .banks legend { font-weight: 700; margin-bottom: 8px; }
-  .banks input { accent-color: var(--coral); }
-  .err { color: var(--coral); font-weight: 700; margin: 0; min-height: 1em; }
-  .sum { padding: 20px; position: sticky; top: 90px; }
-  .r { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--line); }
-  .tot { font: 700 22px var(--display); border: 0; }
+  .banks legend { font-weight: 600; margin-bottom: 8px; }
+  .banks input { accent-color: var(--forest); }
+  .err { color: var(--terracotta); font-weight: 600; margin: 0; min-height: 1em; }
+  .sum { padding: 24px; position: sticky; top: 96px; }
+  .r { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .tot { font: 600 22px var(--display); border: 0; }
+  .prog { margin-top: 10px; padding: 14px; background: var(--surface-2); border-radius: var(--r-sm); }
+  .pm { margin: 0 0 10px; font-size: 14px; font-weight: 500; }
+  .bar { position: relative; height: 8px; background: #fff; border-radius: 99px; overflow: visible; }
+  .bar span { position: absolute; inset: 0 auto 0 0; background: var(--forest); border-radius: 99px; transition: width .35s var(--ease); }
+  .bar i { position: absolute; top: -3px; width: 2px; height: 14px; background: var(--muted); opacity: .5; }
+  .ms { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--muted); }
+  .ms .ok { color: var(--forest); font-weight: 600; }
+  .ms span:only-child { margin-left: auto; }
   .small { font-size: 13px; }
+  .link { color: var(--forest); font-weight: 600; }
   .empty, .done { padding: 28px; display: grid; gap: 12px; justify-items: start; max-width: 720px; }
-  .done h2 { font-size: clamp(24px, 4vw, 36px); }
-  .bank { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; margin: 0; padding: 14px; background: var(--lime); border: 1px solid var(--border); }
-  .bank dt { font-weight: 700; } .bank dd { margin: 0; word-break: break-all; }
+  .done h2 { font-size: clamp(24px, 4vw, 34px); }
+  .bank { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; margin: 0; padding: 16px; background: var(--forest-tint); border-radius: var(--r-sm); }
+  .bank dt { font-weight: 600; } .bank dd { margin: 0; word-break: break-all; }
   @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } .sum { position: static; order: -1; } .two { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { .bar span { transition: none; } }
 </style>
 <script>
   import { read, write, clear } from '../lib/cart';
   import { computeTotals, bundleOffer, applyBundle, FREE_FROM, posterCount } from '../lib/pricing';
-  import { SETTINGS } from '../data/catalog';
+  import { SETTINGS, BUNDLES } from '../data/catalog';
   const $ = (id: string) => document.getElementById(id)!;
+  const m = (n: number) => `${Number.isInteger(n) ? n : n.toFixed(2)} ₾`;
   const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
   function render() {
     if (!$('done').hidden) return;
@@ -105,19 +123,33 @@ import { SETTINGS } from '../data/catalog';
         ${l.type === 'product' ? `<div class="q"><button type="button" data-d="${i}" data-v="-1" aria-label="ნაკლები">−</button><b>${l.qty}</b><button type="button" data-d="${i}" data-v="1" aria-label="მეტი">+</button></div>` : ''}
         ${l.error ? `<div class="e">${esc(l.error)}</div>` : ''}
         <div><button type="button" class="rm" data-rm="${i}">წაშლა</button></div></div>
-      <b>${l.total.toFixed(2)} ₾</b></li>`).join('');
-    $('sub').textContent = `${t.subtotal.toFixed(2)} ₾`;
-    $('ship').textContent = t.shipping ? `${t.shipping.toFixed(2)} ₾` : 'უფასო';
-    $('tot').textContent = `${t.total.toFixed(2)} ₾`;
-    const left = FREE_FROM - posterCount(t.lines);
-    $('tip').textContent = t.shipping && left > 0 ? `დაამატე კიდევ ${left} პოსტერი და მიტანა უფასო იქნება.` : '';
+      <b>${m(l.total)}</b></li>`).join('');
+    $('sub').textContent = m(t.subtotal);
+    $('ship').textContent = t.shipping ? m(t.shipping) : 'უფასო';
+    $('tot').textContent = m(t.total);
+    const n = posterCount(t.lines), left = FREE_FROM - n;
+    $('tip').textContent = '';
+    // პროგრესი: 3 პოსტერი → უფასო მიწოდება, 4 პოსტერი (ნაკრებად) → საჩუქარი
+    const gb = BUNDLES.find((b) => b.gift), giftOn = SETTINGS.gifts.some((g) => g.active && g.stock > 0);
+    const goal = gb && giftOn ? gb.size : FREE_FROM;
+    const hasGift = t.lines.some((l) => l.type === 'bundle' && !l.error && (l.raw as any).gift);
+    $('prog').hidden = !n || !FREE_FROM;
+    ($('pbar') as HTMLElement).style.width = `${Math.min(100, (n / goal) * 100)}%`;
+    ($('prog').querySelector('i') as HTMLElement).style.left = `${(FREE_FROM / goal) * 100}%`;
+    $('m4').hidden = goal === FREE_FROM;
+    $('m3').classList.toggle('ok', n >= FREE_FROM); $('m4').classList.toggle('ok', hasGift);
+    $('pm').textContent = left > 0
+      ? `კიდევ ${left} პოსტერი — და მიწოდება უფასო იქნება.`
+      : goal > n ? `მიწოდება უფასოა ✓ კიდევ ${goal - n} პოსტერი და ${goal}-პოსტერიან ნაკრებს საჩუქარიც მოჰყვება.`
+      : hasGift || goal === FREE_FROM ? 'მიწოდება უფასოა ✓' + (hasGift ? ' საჩუქარი დამატებულია ✓' : '')
+      : 'მიწოდება უფასოა ✓ აქციე პოსტერები ნაკრებად და საჩუქარიც მიიღე.';
     // ნაკრების შეთავაზება: ცალკე პოსტერები ნაკრებად უფრო იაფია
     const o = bundleOffer(lines), box = $('offer');
     box.hidden = !o;
     if (o) {
       const gifts = SETTINGS.gifts.filter((g) => g.active && g.stock > 0);
       box.innerHTML = `<div><span class="eyebrow">ნაკრებად უფრო ხელსაყრელია</span>
-        <b>აქციე ${o.size} პოსტერი ნაკრებად — დაზოგე ${o.save.toFixed(2)} ₾</b>
+        <b>აქციე ${o.size} პოსტერი ნაკრებად — დაზოგე ${m(o.save)}</b>
         <span class="muted small">${o.items.map((i) => esc(i.title)).join(' · ')}${o.gift ? (gifts.length === 1 ? ` + ${esc(gifts[0].name)}` : ' + საჩუქარი') : ''}</span></div>
         <div class="ob">${o.gift && gifts.length > 1 ? `<span class="small">აირჩიე საჩუქარი:</span>${gifts.map((g) => `<button type="button" class="btn sm" data-ob="${esc(g.id)}">${esc(g.name)}</button>`).join('')}`
           : `<button type="button" class="btn" data-ob="${o.gift && gifts[0] ? esc(gifts[0].id) : ''}">ნაკრებად ქცევა</button>`}</div>`;
@@ -151,7 +183,7 @@ import { SETTINGS } from '../data/catalog';
       if (!res.ok) throw new Error(d.error || 'შეკვეთა ვერ გაიგზავნა');
       $('full').hidden = true; $('done').hidden = false;
       clear(); $('h').textContent = 'შეკვეთა მიღებულია';
-      $('ref').textContent = d.ref; $('d-total').textContent = `${d.total.toFixed(2)} ₾`;
+      $('ref').textContent = d.ref; $('d-total').textContent = m(d.total);
       $('d-bank').textContent = d.bank.name; $('d-recv').textContent = d.bank.receiver; $('d-iban').textContent = d.bank.iban;
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {

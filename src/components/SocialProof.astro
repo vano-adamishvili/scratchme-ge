@@ -1,0 +1,24 @@
+---
+import { SETTINGS } from '../data/catalog';
+// მომხმარებლების ფოტოები — ჩანს მხოლოდ მაშინ, როცა ადმინში ჩართულია და მინიმუმ ერთი ფოტოა
+const sp = SETTINGS.socialProof as { active: boolean; heading: string; items: { image: string; caption?: string }[] };
+const show = sp?.active && sp.items?.length > 0;
+---
+{show && (
+  <section id="social-proof" class="section">
+    <div class="container">
+      <div class="section-head"><div><span class="eyebrow">თქვენი კედლები</span><h2>{sp.heading}</h2></div></div>
+      <div class="grid">
+        {sp.items.map((it) => (
+          <figure><img src={it.image} alt={it.caption || 'scratchme პოსტერი მომხმარებლის სახლში'} loading="lazy" decoding="async" />{it.caption && <figcaption>{it.caption}</figcaption>}</figure>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+<style>
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+  figure { margin: 0; }
+  img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--r-md); }
+  figcaption { margin-top: 8px; font-size: 14px; color: var(--muted); }
+</style>
