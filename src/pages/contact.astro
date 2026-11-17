@@ -8,6 +8,7 @@ const tel = '+995' + SETTINGS.phone.replace(/\s/g, '');
   <div class="container grid">
     <div class="info card">
       <a href={`tel:${tel}`}>📞 {SETTINGS.phone}</a>
+      {SETTINGS.socials.messenger && <a href={SETTINGS.socials.messenger} target="_blank" rel="noopener">💬 მოგვწერე Messenger-ში</a>}
       <a href={`mailto:${SETTINGS.email}`}>✉️ {SETTINGS.email}</a>
       <span>📍 {SETTINGS.address}</span>
       <p class="muted">კორპორატიული შეკვეთის, საჩუქრის ან ინდივიდუალური პოსტერის იდეა გაქვს? მოგვწერე — ერთად მოვიფიქრებთ.</p>

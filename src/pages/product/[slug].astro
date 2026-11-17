@@ -50,7 +50,7 @@ const ld = { '@context': 'https://schema.org', '@type': 'Product', name: p.title
         {ok && <a class="bundle" href={`/?add=${p.slug}#bundle-builder`}>ან დაამატე ნაკრებში — {b2.size} პოსტერი {b2.price} ₾-დან →</a>}
         <ul class="feats">{p.features.map((f) => <li>✦ {f}</li>)}</ul>
         <div class="desc">{p.description.split(/\n\s*\n/).map((para) => <p>{para}</p>)}</div>
-        <p class="ship muted">🚚 მიტანა მთელ საქართველოში · {SETTINGS.shippingFee.toFixed(2)} ₾, 3+ პოსტერიან ნაკრებზე უფასოდ</p>
+        <p class="ship muted">🚚 მიტანა მთელ საქართველოში · {SETTINGS.shippingFee.toFixed(2)} ₾, {SETTINGS.freeShippingFrom}+ პოსტერზე უფასოდ</p>
       </div>
     </div>
     {related.length > 0 && (

@@ -12,12 +12,12 @@ const nav = [
 const LOGO_SRC = 'https://scratchme.ge/logo-wordmark-dark.webp';
 const LOGO = localImage(LOGO_SRC)?.lg ?? LOGO_SRC;
 const b2 = BUNDLES.find((b) => b.size === 2);
-const free = BUNDLES.find((b) => b.freeShipping);
+const free = Number(SETTINGS.freeShippingFrom) || BUNDLES.find((b) => b.freeShipping)?.size;
 const gift = BUNDLES.find((b) => b.gift);
 ---
 <div class="announce">
   <span class="offer o1">{b2?.size} პოსტერი — {b2?.price} ₾</span>
-  {free && <span class="offer o2">{free.size}+ პოსტერზე უფასო მიტანა</span>}
+  {free && <span class="offer o2">{free}+ პოსტერზე უფასო მიტანა</span>}
   {gift && <span class="offer o3">{gift.size} პოსტერზე საჩუქარი 🎁</span>}
 </div>
 <header class="nav">

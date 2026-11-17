@@ -12,6 +12,7 @@ import { SETTINGS } from '../data/catalog';
     <div id="full" class="layout" hidden>
       <div>
         <ul id="lines" class="lines"></ul>
+        <div id="offer" class="offer" hidden></div>
         <form id="form" class="form card" novalidate>
           <h2>მიწოდების ინფორმაცია</h2>
           <label class="field">სახელი და გვარი<input name="name" autocomplete="name" required /></label>
@@ -48,13 +49,17 @@ import { SETTINGS } from '../data/catalog';
         <dt>მიმღები</dt><dd id="d-recv"></dd>
         <dt>IBAN</dt><dd><code id="d-iban"></code> <button type="button" class="btn sm ghost" id="copy">კოპირება</button></dd>
       </dl>
-      <p>გადახდის შემდეგ დაგიკავშირდებით მიტანის დროის დასაზუსტებლად. კითხვებისთვის: <a href={`tel:+995${SETTINGS.phone.replace(/\s/g, '')}`}>{SETTINGS.phone}</a></p>
+      <p>გადახდის შემდეგ დაგიკავშირდებით მიტანის დროის დასაზუსტებლად. კითხვებისთვის: <a href={`tel:+995${SETTINGS.phone.replace(/\s/g, '')}`}>{SETTINGS.phone}</a>{SETTINGS.socials.messenger && <> · <a href={SETTINGS.socials.messenger} target="_blank" rel="noopener">მოგვწერე Messenger-ში</a></>}</p>
       <a href="/shop" class="btn">მაღაზიაში დაბრუნება</a>
     </div>
   </div>
 </Base>
 <style>
   .layout { display: grid; grid-template-columns: 1fr 340px; gap: 28px; align-items: start; }
+  .offer { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin: 0 0 24px; padding: 14px 16px; background: var(--lime); border: 1.5px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); }
+  .offer :global(> div:first-child) { display: grid; gap: 3px; min-width: 0; }
+  .offer :global(b) { font: 700 18px/1.2 var(--display); }
+  .offer :global(.ob) { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
   .lines { list-style: none; padding: 0; margin: 0 0 24px; display: grid; gap: 12px; }
   .lines > :global(li) { display: grid; grid-template-columns: 74px 1fr auto; gap: 14px; align-items: center; padding: 12px; background: #fff; border: 1.5px solid var(--ink); }
   .lines :global(li > img) { width: 74px; aspect-ratio: 3/4; object-fit: contain; background: var(--cream); }
@@ -84,7 +89,8 @@ import { SETTINGS } from '../data/catalog';
 </style>
 <script>
   import { read, write, clear } from '../lib/cart';
-  import { computeTotals } from '../lib/pricing';
+  import { computeTotals, bundleOffer, applyBundle, FREE_FROM, posterCount } from '../lib/pricing';
+  import { SETTINGS } from '../data/catalog';
   const $ = (id: string) => document.getElementById(id)!;
   const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
   function render() {
@@ -103,9 +109,29 @@ import { SETTINGS } from '../data/catalog';
     $('sub').textContent = `${t.subtotal.toFixed(2)} ₾`;
     $('ship').textContent = t.shipping ? `${t.shipping.toFixed(2)} ₾` : 'უფასო';
     $('tot').textContent = `${t.total.toFixed(2)} ₾`;
-    $('tip').textContent = t.shipping ? '3 ან 4 პოსტერიან ნაკრებზე მიტანა უფასოა.' : '';
+    const left = FREE_FROM - posterCount(t.lines);
+    $('tip').textContent = t.shipping && left > 0 ? `დაამატე კიდევ ${left} პოსტერი და მიტანა უფასო იქნება.` : '';
+    // ნაკრების შეთავაზება: ცალკე პოსტერები ნაკრებად უფრო იაფია
+    const o = bundleOffer(lines), box = $('offer');
+    box.hidden = !o;
+    if (o) {
+      const gifts = SETTINGS.gifts.filter((g) => g.active && g.stock > 0);
+      box.innerHTML = `<div><span class="eyebrow">💡 იაფად გამოგივა</span>
+        <b>აქციე ${o.size} პოსტერი ნაკრებად — დაზოგე ${o.save.toFixed(2)} ₾</b>
+        <span class="muted small">${o.items.map((i) => esc(i.title)).join(' · ')}${o.gift ? ' + საჩუქარი 🎁' : ''}</span></div>
+        <div class="ob">${o.gift ? `<span class="small">აირჩიე საჩუქარი:</span>${gifts.map((g) => `<button type="button" class="btn sm coral" data-ob="${esc(g.id)}">${esc(g.name)}</button>`).join('')}`
+          : `<button type="button" class="btn coral" data-ob="">ნაკრებად ქცევა</button>`}</div>`;
+      box.dataset.size = String(o.size); box.dataset.items = o.items.map((i) => i.slug).join(',');
+    }
     ($('submit') as HTMLButtonElement).disabled = !t.ok;
   }
+  $('offer').addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-ob]'); if (!b) return;
+    const box = $('offer');
+    write(applyBundle(read(), +box.dataset.size!, box.dataset.items!.split(','), b.dataset.ob || undefined));
+    window.dispatchEvent(new CustomEvent('toast', { detail: 'ნაკრებად გადაკეთდა ✓' }));
+    render();
+  });
   $('lines').addEventListener('click', (e) => {
     const b = (e.target as HTMLElement).closest('button'); if (!b) return;
     const lines = read();
