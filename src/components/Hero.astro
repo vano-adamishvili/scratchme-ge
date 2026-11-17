@@ -1,6 +1,6 @@
 ---
-// Home hero: copy on the left, a calm Scandinavian interior on the right, drawn in CSS/SVG
-// (no stock photo), with the real poster artwork leaning on a picture ledge. A coin scratches
+// Home hero: copy on the left, a Scandinavian interior photo (empty oak ledge) on the right,
+// with the real poster artwork standing on the ledge. A coin scratches
 // a handful of cells on the front poster once, then stops.
 import { SETTINGS, productBySlug } from '../data/catalog';
 
@@ -31,13 +31,7 @@ const season = SETTINGS.season;
     </div>
 
     <div class="scene">
-      <div class="wall"></div>
-      <div class="light"></div>
-      <svg class="lights" viewBox="0 0 400 60" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M0 8 Q100 46 200 22 T400 14" fill="none" stroke="#8E8A80" stroke-width="1" opacity=".5" />
-        {[18, 52, 88, 126, 166, 206, 248, 290, 332, 372].map((x, i) => <circle cx={x} cy={[14, 24, 33, 36, 31, 23, 19, 18, 17, 15][i]} r="3.2" fill="#F1D9A4" opacity=".9" />)}
-      </svg>
-      <div class="ledge"></div>
+      <img class="room" src="/img/hero-room-lg.webp" srcset="/img/hero-room-sm.webp 820w, /img/hero-room-lg.webp 1374w" sizes="(max-width: 960px) 92vw, 640px" alt="" width="1374" height="1145" decoding="async" fetchpriority="high" />
       {back && <img class="poster p-back" src={back.images[1]?.thumb ?? back.images[0].thumb} alt={`${back.title} — გადაფხეკილი`} width="640" height="900" decoding="async" />}
       {demo && (
         <a class="poster p-front" id="hero-demo" href={`/product/${front!.slug}`} aria-label={`${front!.title} — ნახე პოსტერი`} data-demo={JSON.stringify(demo)}>
@@ -46,17 +40,6 @@ const season = SETTINGS.season;
           <span class="coin" aria-hidden="true"></span>
         </a>
       )}
-      <div class="board">
-        <svg class="books" viewBox="0 0 120 70" aria-hidden="true">
-          <rect x="8" y="44" width="96" height="12" rx="2" fill="#A9B8AE" /><rect x="14" y="32" width="84" height="12" rx="2" fill="#D9C7A8" /><rect x="10" y="20" width="90" height="12" rx="2" fill="#C98F78" />
-          <rect x="52" y="0" width="16" height="20" rx="3" fill="#F3EEE4" /><path d="M60 -2v4" stroke="#C6A56B" stroke-width="2" stroke-linecap="round" />
-        </svg>
-        <svg class="plant" viewBox="0 0 120 160" aria-hidden="true">
-          <path d="M60 104C58 70 40 52 20 44c8 20 18 38 40 60zM60 104c2-38 22-58 42-66-8 24-20 44-42 66zM60 104c-4-44 4-74 18-94 4 30-4 62-18 94z" fill="#5E7F6B" />
-          <path d="M60 104C50 80 34 66 24 62M60 104c8-24 22-40 34-48M60 104c-2-30 4-56 14-80" stroke="#3E5C4C" stroke-width="1.4" fill="none" />
-          <path d="M34 100h52l-6 52H40z" fill="#E9E3D7" /><path d="M34 100h52v8H34z" fill="#DDD5C6" />
-        </svg>
-      </div>
     </div>
   </div>
 </section>
@@ -76,36 +59,28 @@ const season = SETTINGS.season;
   .facts li { display: flex; align-items: center; gap: 8px; }
   .facts li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--forest); opacity: .5; }
 
-  /* ---- interior ---- */
-  .scene { position: relative; aspect-ratio: 1.08; border-radius: var(--r-lg); overflow: hidden; isolation: isolate; box-shadow: var(--shadow); }
-  .wall { position: absolute; inset: 0; background:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .38 0 0 0 0 .34 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"),
-      linear-gradient(180deg, #F1ECE3 0%, #EAE4D9 72%, #E3DCCF 100%); }
-  .light { position: absolute; inset: 0; background: linear-gradient(118deg, transparent 8%, rgba(255, 252, 244, .55) 16%, transparent 30%), linear-gradient(118deg, transparent 30%, rgba(255, 252, 244, .4) 37%, transparent 50%); pointer-events: none; z-index: 1; }
-  .lights { position: absolute; top: 0; left: 4%; width: 92%; height: 9%; z-index: 1; }
-  .ledge { position: absolute; left: 7%; right: 7%; top: 75%; height: 2.4%; background: linear-gradient(180deg, #C9A57E, #B48B62); border-radius: 3px; box-shadow: 0 6px 12px rgba(80, 60, 30, .18); z-index: 3; }
-  .poster { position: absolute; bottom: 25%; aspect-ratio: 640 / 900; border-radius: 3px; background: #fff; box-shadow: 0 2px 4px rgba(40, 35, 25, .12), 0 18px 30px -10px rgba(40, 35, 25, .35); z-index: 2; }
-  .p-back { left: 13%; height: 54%; width: auto; transform: rotate(-2deg); transform-origin: bottom center; filter: saturate(.92); }
-  .p-front { right: 15%; height: 64%; display: block; overflow: hidden; z-index: 2; transition: transform .3s var(--ease); }
-  .p-front:hover { transform: translateY(-4px); }
+  /* ---- interior: photo of an empty oak ledge; posters stand on it ----
+     ledge top surface is at 66.5% of the photo height (33.5% from the bottom); light comes from the left */
+  .scene { position: relative; aspect-ratio: 1374 / 1145; border-radius: var(--r-lg); overflow: hidden; isolation: isolate; box-shadow: var(--shadow); background: #F1EADF; }
+  .room { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .poster { position: absolute; bottom: 33.4%; aspect-ratio: 640 / 900; border-radius: 2px; background: #fff; transform-origin: bottom center;
+    box-shadow: 0 1px 2px rgba(60, 45, 25, .18), 10px 6px 16px -6px rgba(70, 52, 28, .32), 22px 10px 34px -14px rgba(70, 52, 28, .28); z-index: 2; }
+  .p-back { left: 21%; height: 40%; width: auto; transform: rotate(-1.6deg); filter: saturate(.94) brightness(.98); z-index: 1; }
+  .p-front { left: 41%; height: 47.5%; display: block; overflow: hidden; transform: rotate(1deg); transition: transform .3s var(--ease); }
+  .p-front:hover { transform: rotate(1deg) translateY(-4px); }
   .p-front img, .p-front canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .coin { position: absolute; left: 0; top: 0; z-index: 3; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: radial-gradient(circle at 34% 30%, #FFF6D8, #D9B66E 55%, #A9843F); box-shadow: 0 2px 4px rgba(60, 45, 15, .35); opacity: 0; transition: opacity .4s ease; pointer-events: none; }
   .p-front.run .coin { opacity: 1; }
-  .board { position: absolute; left: 0; right: 0; bottom: 0; height: 22.6%; z-index: 4; background: linear-gradient(180deg, #D8BC97 0, #CFB088 6%, #C4A27A 100%); box-shadow: 0 -1px 0 rgba(255, 255, 255, .4) inset; }
-  .books { position: absolute; left: 9%; bottom: 62%; width: 17%; }
-  .plant { position: absolute; right: 5%; bottom: 52%; width: 15%; }
 
   @media (max-width: 960px) {
     .hero-in { grid-template-columns: 1fr; }
     .copy { max-width: 640px; }
     h1 { font-size: clamp(27px, 5vw, 40px); }
-    .scene { aspect-ratio: 1.35; max-height: 440px; }
+    .scene { max-width: 560px; }
   }
   @media (max-width: 560px) {
     .cta .btn { flex: 1 1 100%; }
-    .scene { aspect-ratio: 1.12; }
-    .lights, .books { display: none; }
-    .p-back { left: 8%; } .p-front { right: 10%; }
+    .coin { width: 16px; height: 16px; margin: -8px 0 0 -8px; }
   }
 </style>
 
