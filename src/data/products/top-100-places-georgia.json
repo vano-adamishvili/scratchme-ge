@@ -1,6 +1,6 @@
 {
-  "slug": "top-100-places-georgia",
   "title": "ტოპ 100 ადგილი საქართველოში",
+  "slug": "top-100-places-georgia",
   "titleEn": "Top 100 Places in Georgia",
   "subtitle": "",
   "categories": [
@@ -24,7 +24,7 @@
       "label": "გადაფხეკილი / პროცესში"
     },
     {
-      "url": "https://scratchme.ge/uploads/products/1/3_e035db9e.png",
+      "url": "/images/products/img_1503.webp",
       "label": ""
     }
   ],
