@@ -1,43 +1,107 @@
 ---
 import Logo from './Logo.astro';
-import { SETTINGS } from '../data/catalog';
+import { SETTINGS, localImage } from '../data/catalog';
+import { siFacebook, siInstagram, siTiktok, siMessenger } from 'simple-icons';
 const tel = '+995' + SETTINGS.phone.replace(/\s/g, '');
 const s = SETTINGS.socials as Record<string, string>;
+const LOGO_SRC = 'https://scratchme.ge/logo-wordmark-dark.webp';
+const logo = localImage(LOGO_SRC)?.lg;
+// სოც. ქსელები: ბმული ადმინის პარამეტრებიდან, ცარიელი არ ჩანს
+const socials = [
+  { key: 'instagram', name: 'Instagram', icon: siInstagram, bg: 'var(--coral)' },
+  { key: 'tiktok', name: 'TikTok', icon: siTiktok, bg: 'var(--lime)' },
+  { key: 'facebook', name: 'Facebook', icon: siFacebook, bg: 'var(--blue)' },
+  { key: 'messenger', name: 'Messenger', icon: siMessenger, bg: 'var(--lilac)' },
+].filter((x) => s[x.key]);
+const year = new Date().getFullYear();
 ---
 <footer class="ft">
-  <div class="container grid">
-    <div>
-      <Logo size={30} />
-      <p class="tag">შენი კედელი უფრო შენსავით რომ გახდეს. გადაფხიკე, აღმოაჩინე, გაიხსენე.</p>
-      <p class="eyebrow made">დამზადებულია თბილისში</p>
+  <div class="container">
+    <div class="cta">
+      <div>
+        <span class="eyebrow">გადაფხიკე / აღმოაჩინე</span>
+        <p>შენი შემდეგი თავგადასავალი კედელზე გელოდება.</p>
+      </div>
+      <div class="cta-b">
+        <a href="/shop" class="btn coral">ნახე პოსტერები</a>
+        <a href="/#bundle-builder" class="btn ghost">ააწყე ნაკრები</a>
+      </div>
     </div>
-    <div>
-      <h3>აღმოაჩინე</h3>
-      <a href="/shop">ყველა პოსტერი</a><a href="/#bundle-builder">ააწყე ნაკრები</a><a href="/#how-it-works">როგორ მუშაობს</a><a href="/blog">ბლოგი</a>
-    </div>
-    <div>
-      <h3>დახმარება</h3>
-      <a href={`mailto:${SETTINGS.email}`}>{SETTINGS.email}</a>
-      <a href={`tel:${tel}`}>{SETTINGS.phone}</a>
-      <span>{SETTINGS.address}</span>
-      <a href="/contact">კონტაქტი</a>
-      {Object.entries(s).filter(([, v]) => v).map(([k, v]) => <a href={v} rel="noopener" target="_blank">{k[0].toUpperCase() + k.slice(1)}</a>)}
+
+    <div class="grid">
+      <div class="brand">
+        <a href="/" class="sticker" aria-label="scratchme.ge — მთავარი">
+          {logo ? <img src={logo} alt="scratchme.ge" width="676" height="150" loading="lazy" /> : <Logo size={30} />}
+        </a>
+        <p class="tag">შენი კედელი უფრო შენსავით რომ გახდეს. გადაფხიკე, აღმოაჩინე, გაიხსენე.</p>
+        <p class="eyebrow made">✦ დამზადებულია თბილისში</p>
+      </div>
+      <nav aria-label="აღმოაჩინე">
+        <h3>აღმოაჩინე</h3>
+        <a href="/shop">ყველა პოსტერი</a><a href="/#bundle-builder">ააწყე ნაკრები</a><a href="/#how-it-works">როგორ მუშაობს</a><a href="/blog">ბლოგი</a>
+      </nav>
+      <div>
+        <h3>დახმარება</h3>
+        <a href={`tel:${tel}`} class="ic"><span aria-hidden="true">📞</span>{SETTINGS.phone}</a>
+        <a href={`mailto:${SETTINGS.email}`} class="ic"><span aria-hidden="true">✉️</span>{SETTINGS.email}</a>
+        <span class="ic"><span aria-hidden="true">📍</span>{SETTINGS.address}</span>
+        <a href="/contact" class="ic"><span aria-hidden="true">💬</span>კონტაქტი</a>
+      </div>
+      {socials.length > 0 && (
+        <div>
+          <h3>გამოგვყევი</h3>
+          <div class="soc">
+            {socials.map((x) => (
+              <a href={s[x.key]} target="_blank" rel="noopener" aria-label={x.name} title={x.name} style={`--bg:${x.bg}`}>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d={x.icon.path} /></svg>
+              </a>
+            ))}
+          </div>
+          <p class="soc-note">ახალი პოსტერები, გათამაშებები და გადაფხეკილი კედლები</p>
+        </div>
+      )}
     </div>
   </div>
   <div class="container bottom">
-    <span>© {new Date().getFullYear()} scratchme.ge</span>
+    <span>© {year} scratchme.ge</span>
     <span class="legal"><a href="/privacy-policy">კონფიდენციალურობა</a><a href="/terms">წესები და პირობები</a><a href="/delivery-returns">მიწოდება და დაბრუნება</a></span>
   </div>
 </footer>
 <style>
-  .ft { margin-top: 40px; background: var(--ink); color: var(--paper); padding: 48px 0 24px; }
-  .grid { display: grid; grid-template-columns: 1.4fr 1fr 1.2fr; gap: 32px; }
-  .tag { max-width: 340px; opacity: .8; margin: 14px 0 8px; }
+  .ft { margin-top: 40px; background: var(--ink); color: var(--paper); padding: 0 0 24px; position: relative; }
+  .ft::before { content: ''; display: block; height: 6px; background: linear-gradient(90deg, var(--lime) 0 25%, var(--yellow) 25% 50%, var(--coral) 50% 75%, var(--lilac) 75% 100%); }
+
+  .cta { display: flex; align-items: center; justify-content: space-between; gap: 18px 28px; flex-wrap: wrap; margin: 40px 0 44px; padding: 22px 24px; background: var(--paper); color: var(--ink); border: 1.5px solid var(--paper); box-shadow: 6px 6px 0 var(--coral); }
+  .cta .eyebrow { color: #57564e; }
+  .cta p { margin: 6px 0 0; font: 700 clamp(20px, 2.6vw, 30px)/1.1 var(--display); letter-spacing: -.03em; }
+  .cta-b { display: flex; gap: 10px; flex-wrap: wrap; }
+  .cta-b .btn { box-shadow: 3px 3px 0 var(--ink); background-color: var(--paper); }
+  .cta-b .btn.coral { background-color: var(--coral); }
+
+  .grid { display: grid; grid-template-columns: 1.3fr .9fr 1.3fr 1fr; gap: 32px; }
+  .sticker { display: inline-block; line-height: 0; background: var(--paper); border: 1.5px solid var(--paper); box-shadow: 5px 5px 0 var(--lime); transform: rotate(-2.5deg); transition: transform .2s var(--ease), box-shadow .2s ease; }
+  .sticker:hover { transform: rotate(0) translateY(-2px); box-shadow: 7px 7px 0 var(--coral); }
+  .sticker img { display: block; height: 58px; width: auto; }
+  .tag { max-width: 320px; opacity: .8; margin: 18px 0 8px; }
   .made { color: var(--lime); }
-  h3 { font-size: 15px; margin: 0 0 12px; color: var(--yellow); letter-spacing: 0; }
-  .grid a, .grid span { display: block; margin: 0 0 8px; opacity: .85; text-decoration: none; font-size: 15px; }
-  .grid a:hover { opacity: 1; text-decoration: underline; }
-  .bottom { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 34px; padding-top: 18px; border-top: 1px solid rgba(247,245,238,.18); font-size: 13px; opacity: .8; }
-  .legal { display: flex; gap: 16px; flex-wrap: wrap; } .legal a { text-decoration: none; }
-  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+  h3 { font-size: 15px; margin: 0 0 14px; color: var(--yellow); letter-spacing: 0; }
+  nav a, .grid > div > a, .grid > div > span { display: block; margin: 0 0 9px; opacity: .85; text-decoration: none; font-size: 15px; }
+  nav a:hover, .grid > div > a:hover { opacity: 1; color: var(--lime); }
+  .ic { display: flex !important; gap: 9px; align-items: flex-start; }
+  .ic > span { flex: none; width: 18px; text-align: center; }
+
+  .soc { display: flex; gap: 10px; flex-wrap: wrap; }
+  .soc a { display: grid; place-items: center; width: 46px; height: 46px; background: var(--bg); color: var(--ink); border: 1.5px solid var(--paper); box-shadow: 3px 3px 0 var(--paper); transition: transform .15s var(--ease), box-shadow .15s ease; }
+  .soc a:nth-child(odd) { transform: rotate(-3deg); } .soc a:nth-child(even) { transform: rotate(3deg); }
+  .soc a:hover { transform: translate(-2px, -3px) rotate(0); box-shadow: 5px 6px 0 var(--paper); }
+  .soc svg { width: 22px; height: 22px; fill: currentColor; }
+  .soc-note { font-size: 13px; opacity: .65; margin: 14px 0 0; max-width: 220px; }
+
+  .bottom { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 40px; padding-top: 18px; border-top: 1px solid rgba(247,245,238,.18); font-size: 13px; opacity: .8; }
+  .legal { display: flex; gap: 16px; flex-wrap: wrap; } .legal a { text-decoration: none; } .legal a:hover { text-decoration: underline; }
+  @media (max-width: 980px) { .grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) {
+    .grid { grid-template-columns: 1fr; gap: 26px; } .cta { padding: 18px; margin: 28px 0 32px; } .cta-b { width: 100%; } .cta-b .btn { flex: 1; padding: 0 10px; }
+    .bottom { flex-direction: column; }
+  }
 </style>
