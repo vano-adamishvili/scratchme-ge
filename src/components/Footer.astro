@@ -1,7 +1,7 @@
 ---
 import Logo from './Logo.astro';
 import { SETTINGS, localImage } from '../data/catalog';
-import { siFacebook, siInstagram, siTiktok, siMessenger } from 'simple-icons';
+import { siFacebook, siInstagram, siTiktok } from 'simple-icons';
 const tel = '+995' + SETTINGS.phone.replace(/\s/g, '');
 const s = SETTINGS.socials as Record<string, string>;
 const LOGO_SRC = 'https://scratchme.ge/logo-wordmark-dark.webp';
@@ -11,7 +11,6 @@ const socials = [
   { key: 'instagram', name: 'Instagram', icon: siInstagram },
   { key: 'tiktok', name: 'TikTok', icon: siTiktok },
   { key: 'facebook', name: 'Facebook', icon: siFacebook },
-  { key: 'messenger', name: 'Messenger', icon: siMessenger },
 ].filter((x) => s[x.key]);
 const year = new Date().getFullYear();
 ---
