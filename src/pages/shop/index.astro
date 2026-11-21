@@ -1,0 +1,11 @@
+---
+import Base from '../../layouts/Base.astro';
+import Catalog from '../../components/Catalog.astro';
+import { breadcrumbs } from '../../lib/seo';
+import { PRODUCTS } from '../../data/catalog';
+const ld = breadcrumbs([{ name: 'მთავარი', url: '/' }, { name: 'პოსტერები', url: '/shop' }]);
+---
+<Base title="ყველა გადასაფხეკი პოსტერი — კატალოგი" description={`${PRODUCTS.length} გადასაფხეკი პოსტერი ერთ გვერდზე: მოგზაურობა, ფილმები და სერიალები, წიგნები, ანიმე, ბავშვებისთვის, წყვილებისთვის და გამოწვევები. 32 × 45 სმ, მიწოდება მთელ საქართველოში.`} jsonLd={ld}>
+  <div class="container page-head"><span class="eyebrow">კატალოგი</span><h1>ყველა გადასაფხეკი პოსტერი</h1></div>
+  <Catalog heading={false} />
+</Base>

@@ -9,11 +9,14 @@ import Footer from '../components/Footer.astro';
 import Zoom from '../components/Zoom.astro';
 import FloatingGiftOffers from '../components/FloatingGiftOffers.astro';
 
-interface Props { title: string; description: string; image?: string; type?: string; noindex?: boolean; jsonLd?: object }
-const { title, description, image = '/og-image.png', type = 'website', noindex = false, jsonLd } = Astro.props;
-const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', Astro.site);
+interface Props { title: string; description: string; image?: string; imageAlt?: string; type?: string; noindex?: boolean; jsonLd?: object | object[]; canonical?: string; fullTitle?: boolean }
+const { title, description, image = '/og-image.png', imageAlt, type = 'website', noindex = false, jsonLd, fullTitle: exact = false } = Astro.props;
+// canonical: ყოველთვის https://scratchme.ge/... დახრილი ხაზის გარეშე (ადმინიდან შეიძლება სხვა მიეთითოს)
+const canonical = new URL(Astro.props.canonical || Astro.url.pathname.replace(/\/$/, '') || '/', Astro.site);
 const og = new URL(image, Astro.site);
-const fullTitle = title.includes('scratchme') ? title : `${title} | scratchme.ge`;
+// ბრენდი: ScratchMe (დომენი scratchme.ge)
+const fullTitle = exact || /scratchme/i.test(title) ? title : `${title} | ScratchMe`;
+const lds = (Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []);
 ---
 <!doctype html>
 <html lang="ka">
@@ -23,7 +26,7 @@ const fullTitle = title.includes('scratchme') ? title : `${title} | scratchme.ge
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'} />
     <meta name="theme-color" content="#F8F6F1" />
     <link rel="preload" href="/fonts/firago-600.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -32,9 +35,11 @@ const fullTitle = title.includes('scratchme') ? title : `${title} | scratchme.ge
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={og} />
+    {imageAlt && <meta property="og:image:alt" content={imageAlt} />}
+    <meta property="og:site_name" content="ScratchMe" />
     <meta property="og:locale" content="ka_GE" />
     <meta name="twitter:card" content="summary_large_image" />
-    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    {lds.map((d) => <script type="application/ld+json" set:html={JSON.stringify(d)} />)}
   </head>
   <body>
     <a class="sr-only" href="#main">მთავარ შიგთავსზე გადასვლა</a>

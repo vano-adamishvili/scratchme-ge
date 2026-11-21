@@ -7,6 +7,8 @@ export interface Product {
   slug: string; title: string; titleEn?: string; subtitle?: string; categories: string[];
   price: number; description: string; features: string[]; accent: string; images: ProductImage[];
   stock?: number | string; badge?: string; order?: number; active?: boolean;
+  // SEO (ადმინიდან, არასავალდებულო): თუ ცარიელია, ავტომატურად იწყობა
+  seoTitle?: string; seoDescription?: string; ogImage?: string; giftFor?: string;
 }
 
 export const CATEGORIES = [

@@ -8,9 +8,13 @@ import GiftFinderQuiz from '../components/GiftFinderQuiz.astro';
 import ProductDetails from '../components/ProductDetails.astro';
 import SocialProof from '../components/SocialProof.astro';
 import FAQ from '../components/FAQ.astro';
-const ld = { '@context': 'https://schema.org', '@type': 'Store', name: 'scratchme.ge', url: 'https://scratchme.ge', description: 'გადასაფხეკი პოსტერები — ფილმები, წიგნები, მოგზაურობა და გამოწვევები.', address: { '@type': 'PostalAddress', addressLocality: 'Tbilisi', addressCountry: 'GE' } };
+import { organization, website } from '../lib/seo';
+import { PRODUCTS, BUNDLES, SETTINGS } from '../data/catalog';
+const ld = [organization(), website()];
+const prices = PRODUCTS.map((p) => p.price), lo = Math.min(...prices), hi = Math.max(...prices);
+const desc = `თემატური გადასაფხეკი პოსტერები ფილმების, წიგნების, მოგზაურობისა და ანიმეს მოყვარულებისთვის. ${SETTINGS.product.size}, ${lo === hi ? lo : `${lo}–${hi}`} ₾, ნაკრები ${BUNDLES[0].size} პოსტერი ${BUNDLES[0].price} ₾-დან. მიწოდება მთელ საქართველოში.`;
 ---
-<Base title="scratchme.ge — გადასაფხეკი პოსტერები" description="გადასაფხეკი პოსტერები ფილმების, წიგნების, მოგზაურობისა და გამოწვევების მოყვარულებისთვის. გადაფხიკე, აღმოაჩინე, გაიხსენე. მიტანა მთელ საქართველოში." jsonLd={ld}>
+<Base fullTitle title="გადასაფხეკი პოსტერები — ორიგინალური საჩუქარი | ScratchMe" description={desc} jsonLd={ld}>
   <Hero />
   <Catalog />
   <BundleBuilder />

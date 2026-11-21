@@ -24,7 +24,7 @@ const LOGO = localImage(LOGO_SRC)?.lg ?? LOGO_SRC;
           <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <div class="dd-menu" id="cat-menu" hidden>
-          {cats.map((c) => <a href={`/shop?category=${c.id}`}>{c.name}</a>)}
+          {cats.map((c) => <a href={`/shop/${c.id}`}>{c.name}</a>)}
           <a href="/shop" class="all">ყველა პოსტერი →</a>
         </div>
       </div>
@@ -43,7 +43,7 @@ const LOGO = localImage(LOGO_SRC)?.lg ?? LOGO_SRC;
   <nav id="mnav" class="mnav" hidden aria-label="მობილური მენიუ">
     {nav.map((n) => <a href={n.href}>{n.label}</a>)}
     <span class="mnav-h">კატეგორიები</span>
-    <div class="mnav-cats">{cats.map((c) => <a href={`/shop?category=${c.id}`} class="chip">{c.name}</a>)}</div>
+    <div class="mnav-cats">{cats.map((c) => <a href={`/shop/${c.id}`} class="chip">{c.name}</a>)}</div>
     <a href={`tel:+995${SETTINGS.phone.replace(/\s/g, '')}`} class="tel">{SETTINGS.phone}</a>
   </nav>
 </header>

@@ -1,5 +1,20 @@
+# scratchme.ge — საჯარო გვერდები ღიაა საძიებო სისტემებისთვის.
+# დახურულია მხოლოდ ადმინი, კალათა/შეკვეთა და API.
+
 User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /cart
+Disallow: /api/
+
+# Google, Bing და ChatGPT Search (OAI-SearchBot) — იგივე წესები, ცალსახად.
+# GPTBot-ის (მოდელების სწავლება) პოლიტიკა აქ არ იცვლება — მას ზემოთა საერთო წესი ეხება.
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin
+Disallow: /cart
+Disallow: /api/
+
 Sitemap: https://scratchme.ge/sitemap-index.xml

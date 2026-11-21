@@ -6,7 +6,9 @@
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": "./dist",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    // /shop და /shop/ ერთი გვერდია: მისამართი ყოველთვის დახრილი ხაზის გარეშე (canonical-ის მსგავსად), /shop/ → 301 /shop
+    "html_handling": "drop-trailing-slash"
   },
   "observability": { "enabled": true },
   // Cloudflare-ის პანელში დამატებული ცვლადები deploy-ისას არ წაიშალოს
