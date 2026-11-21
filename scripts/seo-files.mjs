@@ -40,6 +40,13 @@ export default function seoFiles() {
         walk(out);
         writeFileSync(`${out}_redirects`, lines.join('\n') + '\n');
         writeFileSync(`${out}_headers`, [
+          // უსაფრთხოების headers ყველა სტატიკურ ფაილზე (/api და /admin Worker-იდან მოდის და ამით არ იფარება)
+          '/*',
+          '  Strict-Transport-Security: max-age=31536000',
+          '  X-Content-Type-Options: nosniff',
+          '  Referrer-Policy: strict-origin-when-cross-origin',
+          '  X-Frame-Options: SAMEORIGIN',
+          '  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()',
           '/robots.txt', '  Content-Type: text/plain; charset=utf-8',
           '/llms.txt', '  Content-Type: text/plain; charset=utf-8', '  Cache-Control: public, max-age=3600',
           '/_astro/*', '  Cache-Control: public, max-age=31536000, immutable',
