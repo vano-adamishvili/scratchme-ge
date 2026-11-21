@@ -37,21 +37,17 @@ export const returnPolicy = () => ({
   returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
   merchantReturnDays: 7,
   returnMethod: 'https://schema.org/ReturnByMail',
-  returnFees: 'https://schema.org/ReturnShippingFees',
+  // დაბრუნების კურიერს მყიდველი თვითონ იხდის/აგვარებს
+  returnFees: 'https://schema.org/ReturnFeesCustomerResponsibility',
   merchantReturnLink: `${SITE}/delivery-returns`,
 });
 
 // მიწოდება საქართველოში: ერთ-ორ პოსტერზე 5 ₾ (3+ პოსტერზე უფასო — ეს ნაკრების/კალათის პირობაა და ცალკე პროდუქტზე არ ჩანს),
-// ვადა: თბილისი 2 სამუშაო დღე, რეგიონები 3+
 export const shipping = () => ({
   '@type': 'OfferShippingDetails',
   shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'GE' },
   shippingRate: { '@type': 'MonetaryAmount', value: SETTINGS.shippingFee, currency: 'GEL' },
-  deliveryTime: {
-    '@type': 'ShippingDeliveryTime',
-    businessDays: { '@type': 'OpeningHoursSpecification', dayOfWeek: ['https://schema.org/Monday', 'https://schema.org/Tuesday', 'https://schema.org/Wednesday', 'https://schema.org/Thursday', 'https://schema.org/Friday'] },
-    transitTime: { '@type': 'QuantitativeValue', minValue: 2, unitCode: 'DAY' },
-  },
+  // ვადა (თბილისი 2, რეგიონები 3+ სამუშაო დღე) გვერდზე ტექსტადაა; schema-ში არ ვწერთ, რადგან რეგიონების ზედა ზღვარი ზუსტად არ არის განსაზღვრული
 });
 
 export const breadcrumbs = (items: { name: string; url: string }[]) => ({

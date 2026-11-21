@@ -13,7 +13,7 @@ const { p } = Astro.props as { p: Product };
 const ok = inStock(p);
 const related = PRODUCTS.filter((x) => x.slug !== p.slug && x.categories.some((c) => p.categories.includes(c))).slice(0, 4);
 // SEO: ადმინიდან შეყვანილი ტექსტი, ან ავტომატური — რეალური ფასით, ზომით და მიწოდებით
-const seoTitle = p.seoTitle || `${p.title} — გადასაფხეკი პოსტერი`;
+const seoTitle = p.seoTitle || (p.title.length > 34 ? p.title : `${p.title} — გადასაფხეკი პოსტერი`);
 const desc = p.seoDescription || clip(`${p.title}: გადასაფხეკი პოსტერი ${SETTINGS.product.size}, ${p.price} ₾. ${p.subtitle ? p.subtitle.replace(/[.!]*$/, '.') + ' ' : ''}${p.description}`, 150) ;
 const descFull = `${desc} მიწოდება მთელ საქართველოში, ${SETTINGS.freeShippingFrom}+ პოსტერზე უფასოდ.`;
 const altFor = (label?: string) => p.title + ' — გადასაფხეკი პოსტერი' + (label ? ', ' + label.toLowerCase() : '');
