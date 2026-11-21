@@ -104,6 +104,7 @@ collections:
             fields:
               - { label: 'ჩართული', name: active, widget: boolean, default: true }
               - { label: 'ტექსტი', name: text, widget: string }
+              - { label: 'ბმული (სად გადავიდეს დაჭერისას)', name: href, widget: string, required: false, default: '/secret-santa' }
           - label: 'შეთავაზებების პანელი (საჩუქრის ღილაკი)'
             name: offersDrawer
             widget: object

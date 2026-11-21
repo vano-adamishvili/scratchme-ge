@@ -67,7 +67,8 @@
   },
   "season": {
     "active": true,
-    "text": "სეკრეტ სანტა · საახალწლო საჩუქრები"
+    "text": "სეკრეტ სანტა · საახალწლო საჩუქრები",
+    "href": "/secret-santa"
   },
   "offersDrawer": {
     "active": true,
