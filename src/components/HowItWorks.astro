@@ -2,6 +2,16 @@
 import { PRODUCTS, productBySlug } from '../data/catalog';
 // დემოსთვის გვჭირდება პოსტერი ორი ფოტოთი: გადაუფხეკელი და გადაფხეკილი
 const demo = [productBySlug('top-100-movies'), ...PRODUCTS].find((p) => p && p.images.length > 1);
+// დაფარული უჯრების ზუსტი კოორდინატები (ფოტოს წილებში) — გადაფხეკა მხოლოდ აქ ხდება, სათაური და ჩარჩო ხელუხლებელია.
+// ამოღებულია „ტოპ 100 ფილმი“-ს დაფარული/გადაფხეკილი ფოტოების შედარებით (10 × 10 ბადე).
+const GRIDS: Record<string, { cols: number[][]; rows: number[][]; ratio: number }> = {
+  'top-100-movies': {
+    ratio: 1600 / 2251,
+    cols: [[.0519, .1306], [.1431, .2206], [.2331, .3119], [.3244, .4031], [.4156, .4931], [.5056, .5844], [.5969, .6756], [.6881, .7656], [.7781, .8569], [.8694, .9475]],
+    rows: [[.1031, .159], [.1844, .2403], [.2661, .3212], [.3478, .4029], [.4287, .4847], [.5104, .5655], [.5917, .6473], [.6739, .729], [.7548, .8108], [.8361, .892]],
+  },
+};
+const grid = demo ? GRIDS[demo.slug] : undefined;
 const steps = [
   { n: '1', t: 'აირჩიე', d: 'თემა, რომელიც შენ ან შენს ახლობელს უყვარს: ფილმები, მოგზაურობა, წიგნები, წყვილის იდეები.' },
   { n: '2', t: 'გადაფხიკე', d: 'უყურე, წაიკითხე, ეწვიე ან შეასრულე, და მონეტით გადაფხიკე შესაბამისი უჯრა.' },
@@ -33,11 +43,12 @@ const perks = [
 
     <div class="how">
       <div class="demo">
-        <div class="box" style={demo ? `aspect-ratio:3/4` : ''}>
+        <div class="box" style={`aspect-ratio:${grid ? grid.ratio : 3 / 4}`}>
           {demo ? <img class="under" src={demo.images[1].thumb} alt={`${demo.title} — გადაფხეკილი`} loading="lazy" decoding="async" /> : <div class="under txt"><b>ნანახია!</b></div>}
-          <canvas data-cover={demo?.images[0].thumb} aria-label="გადაფხიკე აქ — სცადე თითით ან მაუსით"></canvas>
+          <canvas data-cover={demo?.images[0].thumb} data-grid={grid ? JSON.stringify({ c: grid.cols, r: grid.rows }) : undefined} aria-label="გადაფხიკე აქ — სცადე თითით ან მაუსით"></canvas>
+          <span class="coin" aria-hidden="true"></span>
         </div>
-        <div class="dm-row"><span class="hint" id="sc-p">გადაფხიკე თითით ან მაუსით</span><span class="dm-b"><button type="button" class="btn sm ghost" id="sc-all">სრულად გახსნა</button><button type="button" class="btn sm ghost" id="sc-r">თავიდან</button></span></div>
+        <div class="dm-row"><span class="hint" id="sc-p">გადაუსვი მონეტა უჯრებს</span><span class="dm-b"><button type="button" class="btn sm ghost" id="sc-all">სრულად გახსნა</button><button type="button" class="btn sm ghost" id="sc-r">თავიდან</button></span></div>
       </div>
 
       <ol class="steps">
@@ -73,7 +84,12 @@ const perks = [
   .under, canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
   img.under { object-fit: cover; }
   .under.txt { display: flex; align-items: center; justify-content: center; }
-  canvas { touch-action: none; cursor: crosshair; }
+  canvas { touch-action: none; cursor: none; }
+  /* მონეტა კურსორის ადგილას (ჩნდება, როცა მაუსი/თითი პოსტერზეა) */
+  .coin { position: absolute; left: 0; top: 0; z-index: 2; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; pointer-events: none; opacity: 0; transition: opacity .2s ease;
+    background: radial-gradient(circle at 34% 30%, #FFF6D8, #E2C27C 45%, #B8924A 70%, #8F6E33); box-shadow: 0 3px 8px rgba(60, 45, 15, .35), inset 0 0 0 2px rgba(255, 246, 216, .45); }
+  .coin::after { content: ''; position: absolute; inset: 6px; border-radius: 50%; border: 1px solid rgba(143, 110, 51, .45); }
+  .coin.on { opacity: 1; }
   .dm-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
   .hint { font-size: 14px; color: var(--muted); }
   .dm-b { display: flex; gap: 6px; }
@@ -114,43 +130,76 @@ const perks = [
     rv.forEach((el) => io.observe(el));
   } else rv.forEach((el) => el.classList.add('in'));
 
-  // გადაფხეკის დემო: ქვემოთ გადაფხეკილი პოსტერია, ზემოდან — დაფარული
+  // გადაფხეკის დემო: ქვემოთ გადაფხეკილი პოსტერია, ზემოდან — დაფარული.
+  // მონეტა მიჰყვება კურსორს/თითს და ფხეკს მხოლოდ იმ უჯრას, რომელზეც დგას (სათაური, წარწერები და ჩარჩო ხელუხლებელია).
+  // უჯრის დიდი ნაწილის გადაფხეკისას უჯრა ბოლომდე იხსნება.
   const cv = document.querySelector<HTMLCanvasElement>('#how-it-works canvas');
   if (cv) {
     const ctx = cv.getContext('2d')!;
     const label = document.getElementById('sc-p')!;
-    const G = 12; let cells = new Set<number>(), W = 0, H = 0, down = false, cover: HTMLImageElement | null = null;
+    const coin = cv.parentElement!.querySelector<HTMLElement>('.coin')!;
+    const g = cv.dataset.grid ? (JSON.parse(cv.dataset.grid) as { c: number[][]; r: number[][] }) : null;
+    // უჯრები [x0,y0,x1,y1] წილებში; ბადის გარეშე — მთელი ფართობი ერთი „უჯრაა“
+    const CELLS = g ? g.r.flatMap(([y0, y1]) => g.c.map(([x0, x1]) => [x0, y0, x1, y1])) : [[0, 0, 1, 1]];
+    const N = 4; // უჯრის შიგნით 4 × 4 საკონტროლო წერტილი
+    let hits: Set<number>[] = [], done = new Set<number>(), W = 0, H = 0, cover: HTMLImageElement | null = null, last: { x: number; y: number } | null = null;
+    const msg = () => { label.textContent = !g ? 'გადაფხიკე თითით ან მაუსით' : done.size === 0 ? 'გადაუსვი მონეტა უჯრებს' : done.size >= CELLS.length ? 'ასე ივსება შენი პოსტერი' : `${done.size} / ${CELLS.length} უჯრა გადაფხეკილია`; };
     const paint = () => {
       const r = cv.getBoundingClientRect(); if (!r.width) return;
       const dpr = Math.min(2, window.devicePixelRatio || 1);
       W = cv.width = Math.round(r.width * dpr); H = cv.height = Math.round(r.height * dpr);
       ctx.globalCompositeOperation = 'source-over';
       if (cover) ctx.drawImage(cover, 0, 0, W, H);
-      else {
-        const g = ctx.createLinearGradient(0, 0, W, H); g.addColorStop(0, '#c9c6bd'); g.addColorStop(.5, '#e9e6dc'); g.addColorStop(1, '#b9b6ad');
-        ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-        ctx.fillStyle = '#77766d'; ctx.font = `600 ${Math.round(W / 16)}px "Noto Sans Georgian", sans-serif`; ctx.textAlign = 'center'; ctx.fillText('გადაფხიკე', W / 2, H / 2);
-      }
-      cells = new Set(); label.textContent = 'გადაფხიკე თითით ან მაუსით';
+      else { ctx.fillStyle = '#d6d3ca'; ctx.fillRect(0, 0, W, H); }
+      hits = CELLS.map(() => new Set()); done = new Set(); msg();
     };
     const src = cv.dataset.cover;
     if (src) { const im = new Image(); im.onload = () => { cover = im; paint(); }; im.src = src; }
     paint();
     if ('ResizeObserver' in window) { let w0 = 0; new ResizeObserver(() => { const w = cv.clientWidth; if (w && Math.abs(w - w0) > 2) { w0 = w; paint(); } }).observe(cv); }
-    const scratch = (e: PointerEvent) => {
-      const r = cv.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
-      ctx.globalCompositeOperation = 'destination-out'; ctx.beginPath(); ctx.arc(x * W, y * H, W * .075, 0, Math.PI * 2); ctx.fill();
-      if (x >= 0 && x < 1 && y >= 0 && y < 1) cells.add(Math.floor(y * G) * G + Math.floor(x * G));
-      const pct = Math.min(100, Math.round(cells.size / (G * G) * 130));
-      label.textContent = pct >= 70 ? 'ასე ივსება შენი პოსტერი' : `${pct}% გადაფხეკილია`;
+    const rectPx = (c: number[]) => [c[0] * W + 1, c[1] * H + 1, (c[2] - c[0]) * W - 2, (c[3] - c[1]) * H - 2];
+    const clearCell = (i: number) => { const [x, y, w, h] = rectPx(CELLS[i]); ctx.clearRect(x, y, w, h); done.add(i); };
+    const cellAt = (x: number, y: number) => CELLS.findIndex((c) => x >= c[0] && x <= c[2] && y >= c[1] && y <= c[3]);
+    // ერთი „მოსმა“ წერტილიდან წერტილამდე: იშლება მხოლოდ უჯრის შიგნით (clip)
+    const stroke = (x: number, y: number) => {
+      const i = cellAt(x, y);
+      if (i >= 0 && !done.has(i)) {
+        const c = CELLS[i], [rx, ry, rw, rh] = rectPx(c), rad = Math.max(rw, rh) * .34;
+        ctx.save(); ctx.beginPath(); ctx.rect(rx, ry, rw, rh); ctx.clip();
+        ctx.globalCompositeOperation = 'destination-out'; ctx.lineCap = 'round'; ctx.lineWidth = rad * 2;
+        ctx.beginPath();
+        if (last && cellAt(last.x, last.y) === i) { ctx.moveTo(last.x * W, last.y * H); ctx.lineTo(x * W, y * H); ctx.stroke(); }
+        else { ctx.arc(x * W, y * H, rad, 0, Math.PI * 2); ctx.fill(); }
+        ctx.restore();
+        // რომელი საკონტროლო წერტილები მოხვდა მონეტის ქვეშ
+        const h = hits[i], cw = c[2] - c[0], ch = c[3] - c[1], rr = rad * 1.05;
+        for (let a = 0; a < N; a++) for (let b = 0; b < N; b++) {
+          const px = c[0] + cw * (a + .5) / N, py = c[1] + ch * (b + .5) / N;
+          if (Math.hypot((px - x) * W, (py - y) * H) <= rr) h.add(a * N + b);
+        }
+        if (h.size >= N * N * .55) clearCell(i);
+        msg();
+      }
+      last = { x, y };
     };
-    cv.addEventListener('pointerdown', (e) => { down = true; cv.setPointerCapture(e.pointerId); scratch(e); });
-    cv.addEventListener('pointermove', (e) => down && scratch(e));
-    cv.addEventListener('pointerup', () => (down = false));
-    cv.addEventListener('pointercancel', () => (down = false));
+    const pos = (e: PointerEvent) => { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height, px: e.clientX - r.left, py: e.clientY - r.top }; };
+    let down = false;
+    const move = (e: PointerEvent) => {
+      const p = pos(e);
+      coin.style.transform = `translate(${p.px}px, ${p.py}px) rotate(${(p.px + p.py) % 40 - 20}deg)`;
+      coin.classList.add('on');
+      // მაუსით: საკმარისია მიტანა. თითით: გადაფხეკა თითის მოსმით.
+      if (e.pointerType === 'mouse' || down) stroke(p.x, p.y); else last = null;
+    };
+    cv.addEventListener('pointerenter', (e) => { last = null; move(e); });
+    cv.addEventListener('pointermove', move);
+    cv.addEventListener('pointerdown', (e) => { down = true; cv.setPointerCapture(e.pointerId); last = null; move(e); });
+    const up = () => { down = false; last = null; };
+    cv.addEventListener('pointerup', up);
+    cv.addEventListener('pointercancel', up);
+    cv.addEventListener('pointerleave', () => { if (!down) { coin.classList.remove('on'); last = null; } });
     document.getElementById('sc-r')!.addEventListener('click', paint);
-    // button alternative to dragging (keyboard / accessibility)
-    document.getElementById('sc-all')!.addEventListener('click', () => { ctx.clearRect(0, 0, W, H); label.textContent = 'ასე ივსება შენი პოსტერი'; });
+    // ღილაკით გახსნა (კლავიატურა / ხელმისაწვდომობა): მხოლოდ უჯრები
+    document.getElementById('sc-all')!.addEventListener('click', () => { CELLS.forEach((_, i) => clearCell(i)); msg(); });
   }
 </script>
