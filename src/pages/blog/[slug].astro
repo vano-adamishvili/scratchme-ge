@@ -1,20 +1,56 @@
 ---
 import Base from '../../layouts/Base.astro';
 import ProductCard from '../../components/ProductCard.astro';
-import { POSTS, fmtDate, type Post } from '../../lib/blog';
-import { productBySlug } from '../../data/catalog';
+import { POSTS, fmtDate, relatedPosts, type Post } from '../../lib/blog';
+import { productBySlug, localImage } from '../../data/catalog';
+import { breadcrumbs, ORG_ID, SITE, abs, clip } from '../../lib/seo';
 export function getStaticPaths() { return POSTS.map((p) => ({ params: { slug: p.slug }, props: { post: p } })); }
 const { post } = Astro.props as { post: Post };
 const prod = post.product ? productBySlug(post.product) : undefined;
-const cover = post.cover ? new URL(localImage(post.cover)?.lg ?? post.cover, Astro.site).href : undefined;
-const ld = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title, datePublished: post.date, description: post.description, image: cover };
-import { localImage } from '../../data/catalog';
+const img = (u?: string) => (u ? abs(localImage(u)?.lg ?? u) : undefined);
+const cover = img(post.cover);
+const og = img(post.ogImage) ?? cover;
+const url = `${SITE}/blog/${post.slug}`;
+const related = relatedPosts(post);
+const ld = [
+  { '@context': 'https://schema.org', '@type': 'BlogPosting', '@id': `${url}#article`, headline: post.title, description: post.seoDescription || post.description,
+    ...(cover ? { image: [cover] } : {}), datePublished: post.date, dateModified: post.updated || post.date, inLanguage: 'ka',
+    author: post.author ? { '@type': 'Person', name: post.author } : { '@type': 'Organization', name: 'ScratchMe', '@id': ORG_ID },
+    publisher: { '@type': 'Organization', name: 'ScratchMe', '@id': ORG_ID, logo: { '@type': 'ImageObject', url: abs('/img/logo-2424add6.webp') } },
+    mainEntityOfPage: url, ...(post.category ? { articleSection: post.category } : {}) },
+  breadcrumbs([{ name: 'მთავარი', url: '/' }, { name: 'ბლოგი', url: '/blog' }, { name: post.title, url: `/blog/${post.slug}` }]),
+];
 ---
-<Base title={post.title} description={post.description} image={cover} type="article" jsonLd={ld}>
+<Base title={post.seoTitle || post.title} description={clip(post.seoDescription || post.description, 160)} image={og} imageAlt={post.coverAlt || post.title} type="article" jsonLd={ld}>
   <article class="container">
-    <div class="page-head"><a href="/blog" class="eyebrow">← ბლოგი</a> <span class="eyebrow">· {fmtDate(post.date)}</span><h1>{post.title}</h1></div>
+    <div class="page-head">
+      <nav class="crumbs" aria-label="ნავიგაცია"><a href="/">მთავარი</a> / <a href="/blog">ბლოგი</a></nav>
+      <p class="meta"><time datetime={post.date}>{fmtDate(post.date)}</time>{post.updated && post.updated !== post.date && <> · განახლდა <time datetime={post.updated}>{fmtDate(post.updated)}</time></>}{post.category && <> · {post.category}</>} · {post.minutes} წთ საკითხავი</p>
+      <h1>{post.title}</h1>
+      {post.description && <p class="lead">{post.description}</p>}
+    </div>
+    {cover && <img class="cover" src={localImage(post.cover!)?.lg ?? post.cover} alt={post.coverAlt || post.title} width="1200" height="675" decoding="async" />}
     <div class="prose"><post.Content /></div>
     {prod && <aside class="pr"><p class="eyebrow">პოსტერი ამ თემაზე</p><div style="max-width:280px"><ProductCard product={prod} /></div></aside>}
+    <p class="links"><a href="/shop">ყველა გადასაფხეკი პოსტერი →</a> · <a href="/secret-santa">სეკრეტ სანტას საჩუქრები →</a></p>
   </article>
+  {related.length > 0 && (
+    <section class="container section rel" aria-labelledby="rel-h">
+      <h2 id="rel-h">კიდევ წაიკითხე</h2>
+      <div class="rg">{related.map((r) => (<a href={`/blog/${r.slug}`} class="card rc"><span class="meta">{fmtDate(r.date)}</span><h3>{r.title}</h3><p>{r.description}</p></a>))}</div>
+    </section>
+  )}
 </Base>
-<style>.page-head h1 { font-size: clamp(30px, 5vw, 54px); max-width: 900px; } .pr { margin-top: 36px; }</style>
+<style>
+  .crumbs { font-size: 14px; color: var(--muted); } .crumbs a { color: inherit; text-decoration: none; } .crumbs a:hover { color: var(--forest); }
+  .meta { font-size: 14px; color: var(--muted); margin: 10px 0 0; }
+  .page-head h1 { font-size: clamp(30px, 5vw, 54px); max-width: 900px; }
+  .lead { font-size: 18px; color: var(--muted); max-width: 70ch; margin: 10px 0 0; }
+  .cover { width: 100%; max-width: 900px; height: auto; max-height: 520px; object-fit: contain; border-radius: var(--r-md); background: var(--surface-2); margin: 0 0 28px; }
+  .pr { margin-top: 36px; }
+  .links { margin-top: 28px; } .links a { color: var(--forest); font-weight: 600; }
+  .rg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 14px; }
+  .rc { display: grid; gap: 6px; padding: 18px; text-decoration: none; color: var(--text); }
+  .rc h3 { margin: 0; font-size: 18px; } .rc p { margin: 0; color: var(--muted); font-size: 15px; }
+  @media (max-width: 760px) { .rg { grid-template-columns: 1fr; } }
+</style>

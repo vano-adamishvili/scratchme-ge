@@ -1,0 +1,38 @@
+# დაგეგმილი სტატიები: ყოველ დილით (თბილისით 00:15) ამოწმებს, დღეს ხომ არ უნდა გამოქვეყნდეს სტატია
+# (draft: false და date = დღევანდელი თარიღი). თუ კი — ცარიელ commit-ს აკეთებს, Cloudflare საიტს თავიდან აწყობს
+# და სტატია გამოჩნდება. სხვა დღეებში არაფერს აკეთებს.
+name: Publish scheduled blog posts
+on:
+  schedule:
+    - cron: '15 20 * * *'   # 20:15 UTC = 00:15 თბილისით
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: scheduled-publish
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main }
+      - name: Find posts due today
+        id: due
+        run: |
+          TODAY=$(TZ=Asia/Tbilisi date +%F)
+          DUE=""
+          for f in src/data/blog/*.md; do
+            fm=$(awk '/^---/{n++; next} n==1' "$f")
+            echo "$fm" | grep -Eq "^draft:[[:space:]]*true" && continue
+            d=$(echo "$fm" | grep -E "^date:" | head -1 | grep -oE "[0-9]{4}-[0-9]{2}-[0-9]{2}")
+            [ "$d" = "$TODAY" ] && DUE="$DUE $(basename "$f" .md)"
+          done
+          echo "today=$TODAY" >> "$GITHUB_OUTPUT"
+          echo "posts=${DUE# }" >> "$GITHUB_OUTPUT"
+          echo "Due today ($TODAY): ${DUE:-none}"
+      - name: Trigger site rebuild
+        if: steps.due.outputs.posts != ''
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit --allow-empty -m "Blog: publish scheduled post(s) ${{ steps.due.outputs.posts }} (${{ steps.due.outputs.today }})"
+          git push origin HEAD:main

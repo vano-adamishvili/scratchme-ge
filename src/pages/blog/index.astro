@@ -2,13 +2,15 @@
 import Base from '../../layouts/Base.astro';
 import { POSTS, fmtDate } from '../../lib/blog';
 import { localImage } from '../../data/catalog';
+import { breadcrumbs, SITE } from '../../lib/seo';
+const ld = [breadcrumbs([{ name: 'მთავარი', url: '/' }, { name: 'ბლოგი', url: '/blog' }]), { '@context': 'https://schema.org', '@type': 'Blog', name: 'ScratchMe ბლოგი', url: `${SITE}/blog`, inLanguage: 'ka', blogPost: POSTS.map((p) => ({ '@type': 'BlogPosting', headline: p.title, url: `${SITE}/blog/${p.slug}`, datePublished: p.date })) }];
 ---
-<Base title="ბლოგი" description="იდეები ფილმებზე, წიგნებზე, მოგზაურობასა და გამოწვევებზე — scratchme.ge-ის ბლოგი.">
+<Base title="ბლოგი — საჩუქრის იდეები, ფილმები, წიგნები, მოგზაურობა" description="ScratchMe-ის ბლოგი: საჩუქრის იდეები, სიები ფილმებზე, წიგნებსა და მოგზაურობაზე და რჩევები, როგორ აქციო ჩვეულებრივი დღე ახალ გამოცდილებად." jsonLd={ld}>
   <div class="container page-head"><span class="eyebrow">ბლოგი</span><h1>იდეები შემდეგი გეგმისთვის</h1></div>
   <div class="container list">
     {POSTS.map((p) => (
       <a href={`/blog/${p.slug}`} class="post card">
-        {p.cover && <img src={localImage(p.cover)?.sm ?? p.cover} alt="" loading="lazy" width="400" height="300" />}
+        {p.cover && <img src={localImage(p.cover)?.sm ?? p.cover} alt={p.coverAlt || p.title} loading="lazy" width="400" height="300" />}
         <div><span class="eyebrow">{fmtDate(p.date)}</span><h2>{p.title}</h2><p class="muted">{p.description}</p></div>
       </a>
     ))}

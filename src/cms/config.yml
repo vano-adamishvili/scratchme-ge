@@ -67,6 +67,16 @@ collections:
       - { label: ბეიჯი, name: badge, widget: string, required: false }
       - { label: 'რიგი (პატარა = წინ)', name: order, widget: number, required: false }
       - { label: აქტიურია, name: active, widget: boolean, default: true }
+      - label: 'SEO (არასავალდებულო — ცარიელი = ავტომატური)'
+        name: seo
+        widget: object
+        collapsed: true
+        required: false
+        fields:
+          - { label: 'SEO სათაური (Google-ში, ~60 სიმბოლო; ბოლოში „| ScratchMe“ თავისით ემატება)', name: seoTitle, widget: string, required: false }
+          - { label: 'SEO აღწერა (Google-ში, 120–160 სიმბოლო)', name: seoDescription, widget: text, required: false }
+          - { label: 'სოც. ქსელის ფოტო (ცარიელი = პირველი ფოტო)', name: ogImage, widget: image, required: false }
+          - { label: '„ვისთვის არის კარგი საჩუქარი“ (ცარიელი = კატეგორიის ტექსტი)', name: giftFor, widget: text, required: false }
 
   - name: blog
     label: ბლოგი
@@ -74,13 +84,30 @@ collections:
     folder: src/data/blog
     create: true
     slug: '{{fields.slug}}'
+    sortable_fields: [date, title]
+    summary: '{{title}} — {{date}}{{draft | ternary(" (დრაფტი)", "")}}'
     fields:
       - { label: სათაური, name: title, widget: string }
       - { label: 'ბმული (ლათინურად, მაგ. top-10-films)', name: slug, widget: string, pattern: ['^[a-z0-9-]+$', 'მხოლოდ პატარა ლათინური ასოები, ციფრები და ტირე'] }
-      - { label: მოკლე აღწერა, name: description, widget: text }
-      - { label: თარიღი, name: date, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false, format: 'YYYY-MM-DD' }
-      - { label: ფოტო, name: cover, widget: image, required: false }
-      - { label: 'დაკავშირებული პოსტერი (ბმული)', name: product, widget: relation, collection: products, value_field: slug, search_fields: [title], display_fields: [title], required: false }
+      - { label: 'დრაფტი (ჩართულია = საიტზე არ ჩანს)', name: draft, widget: boolean, default: true }
+      - { label: 'გამოქვეყნების თარიღი (მომავალი თარიღი = ავტომატურად გამოქვეყნდება იმ დღეს)', name: date, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false, format: 'YYYY-MM-DD' }
+      - { label: 'განახლების თარიღი (მხოლოდ რეალური ცვლილებისას)', name: updated, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false, format: 'YYYY-MM-DD', required: false }
+      - { label: 'მოკლე აღწერა (ჩანს სტატიის თავში და სიაში)', name: description, widget: text }
+      - { label: კატეგორია, name: category, widget: select, options: ['საჩუქრის იდეები', 'ფილმები', 'წიგნები', 'მოგზაურობა', 'ანიმე', 'რჩევები'], required: false }
+      - { label: 'ავტორი (ცარიელი = ScratchMe)', name: author, widget: string, required: false }
+      - { label: მთავარი ფოტო, name: cover, widget: image, required: false }
+      - { label: 'ფოტოს აღწერა (alt)', name: coverAlt, widget: string, required: false }
+      - { label: 'დაკავშირებული პოსტერი', name: product, widget: relation, collection: products, value_field: slug, search_fields: [title], display_fields: [title], required: false }
+      - { label: 'დაკავშირებული სტატიები', name: related, widget: relation, collection: blog, value_field: slug, search_fields: [title], display_fields: [title], multiple: true, required: false }
+      - label: 'SEO (არასავალდებულო — ცარიელი = სათაური და აღწერა)'
+        name: seo
+        widget: object
+        collapsed: true
+        required: false
+        fields:
+          - { label: 'SEO სათაური (Google-ში, ~60 სიმბოლო)', name: seoTitle, widget: string, required: false }
+          - { label: 'SEO აღწერა (Google-ში, 120–160 სიმბოლო)', name: seoDescription, widget: text, required: false }
+          - { label: 'სოც. ქსელის ფოტო (Facebook/Instagram)', name: ogImage, widget: image, required: false }
       - { label: ტექსტი, name: body, widget: markdown }
 
   - name: settings

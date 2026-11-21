@@ -29,7 +29,7 @@ const IMG = imageMap as Record<string, { sm: string; lg: string } | undefined>;
 export const localImage = (url: string) => IMG[url];
 export const PRODUCTS: Product[] = Object.values(files)
   .filter((p) => p.active !== false)
-  .map((p) => ({ ...p, images: (p.images ?? []).map((im) => ({ ...im, url: IMG[im.url]?.lg ?? im.url, thumb: IMG[im.url]?.sm ?? im.url })) }))
+  .map((p) => ({ ...p, ...((p as any).seo ?? {}), images: (p.images ?? []).map((im) => ({ ...im, url: IMG[im.url]?.lg ?? im.url, thumb: IMG[im.url]?.sm ?? im.url })) }))
   .sort((a, b) => (a.order ?? 999) - (b.order ?? 999) || a.title.localeCompare(b.title));
 
 export const productBySlug = (slug: string) => PRODUCTS.find((p) => p.slug === slug);
